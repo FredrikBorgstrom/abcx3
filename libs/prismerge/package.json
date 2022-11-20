@@ -1,0 +1,22 @@
+{
+  "name": "@modded-prisma-utils/prismerge",
+  "version": "1.7.0",
+  "type": "commonjs",
+  "description": "Merge prisma files",
+  "main": "src/index.js",
+  "generators": "./generators.json",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "prismerge": "./src/bin/prismerge.js"
+  },
+  "author": {
+    "name": "Johannes Schobel",
+    "email": "johannes.schobel@googlemail.com",
+    "url": "https://github.com/johannesschobel"
+  },
+  "dependencies": {
+    "@nrwl/devkit": "^15.2.1"
+  }
+}

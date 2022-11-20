@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+        "incremental": true,
+        "target": "ES2022",
+        "composite": true,
+        "module": "commonjs",
+        "lib": [
+            "dom",
+            "ESNext"
+        ],
+        "allowJs": true,
+        "checkJs": false,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noImplicitAny": false,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "useUnknownInCatchVariables": false,
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "types": [
+            "jest",
+            "node"
+        ]
+    },
+    "exclude": ["__dist_old", "dist", "commitlint.config.js", "jest.preset.js", "tools/scripts/publish.mjs", "apps"],
+    "references": [
+        {"path": "libs/prisma-crud-generator"},
+        {"path": "libs/nestjs-prisma"},
+        {"path": "libs/prismerge"},
+        {"path": "libs/request-parser"}
+    ]
+}

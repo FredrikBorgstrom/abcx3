@@ -1,0 +1,45 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "outDir": "dist",
+        "types": [],
+        "rootDir": ".",
+        "composite": true,
+        "sourceMap": true,
+        "declaration": true,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "target": "ES2022",
+        "module": "CommonJS",
+        "lib": [
+            "ES2022"
+        ],
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@prisma-utils/nestjs-prisma": [
+                "libs/nestjs-prisma/src/index.ts"
+            ],
+            "@prisma-utils/nestjs-request-parser": [
+                "libs/request-parser/src/index.ts"
+            ],
+            "@prisma-utils/prisma-crud-generator": [
+                "libs/prisma-crud-generator/src/index.ts"
+            ],
+            "@prisma-utils/prismerge": [
+                "libs/prismerge/src/index.ts"
+            ]
+        },
+        "resolveJsonModule": true
+    },
+    
+    "exclude": [
+        "node_modules",
+        "tmp",
+        "dist",
+        "__dist_old"
+    ]
+}

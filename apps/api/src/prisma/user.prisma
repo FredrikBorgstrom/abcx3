@@ -1,0 +1,8 @@
+model User {
+  ...id
+
+  name String
+  articles Article[]
+
+  @@map("users")
+}

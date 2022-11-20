@@ -1,0 +1,11 @@
+model Article {
+  ...id
+
+  title String
+  text  String
+
+  author User @relation(fields: [authorId], references: [id])
+  authorId Int
+
+  @@map("articles")
+}

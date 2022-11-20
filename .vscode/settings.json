@@ -1,0 +1,14 @@
+{
+    "favorites.groups": [
+        "Default",
+        "important"
+    ],
+    "favorites.currentGroup": "important",
+    "favorites.sortOrder": "ASC",
+    "favorites.resources": [
+        {
+            "filePath": "libs\\prisma-crud-generator\\src\\interfaces\\generator.interface.ts",
+            "group": "important"
+        }
+    ]
+}

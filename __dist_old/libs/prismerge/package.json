@@ -1,0 +1,26 @@
+{
+  "name": "@prisma-utils/prismerge",
+  "version": "1.7.0",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "generators": "./generators.json",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "prismerge": "./src/bin/prismerge.js"
+  },
+  "author": {
+    "name": "Johannes Schobel",
+    "email": "johannes.schobel@googlemail.com",
+    "url": "https://github.com/johannesschobel"
+  },
+  "typings": "./src/index.d.ts",
+  "dependencies": {
+    "commander": "^9.4.1",
+    "glob": "8.0.3",
+    "lodash": "^4.17.21",
+    "pluralize": "8.0.0"
+  },
+  "peerDependencies": {}
+}

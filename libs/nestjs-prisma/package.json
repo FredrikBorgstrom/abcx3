@@ -1,0 +1,14 @@
+{
+  "name": "@modded-prisma-utils/nestjs-prisma",
+  "description": "Helper library for prisma-crud-generator",
+  "version": "1.9.0",
+  "type": "commonjs",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Johannes Schobel",
+    "email": "johannes.schobel@googlemail.com",
+    "url": "https://github.com/johannesschobel"
+  }
+}
