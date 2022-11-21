@@ -16,7 +16,7 @@ import { Prisma, #{Model} } from '@prisma/client';
 import {
   PaginationInterface,
   PrismaService,
-} from '@prisma-utils/nestjs-prisma';
+} from '@modded-prisma-utils/nestjs-prisma';
 import { err, ok, Result } from 'neverthrow';
 
 @Injectable()
