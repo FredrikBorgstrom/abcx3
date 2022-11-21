@@ -7,6 +7,7 @@ import {
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { lowerCaseFirstChar } from '../utils/utils';
+import { PrismaHelper } from '../helpers/prisma.helper';
 
 export class CrudServiceGenerator {
   constructor(
@@ -35,6 +36,8 @@ export class CrudServiceGenerator {
       crudServiceContent = customStub.toString();
     }
 
+    // isId
+    
     // replace variables
     crudServiceContent = crudServiceContent.replace(
       /#{CrudServiceClassName}/g,
@@ -58,6 +61,47 @@ export class CrudServiceGenerator {
       lowerCaseFirstChar(this.model.name),
     );
 
+    const idNameAndType = this.getIdFieldNameAndType(this.model);
+
+    if (idNameAndType) {
+        crudServiceContent = crudServiceContent.replace(
+            /#{idName}/g,
+            idNameAndType.name
+        );
+
+        crudServiceContent = crudServiceContent.replace(
+            /#{idType}/g,
+            idNameAndType.type
+        );
+    }
+    
+
     return crudServiceContent;
   }
+
+  
+
+  private getIdFieldNameAndType(model: DMMF.Model): FieldNameAndType | null {
+    const primaryKey = model.primaryKey;
+    // const fieldType: Int;
+    if (primaryKey?.fields) {
+        // getMapTypeFromDMMF
+    } else {
+        const idField = model.fields.find(field => field.isId === true);
+        if (idField) {
+            const mapType = PrismaHelper.getInstance().getMapTypeFromDMMF(idField);
+            const nameAndType = {
+                name: idField.name,
+                type: mapType.tsType
+            };
+            return nameAndType;
+        }
+    }
+    return null;
+  }
 }
+
+interface FieldNameAndType {
+    name: string;
+    type: string;
+  }

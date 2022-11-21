@@ -1,14 +1,30 @@
 {
-    "favorites.groups": [
-        "Default",
-        "important"
-    ],
-    "favorites.currentGroup": "important",
-    "favorites.sortOrder": "ASC",
-    "favorites.resources": [
-        {
-            "filePath": "libs\\prisma-crud-generator\\src\\interfaces\\generator.interface.ts",
-            "group": "important"
-        }
-    ]
+  "favorites.groups": [
+    "Default",
+    "important"
+  ],
+  "favorites.currentGroup": "important",
+  "favorites.sortOrder": "ASC",
+  "favorites.resources": [
+    {
+      "filePath": "libs\\prisma-crud-generator\\src\\interfaces\\generator.interface.ts",
+      "group": "important"
+    }
+  ],
+  "files.exclude": {
+    "./not_used": true,
+    "**/.classpath": true,
+    "**/.DS_Store": true,
+    "**/.factorypath": true,
+    "**/.git": true,
+    "**/.hg": true,
+    "**/.project": true,
+    "**/.svn": true,
+    "**/*.map": true,
+    "**/*.spec.js": true,
+    "**/*.spec.ts": true,
+    "**/CVS": true,
+    "**/Thumbs.db": true
+},
+  "hide-files.files": []
 }

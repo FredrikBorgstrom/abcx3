@@ -19,6 +19,4 @@ export interface GeneratorInterface {
   CRUDServiceSuffix: string;
   CRUDStubFile?: string;
   CRUDAddExceptions?: 'true' | 'false';
-
-  modelsIdType: 'string' | 'number';
 }

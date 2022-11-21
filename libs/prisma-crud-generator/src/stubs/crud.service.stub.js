@@ -1,4 +1,7 @@
-export const crudServiceStubWithExceptions = `/*
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.crudServiceStub = exports.crudServiceStubWithExceptions = void 0;
+exports.crudServiceStubWithExceptions = `/*
 -----------------------------------------------------
 THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 -----------------------------------------------------
@@ -100,8 +103,7 @@ export class #{CrudServiceClassName} {
   }
 }
 `;
-
-export const crudServiceStub = `/*
+exports.crudServiceStub = `/*
 -----------------------------------------------------
 THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 -----------------------------------------------------
@@ -171,3 +173,4 @@ export class #{CrudServiceClassName} {
   }
 }
 `;
+//# sourceMappingURL=crud.service.stub.js.map
