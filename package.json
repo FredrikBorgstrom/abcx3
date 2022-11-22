@@ -6,6 +6,7 @@
     "start": "serve",
     "clean2": "yarn workspaces foreach run clean",
     "build": "tsc --build",
+    "debug": "tsc --build -w",
     "test": "test",
     "clean": "rimraf dist"
   },
