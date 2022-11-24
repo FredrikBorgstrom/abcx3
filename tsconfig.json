@@ -5,8 +5,7 @@
         "composite": true,
         "module": "commonjs",
         "lib": [
-            "dom",
-            "ESNext"
+            "ES2022"
         ],
         "allowJs": true,
         "checkJs": false,

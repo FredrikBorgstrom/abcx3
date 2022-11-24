@@ -1,13 +1,22 @@
 {
   "favorites.groups": [
     "Default",
-    "important"
+    "important",
+    "prismerge"
   ],
   "favorites.currentGroup": "important",
-  "favorites.sortOrder": "ASC",
+  "favorites.sortOrder": "DESC",
   "favorites.resources": [
     {
       "filePath": "libs\\prisma-crud-generator\\src\\interfaces\\generator.interface.ts",
+      "group": "important"
+    },
+    {
+      "filePath": "libs\\nestjs-prisma\\tsconfig.json",
+      "group": "important"
+    },
+    {
+      "filePath": "libs\\nestjs-prisma\\tsconfig.lib.json",
       "group": "important"
     }
   ],
@@ -18,13 +27,11 @@
     "**/.factorypath": true,
     "**/.git": true,
     "**/.hg": true,
-    "**/.project": true,
     "**/.svn": true,
     "**/*.map": true,
-    "**/*.spec.js": true,
-    "**/*.spec.ts": true,
-    "**/CVS": true,
-    "**/Thumbs.db": true
+    "libs/**/*.d.ts": true,
+    "libs/**/*.js": true,
+    "libs/**/*.spec.*": true
 },
   "hide-files.files": []
 }

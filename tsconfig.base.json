@@ -13,6 +13,11 @@
         "importHelpers": true,
         "target": "ES2022",
         "module": "CommonJS",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
         "lib": [
             "ES2022"
         ],

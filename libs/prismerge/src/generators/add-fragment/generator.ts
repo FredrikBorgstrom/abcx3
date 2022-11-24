@@ -38,7 +38,7 @@ export default async function (
     templateSchema,
   );
 
-  updateJson(tree, options.prismergeFile, (content) => {
+  updateJson(tree, options.prismergeFile, (content: Record<string, any>) => {
     set(
       content,
       `${options.app}`,

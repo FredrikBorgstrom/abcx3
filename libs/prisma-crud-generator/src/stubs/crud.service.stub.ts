@@ -51,6 +51,19 @@ export class #{CrudServiceClassName} {
     }
   }
 
+  async getUnique(uniqueProps: Prisma.#{Model}WhereUniqueInput, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
+    // , select?: Prisma.#{Model}Select
+    try {
+      const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
+        where: uniqueProps,
+        include
+      });
+      return ok(result);
+    } catch(e) {
+      return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
+    }
+  }
+
   async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
     try {
       const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
@@ -100,6 +113,8 @@ export class #{CrudServiceClassName} {
   }
 }
 `;
+
+// export const crudServiceStubGetById_neverThrow = ``;
 
 export const crudServiceStub = `/*
 -----------------------------------------------------

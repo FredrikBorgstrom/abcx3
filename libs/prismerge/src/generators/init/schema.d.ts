@@ -1,5 +1,5 @@
 export interface InitGeneratorSchema {
   name: string;
-  directory?: string;
+  directory: string;
   output: string;
 }
