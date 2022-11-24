@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.crudServiceStub = exports.crudServiceStubWithExceptions = void 0;
+exports.crudServiceStub = exports.idMethods_neverThrow = exports.crudServiceStubWithExceptions = void 0;
 exports.crudServiceStubWithExceptions = `/*
 -----------------------------------------------------
 THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -25,6 +25,15 @@ export class #{CrudServiceClassName} {
 
   getPrisma() {
     return this.prismaService;
+  }
+
+  async create(data: Prisma.#{Model}CreateInput): Promise<Result<#{Model}, Error>> {
+    try {
+      const result = await this.prismaService.#{moDel}.create({ data: data });
+      return ok(result);
+    } catch (e) {
+      return err(new InternalServerErrorException(\`Could not create #{Model} Resource.\`));
+    }
   }
 
   async getAll(
@@ -54,7 +63,7 @@ export class #{CrudServiceClassName} {
     }
   }
 
-  async getUnique(uniqueProps: Prisma.#{Model}WhereUniqueInput, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
+  async get(uniqueProps: Prisma.#{Model}WhereUniqueInput, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
     // , select?: Prisma.#{Model}Select
     try {
       const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
@@ -67,7 +76,40 @@ export class #{CrudServiceClassName} {
     }
   }
 
-  async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
+  async update(
+    uniqueProps: Prisma.#{Model}WhereUniqueInput | #{Model},
+    data: Prisma.#{Model}UpdateInput,
+  ): Promise<Result<#{Model}, Error>> {
+    try {
+      const result = await this.prismaService.#{moDel}.update({
+        where: uniqueProps,
+        data: data,
+      });
+      return ok(result);
+    } catch (e) {
+      return err(new InternalServerErrorException(
+        \`Could not update #{Model} Resource \${#{uniqueProps}}.\`,
+      ));
+    }
+  }
+
+  async delete(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
+    try {
+      const result = await this.prismaService.#{moDel}.delete({ where: { #{idName} } });
+      return ok(result);
+    } catch (e) {
+      return err(new InternalServerErrorException(
+        \`Could not delete #{Model} Resource \${#{idName}}.\`,
+      ));
+    }
+  }
+
+  #{byIdMethods}
+
+}
+`;
+exports.idMethods_neverThrow = `
+async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
     try {
       const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
         where: { #{idName} }
@@ -77,17 +119,8 @@ export class #{CrudServiceClassName} {
       return err(new NotFoundException(\`#{Model} Resource \${id} was not found.\`));
     }
   }
-
-  async create(data: Prisma.#{Model}CreateInput): Promise<Result<#{Model}, Error>> {
-    try {
-      const result = await this.prismaService.#{moDel}.create({ data: data });
-      return ok(result);
-    } catch (e) {
-      return err(new InternalServerErrorException(\`Could not create #{Model} Resource.\`));
-    }
-  }
-
-  async update(
+  
+  async updateById(
     #{idName}: #{idType},
     data: Prisma.#{Model}UpdateInput,
   ): Promise<Result<#{Model}, Error>> {
@@ -104,7 +137,7 @@ export class #{CrudServiceClassName} {
     }
   }
 
-  async delete(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
+  async deleteById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
     try {
       const result = await this.prismaService.#{moDel}.delete({ where: { #{idName} } });
       return ok(result);
@@ -114,9 +147,7 @@ export class #{CrudServiceClassName} {
       ));
     }
   }
-}
-`;
-// export const crudServiceStubGetById_neverThrow = ``;
+  `;
 exports.crudServiceStub = `/*
 -----------------------------------------------------
 THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)

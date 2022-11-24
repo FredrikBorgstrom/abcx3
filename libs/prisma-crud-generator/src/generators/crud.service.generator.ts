@@ -3,6 +3,7 @@ import { DMMF } from '@prisma/generator-helper';
 import {
     crudServiceStub,
     crudServiceStubWithExceptions,
+    idMethods_neverThrow
 } from './../stubs/crud.service.stub';
 import * as path from 'path';
 import { promises as fs } from 'fs';
@@ -41,6 +42,12 @@ export class CrudServiceGenerator {
         const idFieldAndType = PrismaHelper.getInstance().getIdFieldNameAndType(this.model);
 
         if (idFieldAndType) {
+
+            crudServiceContent = crudServiceContent.replace(
+                /#{byIdMethods}/g,
+                idMethods_neverThrow
+            );
+
             crudServiceContent = crudServiceContent.replace(
                 /#{idName}/g,
                 idFieldAndType.name
@@ -49,6 +56,11 @@ export class CrudServiceGenerator {
             crudServiceContent = crudServiceContent.replace(
                 /#{idType}/g,
                 idFieldAndType.type
+            );
+        } else {
+            crudServiceContent = crudServiceContent.replace(
+                /#{byIdMethods}/g,
+                ''
             );
         }
 

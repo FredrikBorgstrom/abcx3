@@ -106,7 +106,7 @@ export class #{CrudServiceClassName} {
 }
 `;
 
-export const ByIdMethods_neverThrow = `
+export const idMethods_neverThrow = `
 async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
     try {
       const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
