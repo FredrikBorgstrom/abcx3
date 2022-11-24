@@ -37,6 +37,21 @@ export class CrudServiceGenerator {
         }
 
         // replace variables
+
+        const idFieldAndType = PrismaHelper.getInstance().getIdFieldNameAndType(this.model);
+
+        if (idFieldAndType) {
+            crudServiceContent = crudServiceContent.replace(
+                /#{idName}/g,
+                idFieldAndType.name
+            );
+
+            crudServiceContent = crudServiceContent.replace(
+                /#{idType}/g,
+                idFieldAndType.type
+            );
+        }
+
         crudServiceContent = crudServiceContent.replace(
             /#{CrudServiceClassName}/g,
             this.className,
@@ -59,19 +74,7 @@ export class CrudServiceGenerator {
             lowerCaseFirstChar(this.model.name),
         );
 
-        const idFieldAndType = PrismaHelper.getInstance().getIdFieldNameAndType(this.model);
-
-        if (idFieldAndType) {
-            crudServiceContent = crudServiceContent.replace(
-                /#{idName}/g,
-                idFieldAndType.name
-            );
-
-            crudServiceContent = crudServiceContent.replace(
-                /#{idType}/g,
-                idFieldAndType.type
-            );
-        }
+       
 
 
         return crudServiceContent;
