@@ -63,10 +63,10 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async get(uniqueProps: Prisma.#{Model}WhereUniqueInput, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
+    async get(uniqueProps: #{uniqueInputType}, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
         try {
             const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
-                where: uniqueProps,
+                where: #{uniqueKeyAndVal},
                 include
             });
         return ok(result);
@@ -76,12 +76,12 @@ export class #{CrudServiceClassName} {
     }
 
     async update(
-        uniqueProps: Prisma.#{Model}WhereUniqueInput | #{Model},
+        uniqueProps: #{uniqueInputType},
         data: Prisma.#{Model}UpdateInput,
     ): Promise<Result<#{Model}, Error>> {
         try {
             const result = await this.prismaService.#{moDel}.update({
-                where: uniqueProps,
+                where: #{uniqueKeyAndVal},
                 data: data,
             });
             return ok(result);
@@ -92,9 +92,9 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async delete(uniqueProps: Prisma.#{Model}WhereUniqueInput | #{Model}): Promise<Result<#{Model}, Error>> {
+    async delete(uniqueProps: #{uniqueInputType}): Promise<Result<#{Model}, Error>> {
         try {
-            const result = await this.prismaService.#{moDel}.delete({ where: uniqueProps });
+            const result = await this.prismaService.#{moDel}.delete({ where: #{uniqueKeyAndVal} });
             return ok(result);
         } catch (e) {
             return err(new InternalServerErrorException(

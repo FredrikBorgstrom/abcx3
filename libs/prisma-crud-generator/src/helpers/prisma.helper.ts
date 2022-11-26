@@ -111,6 +111,39 @@ export class PrismaHelper {
         }
     }
 
+    public getUniqueInputPropertyName(model: DMMF.Model): string | null {
+
+        const primaryKey = model.primaryKey;
+        if (primaryKey?.fields) {
+            let compoundName = primaryKey.fields.reduce((acc: string, fieldName: string) => acc + '_' + fieldName, '');
+            compoundName = compoundName.substring(1);
+            return compoundName;
+        } else {
+            return null;
+        }
+    }
+
+    public getUniqueInputType(model: DMMF.Model): string | null {
+
+        const primaryKey = model.primaryKey;
+        if (primaryKey?.fields) {
+            let compoundName = primaryKey.fields.reduce((acc: string, fieldName: string) => acc + this.capitalize(fieldName), '');
+            return compoundName;
+        } else {
+            return null;
+        }
+    }
+
+    public capitalize (str: string) {
+        if (str.length === 0) {
+            return str;
+        } else if (str.length === 1) {
+            return str.toUpperCase();
+        } else {
+            return str[0].toUpperCase() + str.substring(1);
+        }
+    }
+
 
     /* public getIdFieldNamesAndTypes(model: DMMF.Model): FieldNameAndType[] {
       const primaryKey = model.primaryKey;

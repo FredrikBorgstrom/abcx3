@@ -15,6 +15,9 @@ export declare class PrismaHelper {
     getMapTypeFromDMMF(field: DMMF.Field, validatorClass?: string): TypeMap;
     generateSwaggerDecoratorsFromDMMF(field: DMMF.Field): DecoratorHelper[];
     getIdFieldNameAndType(model: DMMF.Model): FieldNameAndType | null;
+    getUniqueInputPropertyName(model: DMMF.Model): string | null;
+    getUniqueInputType(model: DMMF.Model): string | null;
+    capitalize(str: string): string;
 }
 export {};
 //# sourceMappingURL=prisma.helper.d.ts.map

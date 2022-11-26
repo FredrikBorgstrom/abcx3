@@ -57,11 +57,42 @@ export class CrudServiceGenerator {
                 /#{idType}/g,
                 idFieldAndType.type
             );
+
+            crudServiceContent = crudServiceContent.replace(
+                /#{uniqueInputType}/g,
+                `Prisma.${this.model.name}WhereUniqueInput`
+            );
+
+            crudServiceContent = crudServiceContent.replace(
+                /#{uniqueKeyAndVal}/g,
+                "uniqueProps"
+            );
+
+            // #{uniqueKeyAndVal}
+
         } else {
             crudServiceContent = crudServiceContent.replace(
                 /#{byIdMethods}/g,
                 ''
             );
+
+            let compoundkey = PrismaHelper.getInstance().getUniqueInputPropertyName(this.model);
+            let compoundType = PrismaHelper.getInstance().getUniqueInputType(this.model);
+            let prismaCompoundInputType = `Prisma.${this.model.name}${compoundType}CompoundUniqueInput`;
+            
+            crudServiceContent = crudServiceContent.replace(
+                /#{uniqueInputType}/g,
+                prismaCompoundInputType
+            );
+
+            crudServiceContent = crudServiceContent.replace(
+                /#{uniqueKeyAndVal}/g,
+                `{${compoundkey}: uniqueProps}`
+            );
+
+
+
+
         }
 
         crudServiceContent = crudServiceContent.replace(
