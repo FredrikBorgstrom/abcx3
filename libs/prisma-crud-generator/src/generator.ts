@@ -7,6 +7,7 @@ import { InputGenerator } from './generators/input.generator';
 import { writeFileSafely } from './utils/writeFileSafely';
 import path = require('path');
 import { lowerCaseFirstChar } from './utils/utils';
+import { DartGenerator } from './generators/dart.generator';
 
 const defaultOptions: GeneratorInterface = {
     strict: 'false',
@@ -30,88 +31,109 @@ const defaultOptions: GeneratorInterface = {
     CRUDServicePath: 'services',
     CRUDServiceSuffix: 'CrudService',
     CRUDStubFile: undefined,
-    CRUDAddExceptions: 'true'
+    CRUDAddExceptions: 'true',
+
+    GenerateDart: 'false',
+    DartExportAbsolutePath: 'data/dart'
+    // DartValidatorPackage: ''
 };
 
 generatorHandler({
-  onManifest() {
-    console.log(`${GENERATOR_NAME}:Registered`);
-    return {
-      version,
-      defaultOutput: '../generated',
-      prettyName: GENERATOR_NAME,
-    };
-  },
-  onGenerate: async (options: GeneratorOptions) => {
-    const configOverwrites = {
-      schemaPath: options.schemaPath,
-    };
+    onManifest() {
+        console.log(`${GENERATOR_NAME}:Registered`);
+        return {
+            version,
+            defaultOutput: '../generated',
+            prettyName: GENERATOR_NAME,
+        };
+    },
+    onGenerate: async (options: GeneratorOptions) => {
+        const configOverwrites = {
+            schemaPath: options.schemaPath,
+        };
 
-    const config: GeneratorInterface = {
-      ...defaultOptions,
-      ...options.generator.config,
-      ...configOverwrites,
-    };
+        const config: GeneratorInterface = {
+            ...defaultOptions,
+            ...options.generator.config,
+            ...configOverwrites,
+        };
 
-    for (const model of options.dmmf.datamodel.models) {
-      console.log(`Processing Model ${model.name}`);
+        for (const model of options.dmmf.datamodel.models) {
+            console.log(`Processing Model ${model.name}`);
 
-      let folderPath = options.generator.output?.value + '';
-      folderPath = folderPath?.replace(/#{Model}/g, model.name);
-      folderPath = folderPath?.replace(/#{model}/g, model.name.toLowerCase());
-      folderPath = folderPath?.replace(/#{MODEL}/g, model.name.toUpperCase());
-      folderPath = folderPath?.replace(
-        /#{moDel}/g,
-        lowerCaseFirstChar(model.name),
-      );
+            let folderPath = options.generator.output?.value + '';
+            folderPath = folderPath?.replace(/#{Model}/g, model.name);
+            folderPath = folderPath?.replace(/#{model}/g, model.name.toLowerCase());
+            folderPath = folderPath?.replace(/#{MODEL}/g, model.name.toUpperCase());
+            folderPath = folderPath?.replace(
+                /#{moDel}/g,
+                lowerCaseFirstChar(model.name),
+            );
 
-      const outputBasePath = folderPath;
+            const outputBasePath = folderPath;
 
-      // ----------------------------------------
-      // generate CRUD Service
-      if (config.GenerateServices === 'true') {
-        console.log(` > Generating CRUD Service for Model ${model.name}`);
-        const crudServiceName = `${model.name}${config.CRUDServiceSuffix}`;
-        const crudServiceGenerator = new CrudServiceGenerator(
-          config,
-          model,
-          crudServiceName,
-        );
-        const crudServiceContent = await crudServiceGenerator.generateContent();
+            // ----------------------------------------
+            // generate CRUD Service
+            if (config.GenerateServices === 'true') {
+                console.log(` > Generating CRUD Service for Model ${model.name}`);
+                const crudServiceName = `${model.name}${config.CRUDServiceSuffix}`;
+                const crudServiceGenerator = new CrudServiceGenerator(
+                    config,
+                    model,
+                    crudServiceName,
+                );
+                const crudServiceContent = await crudServiceGenerator.generateContent();
 
-        await writeFileSafely(
-          config,
-          path.join(
-            outputBasePath,
-            config.CRUDServicePath,
-            `${model.name.toLowerCase()}.crud.service.ts`,
-          ),
-          crudServiceContent,
-        );
-      } else {
-        console.log(
-          ` > Skipping Generation of CRUD Service for Model ${model.name}`,
-        );
-      }
-      // ----------------------------------------
+                await writeFileSafely(
+                    config,
+                    path.join(
+                        outputBasePath,
+                        config.CRUDServicePath,
+                        `${model.name.toLowerCase()}.crud.service.ts`,
+                    ),
+                    crudServiceContent,
+                );
+            } else {
+                console.log(
+                    ` > Skipping Generation of CRUD Service for Model ${model.name}`,
+                );
+            }
+            // ----------------------------------------
 
-      // ----------------------------------------
-      // generate INPUTS
-      if (config.GenerateInputs === 'true') {
-        const inputGenerator = new InputGenerator(config, model);
-        const inputContent = await inputGenerator.generateContent();
+            // ----------------------------------------
+            // generate INPUTS
+            if (config.GenerateInputs === 'true') {
+                const inputGenerator = new InputGenerator(config, model);
+                const inputContent = await inputGenerator.generateContent();
 
-        await writeFileSafely(
-          config,
-          path.join(
-            outputBasePath,
-            config.InputExportPath,
-            `${model.name.toLowerCase()}.input.ts`,
-          ),
-          inputContent,
-        );
-      }
-      // ----------------------------------------
-    }
-  },
+                await writeFileSafely(
+                    config,
+                    path.join(
+                        outputBasePath,
+                        config.InputExportPath,
+                        `${model.name.toLowerCase()}.input.ts`,
+                    ),
+                    inputContent,
+                );
+            }
+            // ----------------------------------------
+
+            // ----------------------------------------
+            // generate DART
+            if (config.GenerateDart === 'true') {
+                const dartGenerator = new DartGenerator(config, model);
+                const dartContent = await dartGenerator.generateContent();
+
+                await writeFileSafely(
+                    config,
+                    path.join(
+                        config.DartExportAbsolutePath,
+                        `${model.name.toLowerCase()}.dart`,
+                    ),
+                    dartContent,
+                );
+            }
+        }
+
+    },
 });

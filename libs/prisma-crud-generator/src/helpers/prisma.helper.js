@@ -1,7 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrismaHelper = void 0;
+exports.PrismaHelper = exports.dartTypeMap = void 0;
 const decorator_helper_1 = require("./decorator.helper");
+exports.dartTypeMap = {
+    bigint: 'BigInt',
+    boolean: 'bool',
+    bytes: 'ByteBuffer',
+    datetime: 'DateTime',
+    decimal: 'double',
+    float: 'double',
+    int: 'int',
+    json: 'Map<String, dynamic>',
+    string: 'String'
+};
+/* export const CellType: {
+    startKey: 'start',
+    letterx2: 'letterx2',
+    letterx3: 'letterx3',
+    wordx2: 'wordx2',
+    wordx3: 'wordx3'
+  };
+  
+export type KeyofTypeofCelltype = keyof typeof CellType;
+
+export type CellType = (typeof CellType)[KeyofTypeofCelltype];
+ */
 class PrismaHelper {
     static instance;
     primitiveTypeMap(validatorClass) {
@@ -56,9 +79,16 @@ class PrismaHelper {
         const mapType = mapTypes[field.type.toLowerCase()];
         if (!mapType) {
             return {
-                tsType: 'unknown',
+                tsType: field.type,
                 validators: [new decorator_helper_1.DecoratorHelper('IsDefined', validatorClass)],
             };
+        }
+        return mapType;
+    }
+    getDartTypeFromDMMF(field) {
+        const mapType = exports.dartTypeMap[field.type.toLowerCase()];
+        if (!mapType) {
+            return field.type;
         }
         return mapType;
     }

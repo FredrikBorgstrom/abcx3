@@ -8,11 +8,23 @@ export interface FieldNameAndType {
     name: string;
     type: string;
 }
+export declare const dartTypeMap: {
+    bigint: string;
+    boolean: string;
+    bytes: string;
+    datetime: string;
+    decimal: string;
+    float: string;
+    int: string;
+    json: string;
+    string: string;
+};
 export declare class PrismaHelper {
     static instance: PrismaHelper;
     private primitiveTypeMap;
     static getInstance(): PrismaHelper;
     getMapTypeFromDMMF(field: DMMF.Field, validatorClass?: string): TypeMap;
+    getDartTypeFromDMMF(field: DMMF.Field): string;
     generateSwaggerDecoratorsFromDMMF(field: DMMF.Field): DecoratorHelper[];
     getIdFieldNameAndType(model: DMMF.Model): FieldNameAndType | null;
     getUniqueInputPropertyName(model: DMMF.Model): string | null;

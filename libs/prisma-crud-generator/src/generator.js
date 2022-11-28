@@ -8,6 +8,7 @@ const input_generator_1 = require("./generators/input.generator");
 const writeFileSafely_1 = require("./utils/writeFileSafely");
 const path = require("path");
 const utils_1 = require("./utils/utils");
+const dart_generator_1 = require("./generators/dart.generator");
 const defaultOptions = {
     strict: 'false',
     dryRun: 'false',
@@ -25,7 +26,10 @@ const defaultOptions = {
     CRUDServicePath: 'services',
     CRUDServiceSuffix: 'CrudService',
     CRUDStubFile: undefined,
-    CRUDAddExceptions: 'true'
+    CRUDAddExceptions: 'true',
+    GenerateDart: 'false',
+    DartExportAbsolutePath: 'data/dart'
+    // DartValidatorPackage: ''
 };
 (0, generator_helper_1.generatorHandler)({
     onManifest() {
@@ -74,6 +78,13 @@ const defaultOptions = {
                 await (0, writeFileSafely_1.writeFileSafely)(config, path.join(outputBasePath, config.InputExportPath, `${model.name.toLowerCase()}.input.ts`), inputContent);
             }
             // ----------------------------------------
+            // ----------------------------------------
+            // generate DART
+            if (config.GenerateDart === 'true') {
+                const dartGenerator = new dart_generator_1.DartGenerator(config, model);
+                const dartContent = await dartGenerator.generateContent();
+                await (0, writeFileSafely_1.writeFileSafely)(config, path.join(config.DartExportAbsolutePath, `${model.name.toLowerCase()}.dart`), dartContent);
+            }
         }
     },
 });

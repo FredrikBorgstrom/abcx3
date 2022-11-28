@@ -19,4 +19,8 @@ export interface GeneratorInterface {
   CRUDServiceSuffix: string;
   CRUDStubFile?: string;
   CRUDAddExceptions?: 'true' | 'false';
+
+  GenerateDart?: 'true' | 'false';
+  DartExportAbsolutePath: string;
+  DartValidatorPackage?: string,
 }
