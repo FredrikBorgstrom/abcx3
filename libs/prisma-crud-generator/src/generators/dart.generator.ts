@@ -6,9 +6,7 @@ import {
     dartBaseClassStub,
     dartConstructorArgument,
     dartConstructorArgumentWithDefaultValue,
-    dartCreateClassStub,
-    dartFieldStub,
-    dartUpdateClassStub,
+    dartFieldStub
 } from '../stubs/dart.stub';
 
 export class DartGenerator {
@@ -16,18 +14,12 @@ export class DartGenerator {
     private omitFields: string[] = [];
     private prismaHelper: PrismaHelper;
 
-    constructor(private config: GeneratorInterface, private model: DMMF.Model) { 
+    constructor(private config: GeneratorInterface, private model: DMMF.Model) {
         this.prismaHelper = PrismaHelper.getInstance();
     }
 
     async generateContent() {
         let content = await this.generateBaseInput();
-
-        const createInputStub = this.generateCreateInput();
-        content = content.replace(/#{CreateClassStub}/g, createInputStub);
-
-        const createUpdateStub = this.generateUpdateInput();
-        content = content.replace(/#{UpdateClassStub}/g, createUpdateStub);
 
         content = content.replace(/#{Imports}/g, this.generateImportStatements());
         return content;
@@ -54,60 +46,39 @@ export class DartGenerator {
         let constructorContent = '';
 
         for (const field of this.model.fields) {
-            const fieldContent = await this.generateFieldContent(field);
-            fieldsContent = fieldsContent + fieldContent;
+            fieldsContent += '\t' + this.generateFieldContent(field) + '\n';
+            constructorContent += this.generateConstructorArg(field) + ',\n\t\t';
+        }
+        if (constructorContent.length > 2) {
+            constructorContent = constructorContent.slice(0, constructorContent.length - 2);
+        } else {
+            constructorContent = '';
         }
 
         content = content.replace(/#{Fields}/g, fieldsContent);
+        content = content.replace(/#{ConstructorArgs}/g, constructorContent);
 
         return content;
     }
 
     // ConstructorArgs
 
-    generateConstructorArg(field: DMMF.Field) {
-        let content = field.hasDefaultValue ? dartConstructorArgumentWithDefaultValue : dartConstructorArgument;
-        
-        let operator = field.isRequired ? 'required' : '';
-        content = content.replace(/#{Operator}/g, operator);
-
-        content = content.replace(/#{Type}/g, this.prismaHelper.getDartTypeFromDMMF(field));
-
-    }
-
-
-
-    private generateCreateInput() {
-        let content = dartCreateClassStub;
-
-        const parentClassName = this.getBaseInputClassName();
-        const className = this.getCreateInputClassName();
-
-        content = content.replace(/#{NameParentInput}/g, parentClassName);
-        content = content.replace(/#{NameCreateInput}/g, className);
-
-        const omitFieldString = this.omitFields
-            .map((field) => `'${field}'`)
-            .join(',');
-        content = content.replace(/#{OmitFields}/g, omitFieldString);
-
+    generateConstructorArg(field: DMMF.Field): string {
+        let content = '';
+        if (field.hasDefaultValue && !(field.default instanceof Object)) {
+            content = dartConstructorArgumentWithDefaultValue;
+            content = content.replace(/#{DefaultValue}/g, field.default!.toString());
+            content = content.replace(/#{Required}/g, '');
+        } else {
+            content = dartConstructorArgument;
+            let required = field.isRequired ? 'required' : '';
+            content = content.replace(/#{Required}/g, required);
+        }
+        content = content.replace(/#{FieldName}/g, field.name);
         return content;
     }
 
-    private generateUpdateInput() {
-        let content = dartUpdateClassStub;
-
-        const parentClassName = this.getCreateInputClassName();
-        const className = this.getUpdateInputClassName();
-
-        content = content.replace(/#{NameParentInput}/g, parentClassName);
-        content = content.replace(/#{NameUpdateInput}/g, className);
-
-
-        return content;
-    }
-
-    async generateFieldContent(field: DMMF.Field) {
+    generateFieldContent(field: DMMF.Field) {
         let content = dartFieldStub;
 
         content = content.replace(/#{FieldName}/g, field.name);
@@ -115,8 +86,6 @@ export class DartGenerator {
         const dartType = this.prismaHelper.getDartTypeFromDMMF(field);
 
         content = content.replace(/#{Type}/g, dartType);
-
-        let isOptionalDecorator = '';
 
         if (field.isRequired === false) {
             content = content.replace(/#{Operator}/g, '?');
@@ -127,9 +96,6 @@ export class DartGenerator {
                 content = content.replace(/#{Operator}/g, '');
             }
         }
-
-        let openApiDecoratorsContent = '';
-
         return content;
     }
 
