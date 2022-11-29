@@ -49,6 +49,7 @@ const defaultOptions = {
             ...options.generator.config,
             ...configOverwrites,
         };
+        let dartModelFileNames = [];
         for (const model of options.dmmf.datamodel.models) {
             console.log(`Processing Model ${model.name}`);
             let folderPath = options.generator.output?.value + '';
@@ -75,7 +76,8 @@ const defaultOptions = {
             if (config.GenerateInputs === 'true') {
                 const inputGenerator = new input_generator_1.InputGenerator(config, model);
                 const inputContent = await inputGenerator.generateContent();
-                await (0, writeFileSafely_1.writeFileSafely)(config, path.join(outputBasePath, config.InputExportPath, `${model.name.toLowerCase()}.input.ts`), inputContent);
+                const filePath = path.join(outputBasePath, config.InputExportPath, `${model.name.toLowerCase()}.input.ts`);
+                await (0, writeFileSafely_1.writeFileSafely)(config, filePath, inputContent);
             }
             // ----------------------------------------
             // ----------------------------------------
@@ -83,8 +85,17 @@ const defaultOptions = {
             if (config.GenerateDart === 'true') {
                 const dartGenerator = new dart_generator_1.DartGenerator(config, model);
                 const dartContent = await dartGenerator.generateContent();
-                await (0, writeFileSafely_1.writeFileSafely)(config, path.join(config.DartExportAbsolutePath, `${model.name.toLowerCase()}.dart`), dartContent);
+                const fileName = `${model.name.toLowerCase()}.dart`;
+                const filePath = path.join(config.DartExportAbsolutePath, fileName);
+                dartModelFileNames.push(fileName);
+                // generate DART model files
+                await (0, writeFileSafely_1.writeFileSafely)(config, filePath, dartContent);
             }
+        }
+        if (config.GenerateDart === 'true') {
+            let content = dartModelFileNames.reduce((acc, val) => acc + `export './${val}';\n`, "");
+            const filePath = path.join(config.DartExportAbsolutePath, `models_library.dart`);
+            await (0, writeFileSafely_1.writeFileSafely)(config, filePath, content);
         }
     },
 });

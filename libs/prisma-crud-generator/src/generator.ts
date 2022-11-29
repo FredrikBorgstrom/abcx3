@@ -58,6 +58,8 @@ generatorHandler({
             ...configOverwrites,
         };
 
+        let dartModelFileNames: string[] = [];
+
         for (const model of options.dmmf.datamodel.models) {
             console.log(`Processing Model ${model.name}`);
 
@@ -106,13 +108,15 @@ generatorHandler({
                 const inputGenerator = new InputGenerator(config, model);
                 const inputContent = await inputGenerator.generateContent();
 
+                const filePath = path.join(
+                    outputBasePath,
+                    config.InputExportPath,
+                    `${model.name.toLowerCase()}.input.ts`
+                );
+
                 await writeFileSafely(
                     config,
-                    path.join(
-                        outputBasePath,
-                        config.InputExportPath,
-                        `${model.name.toLowerCase()}.input.ts`,
-                    ),
+                    filePath,
                     inputContent,
                 );
             }
@@ -123,16 +127,34 @@ generatorHandler({
             if (config.GenerateDart === 'true') {
                 const dartGenerator = new DartGenerator(config, model);
                 const dartContent = await dartGenerator.generateContent();
+                const fileName = `${model.name.toLowerCase()}.dart`;
+                const filePath = path.join(
+                    config.DartExportAbsolutePath,
+                    fileName,
+                );
 
+                dartModelFileNames.push(fileName);
+
+                // generate DART model files
                 await writeFileSafely(
                     config,
-                    path.join(
-                        config.DartExportAbsolutePath,
-                        `${model.name.toLowerCase()}.dart`,
-                    ),
-                    dartContent,
+                    filePath,
+                    dartContent
                 );
             }
+        }
+
+        if (config.GenerateDart === 'true') {
+            let content = dartModelFileNames.reduce((acc, val) => acc + `export './${val}';\n`, "");
+            const filePath = path.join(
+                config.DartExportAbsolutePath,
+                `models_library.dart`
+            );
+            await writeFileSafely(
+                config,
+                filePath,
+                content
+            )
         }
 
     },
