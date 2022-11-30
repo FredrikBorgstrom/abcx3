@@ -99,9 +99,7 @@ export class #{CrudServiceClassName} {
             ));
         }
     }
-
     #{byIdMethods}
-
 }
 `;
 

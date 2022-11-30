@@ -102,9 +102,7 @@ export class #{CrudServiceClassName} {
             ));
         }
     }
-
     #{byIdMethods}
-
 }
 `;
 exports.idMethods_neverThrow = `

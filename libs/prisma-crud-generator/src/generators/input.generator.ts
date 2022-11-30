@@ -15,8 +15,8 @@ export class InputGenerator {
 
     constructor(private config: GeneratorInterface, private model: DMMF.Model) { }
 
-    async generateContent() {
-        let content = await this.generateBaseInput();
+    generateContent() {
+        let content = this.generateBaseInput();
 
         const createInputStub = this.generateCreateInput();
         content = content.replace(/#{CreateClassStub}/g, createInputStub);
@@ -40,7 +40,7 @@ export class InputGenerator {
         return `${this.config.InputUpdatePrefix}${this.model.name}${this.config.InputSuffix}`;
     }
 
-    private async generateBaseInput() {
+    private generateBaseInput() {
         let content = inputBaseClassStub;
 
         const className = this.getBaseInputClassName();
@@ -69,7 +69,7 @@ export class InputGenerator {
         let fieldsContent = '';
 
         for (const field of this.model.fields) {
-            const fieldContent = await this.generateFieldContent(field);
+            const fieldContent = this.generateFieldContent(field);
             fieldsContent = fieldsContent + fieldContent;
         }
 
@@ -115,7 +115,7 @@ export class InputGenerator {
         return content;
     }
 
-    async generateFieldContent(field: DMMF.Field) {
+    generateFieldContent(field: DMMF.Field) {
         let content = inputFieldStub;
 
         content = content.replace(/#{FieldName}/g, field.name);

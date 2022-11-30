@@ -1,30 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrismaHelper = exports.dartTypeMap = void 0;
+exports.PrismaHelper = void 0;
 const decorator_helper_1 = require("./decorator.helper");
-exports.dartTypeMap = {
-    bigint: 'BigInt',
-    boolean: 'bool',
-    bytes: 'ByteBuffer',
-    datetime: 'DateTime',
-    decimal: 'double',
-    float: 'double',
-    int: 'int',
-    json: 'Map<String, dynamic>',
-    string: 'String'
-};
-/* export const CellType: {
-    startKey: 'start',
-    letterx2: 'letterx2',
-    letterx3: 'letterx3',
-    wordx2: 'wordx2',
-    wordx3: 'wordx3'
-  };
-  
-export type KeyofTypeofCelltype = keyof typeof CellType;
-
-export type CellType = (typeof CellType)[KeyofTypeofCelltype];
- */
 class PrismaHelper {
     static instance;
     primitiveTypeMap(validatorClass) {
@@ -85,13 +62,13 @@ class PrismaHelper {
         }
         return mapType;
     }
-    getDartTypeFromDMMF(field) {
-        const mapType = exports.dartTypeMap[field.type.toLowerCase()];
+    /* public getDartTypeFromDMMF(field: DMMF.Field): string {
+        const mapType = dartTypeMap[field.type.toLowerCase() as DartTypeMapKey];
         if (!mapType) {
             return field.type;
         }
         return mapType;
-    }
+    } */
     generateSwaggerDecoratorsFromDMMF(field) {
         const decorators = [];
         if (field.isRequired) {

@@ -11,33 +11,7 @@ export interface FieldNameAndType {
     type: string;
 }
 
-export const dartTypeMap = {
-    bigint: 'BigInt',
-    boolean: 'bool',
-    bytes: 'ByteBuffer',
-    datetime: 'DateTime',
-    decimal: 'double',
-    float: 'double',
-    int: 'int',
-    json: 'Map<String, dynamic>',
-    string: 'String'
-}
 
-type DartTypeMapKey = keyof typeof dartTypeMap;
-
-
-/* export const CellType: {
-    startKey: 'start',
-    letterx2: 'letterx2',
-    letterx3: 'letterx3',
-    wordx2: 'wordx2',
-    wordx3: 'wordx3'
-  };
-  
-export type KeyofTypeofCelltype = keyof typeof CellType;
-
-export type CellType = (typeof CellType)[KeyofTypeofCelltype];
- */
 
 
 export class PrismaHelper {
@@ -107,13 +81,13 @@ export class PrismaHelper {
         return mapType;
     }
 
-    public getDartTypeFromDMMF(field: DMMF.Field): string {        
+    /* public getDartTypeFromDMMF(field: DMMF.Field): string {        
         const mapType = dartTypeMap[field.type.toLowerCase() as DartTypeMapKey];
         if (!mapType) {
             return field.type;
         }
         return mapType;
-    }
+    } */
 
 
     public generateSwaggerDecoratorsFromDMMF(

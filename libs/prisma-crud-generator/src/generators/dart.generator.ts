@@ -9,6 +9,20 @@ import {
     dartFieldStub
 } from '../stubs/dart.stub';
 
+export const dartTypeMap = {
+    bigint: 'BigInt',
+    boolean: 'bool',
+    bytes: 'ByteBuffer',
+    datetime: 'DateTime',
+    decimal: 'double',
+    float: 'double',
+    int: 'int',
+    json: 'Map<String, dynamic>',
+    string: 'String'
+}
+
+type DartTypeMapKey = keyof typeof dartTypeMap;
+
 export class DartGenerator {
     private importedPackages: string[] = [];
     private omitFields: string[] = [];
@@ -18,18 +32,18 @@ export class DartGenerator {
         this.prismaHelper = PrismaHelper.getInstance();
     }
 
-    async generateContent() {
-        let content = await this.generateBaseInput();
+    generateContent() {
+        let content = this.generateBaseInput();
 
         content = content.replace(/#{Imports}/g, this.generateImportStatements());
         return content;
     }
 
 
-    private async generateBaseInput() {
+    private generateBaseInput() {
         let content = dartBaseClassStub;
 
-        const className = this.getBaseInputClassName();
+        const className = this.model.name;
         content = content.replace(/#{NameBaseInput}/g, className);
 
         // ------------------------------------------
@@ -37,10 +51,6 @@ export class DartGenerator {
 
         const parentClassInjection = this.config.InputParentClass ? `extends ${this.config.InputParentClass}` : '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
-
-        if (this.config.InputParentClassPath) {
-            this.addPackageToImport(this.config.InputParentClassPath + '');
-        }
 
         let fieldsContent = '';
         let constructorContent = '';
@@ -83,7 +93,13 @@ export class DartGenerator {
 
         content = content.replace(/#{FieldName}/g, field.name);
 
-        const dartType = this.prismaHelper.getDartTypeFromDMMF(field);
+        //let dartType = this.prismaHelper.getDartTypeFromDMMF(field);
+
+        let dartType = dartTypeMap[field.type.toLowerCase() as DartTypeMapKey];
+        if (!dartType) {
+            dartType = field.type;
+            this.addPackageToImport(dartType.toLowerCase() + '.dart');
+        }
 
         content = content.replace(/#{Type}/g, dartType);
 
@@ -110,52 +126,22 @@ export class DartGenerator {
         let result = '';
 
         for (const packageName of this.importedPackages) {
-            result = `${result}import {${packageName}};\n`;
+            result += `import './${packageName}';\n`;
         }
 
         return result;
     }
-
-    private parseDocumentation(field: DMMF.Field): DecoratorHelper[] {
-        let documentation = field.documentation || '';
-
-        documentation = documentation.replace(/(\r\n|\n|\r)/gm, ' ');
-
-        const customDecorators = documentation.split(' ');
-
-        const result: DecoratorHelper[] = [];
-
-        for (const customDecorator of customDecorators) {
-            const decoratorParamsIndex = customDecorator.indexOf('(');
-            const decoratorParams = customDecorator.substring(
-                decoratorParamsIndex + 1,
-                customDecorator.lastIndexOf(')'),
-            );
-
-            const decoratorName = customDecorator.substring(0, decoratorParamsIndex);
-
-            const decorator = new DecoratorHelper(
-                decoratorName,
-                this.config.InputValidatorPackage,
-                decoratorParams,
-            );
-
-            result.push(decorator);
-        }
-
-        return result;
-    }
-
-    private getBaseInputClassName() {
-        return `${this.model.name}${this.config.InputSuffix}`;
-    }
-
-    private getCreateInputClassName() {
-        return `${this.config.InputCreatePrefix}${this.model.name}${this.config.InputSuffix}`;
-    }
-
-    private getUpdateInputClassName() {
-        return `${this.config.InputUpdatePrefix}${this.model.name}${this.config.InputSuffix}`;
-    }
-
 }
+
+/* export const CellType: {
+    startKey: 'start',
+    letterx2: 'letterx2',
+    letterx3: 'letterx3',
+    wordx2: 'wordx2',
+    wordx3: 'wordx3'
+  };
+  
+export type KeyofTypeofCelltype = keyof typeof CellType;
+
+export type CellType = (typeof CellType)[KeyofTypeofCelltype];
+ */
