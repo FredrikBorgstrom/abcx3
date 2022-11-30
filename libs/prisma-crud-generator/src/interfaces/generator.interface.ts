@@ -20,6 +20,8 @@ export interface GeneratorInterface {
   CRUDStubFile?: string;
   CRUDAddExceptions?: 'true' | 'false';
 
+  EnumPath: string;
+
   GenerateDart?: 'true' | 'false';
   DartExportAbsolutePath: string;
   DartValidatorPackage?: string,

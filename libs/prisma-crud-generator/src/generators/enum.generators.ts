@@ -7,7 +7,7 @@ export const generateEnum = ({ name, values }: DMMF.DatamodelEnum) => {
 }
 
 export const generateDartEnum = ({ name, values }: DMMF.DatamodelEnum) => {
-    const enumValues = values.map(({ name }) => name).join(',\n');
+    const enumValues = values.map(({ name }) => name).join(',\n\t');
   
-    return `enum ${name} { \n${enumValues}\n }`
+    return `enum ${name} {\n\t${enumValues}\n}`
   }

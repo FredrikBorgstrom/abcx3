@@ -8,6 +8,7 @@ import {
     dartConstructorArgumentWithDefaultValue,
     dartFieldStub
 } from '../stubs/dart.stub';
+import { lowerCaseFirstChar } from '../utils/utils';
 
 export const dartTypeMap = {
     bigint: 'BigInt',
@@ -77,7 +78,9 @@ export class DartGenerator {
         let content = '';
         if (field.hasDefaultValue && !(field.default instanceof Object)) {
             content = dartConstructorArgumentWithDefaultValue;
-            content = content.replace(/#{DefaultValue}/g, field.default!.toString());
+            let defValue = field.default!;
+            let valueStr = typeof defValue === 'string' ? `"${defValue}"` : defValue.toString();
+            content = content.replace(/#{DefaultValue}/g, valueStr);
             content = content.replace(/#{Required}/g, '');
         } else {
             content = dartConstructorArgument;
@@ -100,23 +103,14 @@ export class DartGenerator {
             dartType = field.type;
             this.addPackageToImport(dartType.toLowerCase() + '.dart');
         }
-
-        content = content.replace(/#{Type}/g, dartType);
-
-        if (field.isRequired === false) {
-            content = content.replace(/#{Operator}/g, '?');
-        } else {
-            if (this.config.strict === 'true') {
-                content = content.replace(/#{Operator}/g, '!');
-            } else {
-                content = content.replace(/#{Operator}/g, '');
-            }
-        }
+        let printedType = (field.isList) ? `List<${dartType}>` : dartType;
+        content = content.replace(/#{Type}/g, printedType);
+        content = content.replace(/#{Operator}/g, field.isRequired ? '' : '?');
+        
         return content;
     }
 
     private addPackageToImport(packageName: string) {
-
         if (!this.importedPackages.some(name => name == packageName)) {
             this.importedPackages.push(packageName);
         }

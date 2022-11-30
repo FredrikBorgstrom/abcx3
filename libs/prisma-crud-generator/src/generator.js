@@ -28,6 +28,7 @@ const defaultOptions = {
     CRUDServiceSuffix: 'CrudService',
     CRUDStubFile: undefined,
     CRUDAddExceptions: 'true',
+    EnumPath: 'enums',
     GenerateDart: 'false',
     DartExportAbsolutePath: 'data/dart'
     // DartValidatorPackage: ''
@@ -57,7 +58,7 @@ const defaultOptions = {
 class MainGenerator {
     options;
     settings;
-    dartModelFileNames = [];
+    dartFiles = [];
     writeFile;
     constructor(options, settings) {
         this.options = options;
@@ -67,31 +68,71 @@ class MainGenerator {
     async generateFiles(options = this.options, settings = this.settings) {
         for (const model of options.dmmf.datamodel.models) {
             console.log(`Processing Model ${model.name}`);
-            const outputBasePath = this.createOutputBasePath(model.name, options.generator.output?.value);
             if (settings.GenerateServices === 'true') {
-                await this.generateCrudFile(model, outputBasePath);
+                await this.generateCrudFile(model);
             }
             if (this.settings.GenerateInputs === 'true') {
-                await this.generateInputFile(model, outputBasePath);
+                await this.generateInputFile(model);
             }
             if (settings.GenerateDart === 'true') {
                 await this.generateDartModelFile(model);
             }
         }
         for (const tEnum of options.dmmf.datamodel.enums) {
-            let content = (0, enum_generators_1.generateEnum)(tEnum);
+            console.log(`Processing Enum ${tEnum.name}`);
+            await this.generateEnumFile(tEnum);
+            if (settings.GenerateDart === 'true') {
+                await this.generateDartEnumFile(tEnum);
+            }
         }
         // create MODELS_LIBRARY file:
         if (settings.GenerateDart === 'true') {
             this.createDartLibraryFile();
         }
     }
+    async generateEnumFile(tEnum) {
+        let content = (0, enum_generators_1.generateEnum)(tEnum);
+        let outputPath = this.createBasePath(tEnum.name, this.options.generator.output?.value);
+        const filePath = path.join(outputPath, this.settings.EnumPath, `${tEnum.name.toLowerCase()}.ts`);
+        await this.writeFile(filePath, content);
+    }
+    async generateDartEnumFile(tEnum) {
+        let content = (0, enum_generators_1.generateDartEnum)(tEnum);
+        const fileName = `${tEnum.name.toLowerCase()}.dart`;
+        const filePath = path.join(this.settings.DartExportAbsolutePath, fileName);
+        await this.writeFile(filePath, content);
+        this.dartFiles.push(fileName);
+    }
     async createDartLibraryFile() {
-        let content = this.dartModelFileNames.reduce((acc, val) => acc + `export './${val}';\n`, "");
+        let content = this.dartFiles.reduce((acc, val) => acc + `export './${val}';\n`, "");
         const filePath = path.join(this.settings.DartExportAbsolutePath, `models_library.dart`);
         await this.writeFile(filePath, content);
     }
-    createOutputBasePath(modelName, outputPath = '') {
+    async generateDartModelFile(model) {
+        const dartGenerator = new dart_generator_1.DartGenerator(this.settings, model);
+        const dartContent = dartGenerator.generateContent();
+        const fileName = `${model.name.toLowerCase()}.dart`;
+        const filePath = path.join(this.settings.DartExportAbsolutePath, fileName);
+        this.dartFiles.push(fileName);
+        await this.writeFile(filePath, dartContent);
+    }
+    async generateInputFile(model) {
+        let basePath = this.createBasePath(model.name, this.options.generator.output?.value);
+        const inputGenerator = new input_generator_1.InputGenerator(this.settings, model);
+        const inputContent = await inputGenerator.generateContent();
+        const filePath = path.join(basePath, this.settings.InputExportPath, `${model.name.toLowerCase()}.input.ts`);
+        await this.writeFile(filePath, inputContent);
+    }
+    async generateCrudFile(model) {
+        let basePath = this.createBasePath(model.name, this.options.generator.output?.value);
+        console.log(` > Generating CRUD Service for Model ${model.name}`);
+        const crudServiceName = `${model.name}${this.settings.CRUDServiceSuffix}`;
+        const crudServiceGenerator = new crud_service_generator_1.CrudServiceGenerator(this.settings, model, crudServiceName);
+        const crudServiceContent = await crudServiceGenerator.generateContent();
+        const filePath = path.join(basePath, this.settings.CRUDServicePath, `${model.name.toLowerCase()}.crud.service.ts`);
+        await this.writeFile(filePath, crudServiceContent);
+    }
+    createBasePath(modelName, outputPath = '') {
         let folderPath = outputPath;
         folderPath = folderPath?.replace(/#{Model}/g, modelName);
         folderPath = folderPath?.replace(/#{model}/g, modelName.toLowerCase());
@@ -99,30 +140,6 @@ class MainGenerator {
         folderPath = folderPath?.replace(/#{moDel}/g, (0, utils_1.lowerCaseFirstChar)(modelName));
         return folderPath;
     }
-    async generateDartModelFile(model) {
-        const dartGenerator = new dart_generator_1.DartGenerator(this.settings, model);
-        const dartContent = dartGenerator.generateContent();
-        const fileName = `${model.name.toLowerCase()}.dart`;
-        const filePath = path.join(this.settings.DartExportAbsolutePath, fileName);
-        this.dartModelFileNames.push(fileName);
-        await this.writeFile(filePath, dartContent);
-    }
-    async generateInputFile(model, outputBasePath) {
-        const inputGenerator = new input_generator_1.InputGenerator(this.settings, model);
-        const inputContent = await inputGenerator.generateContent();
-        const filePath = path.join(outputBasePath, this.settings.InputExportPath, `${model.name.toLowerCase()}.input.ts`);
-        await this.writeFile(filePath, inputContent);
-    }
-    async generateCrudFile(model, outputBasePath) {
-        console.log(` > Generating CRUD Service for Model ${model.name}`);
-        const crudServiceName = `${model.name}${this.settings.CRUDServiceSuffix}`;
-        const crudServiceGenerator = new crud_service_generator_1.CrudServiceGenerator(this.settings, model, crudServiceName);
-        const crudServiceContent = await crudServiceGenerator.generateContent();
-        const filePath = path.join(outputBasePath, this.settings.CRUDServicePath, `${model.name.toLowerCase()}.crud.service.ts`);
-        await this.writeFile(filePath, crudServiceContent);
-    }
-}
-function createEnumFile(enumName) {
 }
 /*
 function createOutputBasePath(modelName: string, outputPath: string = '') {
