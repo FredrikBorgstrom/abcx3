@@ -6,10 +6,9 @@ THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 
 #{Imports}
 
-class #{NameBaseInput} #{ParentClass} {
+class #{ClassName} #{ParentClass} {
 #{Fields}
-
-  #{NameBaseInput}({#{ConstructorArgs}});
+  #{ClassName}({#{ConstructorArgs}});
 }
 
 

@@ -33,7 +33,7 @@ class DartGenerator {
     generateBaseInput() {
         let content = dart_stub_1.dartBaseClassStub;
         const className = this.model.name;
-        content = content.replace(/#{NameBaseInput}/g, className);
+        content = content.replace(/#{ClassName}/g, className);
         // ------------------------------------------
         // handle the parent class (extends)
         const parentClassInjection = '';

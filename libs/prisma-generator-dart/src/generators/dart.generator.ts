@@ -44,7 +44,7 @@ export class DartGenerator {
         let content = dartBaseClassStub;
 
         const className = this.model.name;
-        content = content.replace(/#{NameBaseInput}/g, className);
+        content = content.replace(/#{ClassName}/g, className);
 
         // ------------------------------------------
         // handle the parent class (extends)
