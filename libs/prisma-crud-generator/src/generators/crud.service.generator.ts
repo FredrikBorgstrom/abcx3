@@ -1,4 +1,4 @@
-import { GeneratorInterface } from './../interfaces/generator.interface';
+import { GeneratorSettings } from './../interfaces/generator.interface';
 import { DMMF } from '@prisma/generator-helper';
 import {
     crudServiceStub,
@@ -12,7 +12,7 @@ import { PrismaHelper } from '../helpers/prisma.helper';
 
 export class CrudServiceGenerator {
     constructor(
-        private config: GeneratorInterface,
+        private config: GeneratorSettings,
         private model: DMMF.Model,
         private className: string,
     ) { }

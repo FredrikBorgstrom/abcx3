@@ -1,7 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
-import { DecoratorHelper } from '../helpers/decorator.helper';
+import { GeneratorSettings } from '../settings.interface';
 import { PrismaHelper } from '../helpers/prisma.helper';
-import { GeneratorInterface } from '../interfaces/generator.interface';
 import {
     dartBaseClassStub,
     dartConstructorArgument,
@@ -29,7 +28,7 @@ export class DartGenerator {
     private omitFields: string[] = [];
     private prismaHelper: PrismaHelper;
 
-    constructor(private config: GeneratorInterface, private model: DMMF.Model) {
+    constructor(private config: GeneratorSettings, private model: DMMF.Model) {
         this.prismaHelper = PrismaHelper.getInstance();
     }
 
@@ -50,7 +49,7 @@ export class DartGenerator {
         // ------------------------------------------
         // handle the parent class (extends)
 
-        const parentClassInjection = this.config.InputParentClass ? `extends ${this.config.InputParentClass}` : '';
+        const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
 
         let fieldsContent = '';
@@ -79,13 +78,17 @@ export class DartGenerator {
         if (field.hasDefaultValue && !(field.default instanceof Object)) {
             content = dartConstructorArgumentWithDefaultValue;
             let defValue = field.default!;
-            let valueStr = typeof defValue === 'string' ? `"${defValue}"` : defValue.toString();
+            let valueStr: string;
+            if (field.kind === 'enum') {
+                valueStr = `${field.type}.${defValue}`;
+            } else {
+                valueStr = typeof defValue === 'string' ? `"${defValue}"` : defValue.toString();
+            }
             content = content.replace(/#{DefaultValue}/g, valueStr);
             content = content.replace(/#{Required}/g, '');
         } else {
             content = dartConstructorArgument;
-            let required = field.isRequired ? 'required' : '';
-            content = content.replace(/#{Required}/g, required);
+            content = content.replace(/#{Required}/g, field.isRequired ? 'required' : '');
         }
         content = content.replace(/#{FieldName}/g, field.name);
         return content;

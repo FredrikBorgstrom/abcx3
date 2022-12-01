@@ -1,0 +1,18 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": { 
+        "noPropertyAccessFromIndexSignature": true,
+        "esModuleInterop": true,
+    },
+    "files": [
+        "package.json"
+    ],
+    "include": [
+        "src/**/*.ts"
+    ],
+    "references": [
+        {
+            "path": "./tsconfig.lib.json"
+        }
+    ]
+}

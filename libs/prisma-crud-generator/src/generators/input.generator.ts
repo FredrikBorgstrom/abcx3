@@ -1,7 +1,7 @@
 import { DMMF } from '@prisma/generator-helper';
 import { DecoratorHelper } from '../helpers/decorator.helper';
 import { PrismaHelper } from '../helpers/prisma.helper';
-import { GeneratorInterface } from '../interfaces/generator.interface';
+import { GeneratorSettings } from '../interfaces/generator.interface';
 import {
     inputBaseClassStub,
     inputCreateClassStub,
@@ -13,7 +13,7 @@ export class InputGenerator {
     private fieldDecorators: DecoratorHelper[] = [];
     private omitFields: string[] = [];
 
-    constructor(private config: GeneratorInterface, private model: DMMF.Model) { }
+    constructor(private config: GeneratorSettings, private model: DMMF.Model) { }
 
     generateContent() {
         let content = this.generateBaseInput();

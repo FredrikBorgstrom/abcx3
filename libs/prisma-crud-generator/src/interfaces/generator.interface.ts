@@ -1,4 +1,4 @@
-export interface GeneratorInterface {
+export interface GeneratorSettings {
   strict: 'true' | 'false';
   dryRun: 'true' | 'false';
 
@@ -21,8 +21,4 @@ export interface GeneratorInterface {
   CRUDAddExceptions?: 'true' | 'false';
 
   EnumPath: string;
-
-  GenerateDart?: 'true' | 'false';
-  DartExportAbsolutePath: string;
-  DartValidatorPackage?: string,
 }
