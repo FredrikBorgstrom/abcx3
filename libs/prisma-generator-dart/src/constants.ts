@@ -1,1 +1,1 @@
-export const GENERATOR_NAME = 'prisma-dart-generator';
+export const GENERATOR_NAME = 'prisma-generator-dart';

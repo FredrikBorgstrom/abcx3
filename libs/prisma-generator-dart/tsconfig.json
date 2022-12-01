@@ -5,7 +5,7 @@
         "esModuleInterop": true,
         "rootDir": ".",
         "baseUrl": ".",
-        "outDir": "../../dist/prisma-dart-generator",
+        "outDir": "../../dist/prisma-generator-dart",
 
     },
     "files": [
