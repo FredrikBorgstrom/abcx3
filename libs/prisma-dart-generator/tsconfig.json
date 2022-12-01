@@ -3,6 +3,10 @@
     "compilerOptions": { 
         "noPropertyAccessFromIndexSignature": true,
         "esModuleInterop": true,
+        "rootDir": ".",
+        "baseUrl": ".",
+        "outDir": "../../dist/prisma-dart-generator",
+
     },
     "files": [
         "package.json"
