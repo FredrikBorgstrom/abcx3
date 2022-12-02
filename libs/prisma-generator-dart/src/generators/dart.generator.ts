@@ -5,9 +5,11 @@ import {
     dartBaseClassStub,
     dartConstructorArgument,
     dartConstructorArgumentWithDefaultValue,
-    dartFieldStub,
+    dartPropertyStub,
     dartFromJsonArg,
-    dartFromJsonListArg
+    dartFromJsonListArg,
+    toJsonPropertyStub,
+    toJsonListPropertyStub
 } from '../stubs/dart.stub';
 import { typeToFileName } from '../utils/utils';
 
@@ -53,31 +55,29 @@ export class DartGenerator {
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
 
-        let fieldsContent = '';
-        let constructorContent = '';
+        let constructorArgs: string[] = [];
+        let properties: string[] = [];
         let fromJsonArgs: string[] = [];
+        let toJsonKeyVals: string[] = [];
 
         for (const field of this.model.fields) {
-            fieldsContent += '\t' + this.generateFieldContent(field) + '\n';
-            constructorContent += this.generateConstructorArg(field) + ',\n\t\t';
+            constructorArgs.push(this.generateConstructorArg(field));
+            properties.push(this.generatePropertyContent(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
+            toJsonKeyVals.push(this.generateToJsonKeyVal(field));
         }
-        if (constructorContent.length > 2) {
-            constructorContent = constructorContent.slice(0, constructorContent.length - 2);
-        } else {
-            constructorContent = '';
-        }
-
-        let fromJsonContent = fromJsonArgs.join(',\n\t');
+        const constructorContent = constructorArgs.join('\n\t');
+        const propertiesContent = properties.join('\n\t');
+        const fromJsonContent = fromJsonArgs.join(',\n\t');
+        const toJsonContent = toJsonKeyVals.join(',\n\t');
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
+        content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
 
-        content = content.replace(/#{Fields}/g, fieldsContent);
+        content = content.replace(/#{Properties}/g, propertiesContent);
         content = content.replace(/#{ConstructorArgs}/g, constructorContent);
 
         return content;
     }
-
-    // ConstructorArgs
 
     generateConstructorArg(field: DMMF.Field): string {
         let content = '';
@@ -96,22 +96,43 @@ export class DartGenerator {
             content = dartConstructorArgument;
             content = content.replace(/#{Required}/g, field.isRequired ? 'required' : '');
         }
-        content = content.replace(/#{FieldName}/g, field.name);
+        content = content.replace(/#{PropName}/g, field.name);
         return content;
+    }
+
+    printDefaultValue(field: DMMF.Field): string | null {
+        if (field.hasDefaultValue && !(field.default instanceof Object)) {
+            let defValue = field.default!;
+            let valueStr: string;
+            if (field.kind === 'enum') {
+                return `${field.type}.${defValue}`;
+            } else {
+                return typeof defValue === 'string' ? `"${defValue}"` : defValue.toString();
+            }
+        } else {
+            return null;
+        }
     }
 
     generateFromJsonArgument(field: DMMF.Field) {
         let content = (field.isList) ? dartFromJsonListArg : dartFromJsonArg;
-        content = this.replaceFieldName(content, field);
+        content = this.replacePropName(content, field);
         content = this.replaceNullable(content, field);
         content = this.replaceType(content, field);
         return content;
     }
 
-    generateFieldContent(field: DMMF.Field) {
-        let content = dartFieldStub;
+    generateToJsonKeyVal(field: DMMF.Field) {
+        let content = (field.isList) ? toJsonListPropertyStub : toJsonPropertyStub;
+        content = this.replacePropName(content, field);
+        content = this.replaceNullable(content, field);
+        return content;
+    }
 
-        content = content.replace(/#{FieldName}/g, field.name);
+    generatePropertyContent(field: DMMF.Field) {
+        let content = dartPropertyStub;
+
+        content = content.replace(/#{PropName}/g, field.name);
 
         //let dartType = this.prismaHelper.getDartTypeFromDMMF(field);
 
@@ -133,7 +154,7 @@ export class DartGenerator {
     
 
     replaceNullable = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
-    replaceFieldName = (content: string, field: DMMF.Field) => content.replace(/#{FieldName}/g, field.name);
+    replacePropName = (content: string, field: DMMF.Field) => content.replace(/#{PropName}/g, field.name);
     replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Type}/g, this.getDartType(field));
 
     // replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');

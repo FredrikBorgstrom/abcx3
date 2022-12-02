@@ -14,7 +14,8 @@ const defaultOptions: GeneratorSettings = {
     dryRun: 'false',
     schemaPath: '',
     EnumPath: 'enums',
-    FormatWithDart: 'true'
+    FormatWithDart: 'true',
+    makeAllPropsOptional: 'true'
 };
 
 generatorHandler({

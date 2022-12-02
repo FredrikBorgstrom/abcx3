@@ -39,27 +39,26 @@ class DartGenerator {
         // handle the parent class (extends)
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
-        let fieldsContent = '';
-        let constructorContent = '';
+        let constructorArgs = [];
+        let properties = [];
         let fromJsonArgs = [];
+        let toJsonKeyVals = [];
         for (const field of this.model.fields) {
-            fieldsContent += '\t' + this.generateFieldContent(field) + '\n';
-            constructorContent += this.generateConstructorArg(field) + ',\n\t\t';
+            constructorArgs.push(this.generateConstructorArg(field));
+            properties.push(this.generatePropertyContent(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
+            toJsonKeyVals.push(this.generateToJsonKeyVal(field));
         }
-        if (constructorContent.length > 2) {
-            constructorContent = constructorContent.slice(0, constructorContent.length - 2);
-        }
-        else {
-            constructorContent = '';
-        }
-        let fromJsonContent = fromJsonArgs.join(',\n\t');
+        const constructorContent = constructorArgs.join('\n\t');
+        const propertiesContent = properties.join('\n\t');
+        const fromJsonContent = fromJsonArgs.join(',\n\t');
+        const toJsonContent = toJsonKeyVals.join(',\n\t');
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
-        content = content.replace(/#{Fields}/g, fieldsContent);
+        content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
+        content = content.replace(/#{Properties}/g, propertiesContent);
         content = content.replace(/#{ConstructorArgs}/g, constructorContent);
         return content;
     }
-    // ConstructorArgs
     generateConstructorArg(field) {
         let content = '';
         if (field.hasDefaultValue && !(field.default instanceof Object)) {
@@ -79,19 +78,40 @@ class DartGenerator {
             content = dart_stub_1.dartConstructorArgument;
             content = content.replace(/#{Required}/g, field.isRequired ? 'required' : '');
         }
-        content = content.replace(/#{FieldName}/g, field.name);
+        content = content.replace(/#{PropName}/g, field.name);
         return content;
+    }
+    printDefaultValue(field) {
+        if (field.hasDefaultValue && !(field.default instanceof Object)) {
+            let defValue = field.default;
+            let valueStr;
+            if (field.kind === 'enum') {
+                return `${field.type}.${defValue}`;
+            }
+            else {
+                return typeof defValue === 'string' ? `"${defValue}"` : defValue.toString();
+            }
+        }
+        else {
+            return null;
+        }
     }
     generateFromJsonArgument(field) {
         let content = (field.isList) ? dart_stub_1.dartFromJsonListArg : dart_stub_1.dartFromJsonArg;
-        content = this.replaceFieldName(content, field);
+        content = this.replacePropName(content, field);
         content = this.replaceNullable(content, field);
         content = this.replaceType(content, field);
         return content;
     }
-    generateFieldContent(field) {
-        let content = dart_stub_1.dartFieldStub;
-        content = content.replace(/#{FieldName}/g, field.name);
+    generateToJsonKeyVal(field) {
+        let content = (field.isList) ? dart_stub_1.toJsonListPropertyStub : dart_stub_1.toJsonPropertyStub;
+        content = this.replacePropName(content, field);
+        content = this.replaceNullable(content, field);
+        return content;
+    }
+    generatePropertyContent(field) {
+        let content = dart_stub_1.dartPropertyStub;
+        content = content.replace(/#{PropName}/g, field.name);
         //let dartType = this.prismaHelper.getDartTypeFromDMMF(field);
         let dartType = this.getDartType(field);
         /* let dartType = dartTypeMap[field.type as DartTypeMapKey];
@@ -107,7 +127,7 @@ class DartGenerator {
     getDartType = (field) => exports.dartTypeMap[field.type] || field.type;
     isProprietaryType = (type) => exports.dartTypeMap[type] == null;
     replaceNullable = (content, field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
-    replaceFieldName = (content, field) => content.replace(/#{FieldName}/g, field.name);
+    replacePropName = (content, field) => content.replace(/#{PropName}/g, field.name);
     replaceType = (content, field) => content.replace(/#{Type}/g, this.getDartType(field));
     // replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
     generateImportStatements() {

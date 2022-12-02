@@ -21,12 +21,14 @@ export declare class DartGenerator {
     generateContent(): string;
     private generateBaseInput;
     generateConstructorArg(field: DMMF.Field): string;
+    printDefaultValue(field: DMMF.Field): string | null;
     generateFromJsonArgument(field: DMMF.Field): string;
-    generateFieldContent(field: DMMF.Field): string;
+    generateToJsonKeyVal(field: DMMF.Field): string;
+    generatePropertyContent(field: DMMF.Field): string;
     getDartType: (field: DMMF.Field) => string;
     isProprietaryType: (type: string) => boolean;
     replaceNullable: (content: string, field: DMMF.Field) => string;
-    replaceFieldName: (content: string, field: DMMF.Field) => string;
+    replacePropName: (content: string, field: DMMF.Field) => string;
     replaceType: (content: string, field: DMMF.Field) => string;
     private generateImportStatements;
 }

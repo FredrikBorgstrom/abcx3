@@ -4,5 +4,6 @@ export interface GeneratorSettings {
     EnumPath: string;
     DartValidatorPackage?: string;
     FormatWithDart: 'true' | 'false';
+    makeAllPropsOptional: 'true' | 'false';
 }
 //# sourceMappingURL=settings.interface.d.ts.map
