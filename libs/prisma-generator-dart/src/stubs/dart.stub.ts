@@ -13,14 +13,19 @@ class #{ClassName} #{ParentClass} {
       #{ClassName}(
         #{fromJsonArgs}
       );
+      }
     `;
     
+    export const dartFromJsonArg = `#{FieldName}: json['#{FieldName}'] as #{Type}#{Nullable}`;
+
+    export const dartFromJsonListArg = `#{FieldName}: (json['#{FieldName}'] as List<#{Type}>#{Nullable})#{Nullable}\n.map((item) => #{Type}.fromJson(item as Map<String, dynamic>)).toList()`;
+
+
     export const dartConstructorArgument = `#{Required} this.#{FieldName}`;
     export const dartConstructorArgumentWithDefaultValue = `#{Required} this.#{FieldName} = #{DefaultValue}`;
     
-    export const dartFromJsonArg = `#{FieldName}: json['#{FieldName}'] as #{Type}#{Nullable}`
     
-    export const dartFieldStub = `#{Type}#{Operator} #{FieldName};`;
+    export const dartFieldStub = `#{Type}#{Nullable} #{FieldName};`;
     
-    export const dartFieldStubWithDefaultValue = `#{Type}#{Operator} #{FieldName} = #{DefaultValue};`;
+    export const dartFieldStubWithDefaultValue = `#{Type}#{Nullable} #{FieldName} = #{DefaultValue};`;
 

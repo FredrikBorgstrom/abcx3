@@ -1,18 +1,20 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
+import { exec } from 'child_process';
 import path from 'path';
 import { GENERATOR_NAME } from './constants';
-import { outputToConsole, writeFileSafely } from './utils/writeFileSafely';
-import {GeneratorSettings} from './settings.interface';
-import { generateDartEnum } from './generators/enum.generators';
 import { DartGenerator } from './generators/dart.generator';
+import { generateDartEnum } from './generators/enum.generators';
+import { GeneratorSettings } from './settings.interface';
+import { typeToFileName } from './utils/utils';
+import { outputToConsole, writeFileSafely } from './utils/writeFileSafely';
 
 const { version } = require('../package.json');
 
 const defaultOptions: GeneratorSettings = {
     dryRun: 'false',
-
     schemaPath: '',
     EnumPath: 'enums',
+    FormatWithDart: 'true'
 };
 
 generatorHandler({
@@ -35,6 +37,7 @@ generatorHandler({
         ...configOverwrites,
     };
 
+    console.log('hello from dart gen');
     const mainGenerator = new MainGenerator(options, settings);
     await mainGenerator.generateFiles();
   }
@@ -63,12 +66,26 @@ class MainGenerator {
             console.log(`Processing Enum ${tEnum.name}`);
             await this.generateDartEnumFile(tEnum);
         }
-        this.createDartLibraryFile();
+        await this.createDartLibraryFile();
+        if (this.settings.FormatWithDart === 'true') {
+            const outputPath = options.generator.output?.value;
+            exec(`dart format "${outputPath}"`, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error: ${error.message}`);
+                    return;
+                }
+                if (stderr) {
+                    console.log(`stderr: ${stderr}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+            });
+        }
     }
 
     async generateDartEnumFile(tEnum: DMMF.DatamodelEnum) {
         let content = generateDartEnum(tEnum);
-        const fileName = `${tEnum.name.toLowerCase()}.dart`;
+        const fileName = `${typeToFileName(tEnum.name)}`;
         const filePath = path.join(this.outputPath, fileName);
         console.log(` > Generating enum for Model ${tEnum.name}`);
         await this.writeFile(filePath, content);
@@ -76,7 +93,7 @@ class MainGenerator {
     }
 
     async createDartLibraryFile() {
-        let content = this.dartFiles.reduce((acc, val) => acc + `export './${val}';\n`, "");
+        let content = this.dartFiles.reduce((acc, val) => acc + `export '${val}';\n`, "");
         const filePath = path.join(
             this.outputPath,
             `models_library.dart`
@@ -87,7 +104,7 @@ class MainGenerator {
     async generateDartModelFile(model: DMMF.Model) {
         const dartGenerator = new DartGenerator(this.settings, model);
         const dartContent = dartGenerator.generateContent();
-        const fileName = `${model.name.toLowerCase()}.dart`;
+        const fileName = `${typeToFileName(model.name)}`;
         const filePath = path.join(
             this.outputPath,
             fileName,
@@ -97,4 +114,5 @@ class MainGenerator {
         await this.writeFile(filePath, dartContent);
     }
 }
+
 

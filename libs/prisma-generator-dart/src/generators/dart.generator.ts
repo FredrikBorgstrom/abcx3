@@ -1,24 +1,26 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorSettings } from '../settings.interface';
 import { PrismaHelper } from '../helpers/prisma.helper';
+import { GeneratorSettings } from '../settings.interface';
 import {
     dartBaseClassStub,
     dartConstructorArgument,
     dartConstructorArgumentWithDefaultValue,
-    dartFieldStub
+    dartFieldStub,
+    dartFromJsonArg,
+    dartFromJsonListArg
 } from '../stubs/dart.stub';
-import { lowerCaseFirstChar } from '../utils/utils';
+import { typeToFileName } from '../utils/utils';
 
 export const dartTypeMap = {
-    bigint: 'BigInt',
-    boolean: 'bool',
-    bytes: 'ByteBuffer',
-    datetime: 'DateTime',
-    decimal: 'double',
-    float: 'double',
-    int: 'int',
-    json: 'Map<String, dynamic>',
-    string: 'String'
+    BigInt: 'BigInt',
+    Boolean: 'bool',
+    Bytes: 'ByteBuffer',
+    DateTime: 'DateTime',
+    Decimal: 'double',
+    Float: 'double',
+    Int: 'int',
+    Json: 'Map<String, dynamic>',
+    String: 'String'
 }
 
 type DartTypeMapKey = keyof typeof dartTypeMap;
@@ -39,7 +41,6 @@ export class DartGenerator {
         return content;
     }
 
-
     private generateBaseInput() {
         let content = dartBaseClassStub;
 
@@ -54,16 +55,21 @@ export class DartGenerator {
 
         let fieldsContent = '';
         let constructorContent = '';
+        let fromJsonArgs: string[] = [];
 
         for (const field of this.model.fields) {
             fieldsContent += '\t' + this.generateFieldContent(field) + '\n';
             constructorContent += this.generateConstructorArg(field) + ',\n\t\t';
+            fromJsonArgs.push(this.generateFromJsonArgument(field));
         }
         if (constructorContent.length > 2) {
             constructorContent = constructorContent.slice(0, constructorContent.length - 2);
         } else {
             constructorContent = '';
         }
+
+        let fromJsonContent = fromJsonArgs.join(',\n\t');
+        content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
 
         content = content.replace(/#{Fields}/g, fieldsContent);
         content = content.replace(/#{ConstructorArgs}/g, constructorContent);
@@ -94,6 +100,14 @@ export class DartGenerator {
         return content;
     }
 
+    generateFromJsonArgument(field: DMMF.Field) {
+        let content = (field.isList) ? dartFromJsonListArg : dartFromJsonArg;
+        content = this.replaceFieldName(content, field);
+        content = this.replaceNullable(content, field);
+        content = this.replaceType(content, field);
+        return content;
+    }
+
     generateFieldContent(field: DMMF.Field) {
         let content = dartFieldStub;
 
@@ -101,34 +115,57 @@ export class DartGenerator {
 
         //let dartType = this.prismaHelper.getDartTypeFromDMMF(field);
 
-        let dartType = dartTypeMap[field.type.toLowerCase() as DartTypeMapKey];
+        let dartType = this.getDartType(field);
+        /* let dartType = dartTypeMap[field.type as DartTypeMapKey];
         if (!dartType) {
             dartType = field.type;
-            this.addPackageToImport(dartType.toLowerCase() + '.dart');
-        }
+            this.addPackageToImport(dartType + '.dart');
+        } */
         let printedType = (field.isList) ? `List<${dartType}>` : dartType;
         content = content.replace(/#{Type}/g, printedType);
-        content = content.replace(/#{Operator}/g, field.isRequired ? '' : '?');
+        content = this.replaceNullable(content, field);
         
         return content;
     }
 
-    private addPackageToImport(packageName: string) {
-        if (!this.importedPackages.some(name => name == packageName)) {
-            this.importedPackages.push(packageName);
-        }
-    }
+    getDartType = (field: DMMF.Field) => dartTypeMap[field.type as DartTypeMapKey] || field.type;
+    isProprietaryType = (type: string) => dartTypeMap[type as DartTypeMapKey] ==  null;
+    
+
+    replaceNullable = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
+    replaceFieldName = (content: string, field: DMMF.Field) => content.replace(/#{FieldName}/g, field.name);
+    replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Type}/g, this.getDartType(field));
+
+    // replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
+
+   
 
     private generateImportStatements(): string {
         let result = '';
+        const checkedTypes: string[] = [];
 
-        for (const packageName of this.importedPackages) {
-            result += `import './${packageName}';\n`;
-        }
+        this.model.fields.forEach(({type}) => {
+            if (!checkedTypes.includes(type)) {
+                checkedTypes.push(type);
+                if (this.isProprietaryType(type)) {
+                    result += `import '${typeToFileName(type)}';\n`;
+                }
+            }
+        });
+
+        // for (const packageName of this.importedPackages) {
+        //     result += `import './${packageName}';\n`;
+        // }
 
         return result;
     }
 }
+
+/*  private addPackageToImport(packageName: string) {
+        if (!this.importedPackages.some(name => name == packageName)) {
+            this.importedPackages.push(packageName);
+        }
+    } */
 
 /* export const CellType: {
     startKey: 'start',

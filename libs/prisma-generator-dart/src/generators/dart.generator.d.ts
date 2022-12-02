@@ -1,15 +1,15 @@
 import { DMMF } from '@prisma/generator-helper';
 import { GeneratorSettings } from '../settings.interface';
 export declare const dartTypeMap: {
-    bigint: string;
-    boolean: string;
-    bytes: string;
-    datetime: string;
-    decimal: string;
-    float: string;
-    int: string;
-    json: string;
-    string: string;
+    BigInt: string;
+    Boolean: string;
+    Bytes: string;
+    DateTime: string;
+    Decimal: string;
+    Float: string;
+    Int: string;
+    Json: string;
+    String: string;
 };
 export declare class DartGenerator {
     private config;
@@ -21,8 +21,13 @@ export declare class DartGenerator {
     generateContent(): string;
     private generateBaseInput;
     generateConstructorArg(field: DMMF.Field): string;
+    generateFromJsonArgument(field: DMMF.Field): string;
     generateFieldContent(field: DMMF.Field): string;
-    private addPackageToImport;
+    getDartType: (field: DMMF.Field) => string;
+    isProprietaryType: (type: string) => boolean;
+    replaceNullable: (content: string, field: DMMF.Field) => string;
+    replaceFieldName: (content: string, field: DMMF.Field) => string;
+    replaceType: (content: string, field: DMMF.Field) => string;
     private generateImportStatements;
 }
 //# sourceMappingURL=dart.generator.d.ts.map
