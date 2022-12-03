@@ -8,6 +8,7 @@ THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 
 class #{ClassName} #{ParentClass} {
     #{Properties}
+    
       #{ClassName}({#{ConstructorArgs}});
 
       factory #{ClassName}.fromJson(Map<String, dynamic> json) =>

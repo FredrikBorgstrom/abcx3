@@ -44,13 +44,13 @@ class DartGenerator {
         let fromJsonArgs = [];
         let toJsonKeyVals = [];
         for (const field of this.model.fields) {
-            constructorArgs.push(this.generateConstructorArg(field));
             properties.push(this.generatePropertyContent(field));
+            constructorArgs.push(this.generateConstructorArg(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
             toJsonKeyVals.push(this.generateToJsonKeyVal(field));
         }
-        const constructorContent = constructorArgs.join('\n\t');
         const propertiesContent = properties.join('\n\t');
+        const constructorContent = constructorArgs.join(',\n\t');
         const fromJsonContent = fromJsonArgs.join(',\n\t');
         const toJsonContent = toJsonKeyVals.join(',\n\t');
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
