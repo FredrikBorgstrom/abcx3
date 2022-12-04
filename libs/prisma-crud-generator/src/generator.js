@@ -8,7 +8,7 @@ const input_generator_1 = require("./generators/input.generator");
 const writeFileSafely_1 = require("./utils/writeFileSafely");
 const path = require("path");
 const utils_1 = require("./utils/utils");
-const enum_generators_1 = require("./generators/enum.generators");
+const enum_generator_1 = require("./generators/enum.generator");
 const defaultOptions = {
     strict: 'false',
     dryRun: 'false',
@@ -27,6 +27,7 @@ const defaultOptions = {
     CRUDServiceSuffix: 'CrudService',
     CRUDStubFile: undefined,
     CRUDAddExceptions: 'true',
+    PrismaServiceImportPath: '@modded-prisma-utils/nestjs-prisma',
     EnumPath: 'enums'
 };
 (0, generator_helper_1.generatorHandler)({
@@ -77,7 +78,7 @@ class MainGenerator {
         }
     }
     async generateEnumFile(tEnum) {
-        let content = (0, enum_generators_1.generateEnum)(tEnum);
+        let content = (0, enum_generator_1.generateEnum)(tEnum);
         let outputPath = this.createBasePath(tEnum.name, this.options.generator.output?.value);
         const filePath = path.join(outputPath, this.settings.EnumPath, `${tEnum.name.toLowerCase()}.ts`);
         await this.writeFile(filePath, content);

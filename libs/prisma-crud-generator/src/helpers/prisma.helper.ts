@@ -58,7 +58,7 @@ export class PrismaHelper {
         };
     }
 
-    
+
 
     static getInstance() {
         if (PrismaHelper.instance) {
@@ -124,6 +124,9 @@ export class PrismaHelper {
         }
     }
 
+    public modelContainsObjectReference = (model: DMMF.Model): boolean => model.fields.some(field => field.kind === 'object');
+
+
     public getUniqueInputPropertyName(model: DMMF.Model): string | null {
 
         const primaryKey = model.primaryKey;
@@ -147,7 +150,7 @@ export class PrismaHelper {
         }
     }
 
-    public capitalize (str: string) {
+    public capitalize(str: string) {
         if (str.length === 0) {
             return str;
         } else if (str.length === 1) {

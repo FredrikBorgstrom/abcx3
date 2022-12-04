@@ -7,7 +7,7 @@ import { InputGenerator } from './generators/input.generator';
 import { outputToConsole, writeFileSafely } from './utils/writeFileSafely';
 import path = require('path');
 import { lowerCaseFirstChar } from './utils/utils';
-import { generateEnum } from './generators/enum.generators';
+import { generateEnum } from './generators/enum.generator';
 
 const defaultOptions: GeneratorSettings = {
     strict: 'false',
@@ -32,6 +32,7 @@ const defaultOptions: GeneratorSettings = {
     CRUDServiceSuffix: 'CrudService',
     CRUDStubFile: undefined,
     CRUDAddExceptions: 'true',
+    PrismaServiceImportPath: '@modded-prisma-utils/nestjs-prisma',
 
     EnumPath: 'enums'
 };

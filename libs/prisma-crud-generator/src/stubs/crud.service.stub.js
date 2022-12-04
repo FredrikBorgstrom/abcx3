@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.crudServiceStub = exports.idMethods_neverThrow = exports.crudServiceStubWithExceptions = void 0;
+exports.crudServiceStub = exports.idMethods_neverThrow = exports.getWithInclude_neverThrow = exports.get_neverThrow = exports.crudServiceStubWithExceptions = void 0;
 exports.crudServiceStubWithExceptions = `/*
 -----------------------------------------------------
 THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -16,7 +16,7 @@ import { Prisma, #{Model} } from '@prisma/client';
 import {
     PaginationInterface,
     PrismaService,
-} from '@modded-prisma-utils/nestjs-prisma';
+} from '#{PrismaServiceImportPath}';
 import { err, ok, Result } from 'neverthrow';
 
 @Injectable()
@@ -63,17 +63,7 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async get(uniqueProps: #{uniqueInputType}, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
-        try {
-            const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
-                where: #{uniqueKeyAndVal},
-                include
-            });
-        return ok(result);
-            } catch(e) {
-            return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
-        }
-    }
+    #{getMethod_neverThrow}
 
     async update(
         uniqueProps: #{uniqueInputType},
@@ -105,6 +95,29 @@ export class #{CrudServiceClassName} {
     #{byIdMethods}
 }
 `;
+exports.get_neverThrow = `
+async get(uniqueProps: #{uniqueInputType}): Promise<Result<#{Model}, Error>> {
+    try {
+        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
+            where: #{uniqueKeyAndVal}
+        });
+    return ok(result);
+        } catch(e) {
+        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
+    }
+}`;
+exports.getWithInclude_neverThrow = `
+async get(uniqueProps: #{uniqueInputType}, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
+    try {
+        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
+            where: #{uniqueKeyAndVal},
+            include
+        });
+    return ok(result);
+        } catch(e) {
+        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
+    }
+}`;
 exports.idMethods_neverThrow = `
 async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
     try {

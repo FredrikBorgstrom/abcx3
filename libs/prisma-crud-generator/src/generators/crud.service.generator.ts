@@ -3,25 +3,35 @@ import { DMMF } from '@prisma/generator-helper';
 import {
     crudServiceStub,
     crudServiceStubWithExceptions,
-    idMethods_neverThrow
+    idMethods_neverThrow,
+    get_neverThrow,
+    getWithInclude_neverThrow
 } from './../stubs/crud.service.stub';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { lowerCaseFirstChar } from '../utils/utils';
-import { PrismaHelper } from '../helpers/prisma.helper';
+import { FieldNameAndType, PrismaHelper } from '../helpers/prisma.helper';
 
 export class CrudServiceGenerator {
+
+    private prismaHelper: PrismaHelper;
+
     constructor(
         private config: GeneratorSettings,
         private model: DMMF.Model,
         private className: string,
-    ) { }
+    ) {
+        this.prismaHelper = PrismaHelper.getInstance();
+     }
 
     public async generateContent() {
         let crudServiceContent: string;
 
         if (this.config.CRUDAddExceptions === 'true') {
             crudServiceContent = crudServiceStubWithExceptions;
+            crudServiceContent = crudServiceContent.replace(
+                /#{getMethod_neverThrow}/g,
+                this.prismaHelper.modelContainsObjectReference(this.model) ? getWithInclude_neverThrow: get_neverThrow);
         } else {
             crudServiceContent = crudServiceStub;
         }
@@ -37,39 +47,17 @@ export class CrudServiceGenerator {
             crudServiceContent = customStub.toString();
         }
 
-        // replace variables
+        crudServiceContent = crudServiceContent.replace(/#{PrismaServiceImportPath}/g, this.config.PrismaServiceImportPath)
 
-        const idFieldAndType = PrismaHelper.getInstance().getIdFieldNameAndType(this.model);
+        const idFieldAndType = this.prismaHelper.getIdFieldNameAndType(this.model);
 
+        // if the model has a unique ID field we insert '...byId' methods:
         if (idFieldAndType) {
-
             crudServiceContent = crudServiceContent.replace(
                 /#{byIdMethods}/g,
                 idMethods_neverThrow
             );
-
-            crudServiceContent = crudServiceContent.replace(
-                /#{idName}/g,
-                idFieldAndType.name
-            );
-
-            crudServiceContent = crudServiceContent.replace(
-                /#{idType}/g,
-                idFieldAndType.type
-            );
-
-            crudServiceContent = crudServiceContent.replace(
-                /#{uniqueInputType}/g,
-                `Prisma.${this.model.name}WhereUniqueInput`
-            );
-
-            crudServiceContent = crudServiceContent.replace(
-                /#{uniqueKeyAndVal}/g,
-                "uniqueProps"
-            );
-
-            // #{uniqueKeyAndVal}
-
+            crudServiceContent = this.replaceInIdMethods(crudServiceContent, idFieldAndType);
         } else {
             crudServiceContent = crudServiceContent.replace(
                 /#{byIdMethods}/g,
@@ -79,7 +67,7 @@ export class CrudServiceGenerator {
             let compoundkey = PrismaHelper.getInstance().getUniqueInputPropertyName(this.model);
             let compoundType = PrismaHelper.getInstance().getUniqueInputType(this.model);
             let prismaCompoundInputType = `Prisma.${this.model.name}${compoundType}CompoundUniqueInput`;
-            
+
             crudServiceContent = crudServiceContent.replace(
                 /#{uniqueInputType}/g,
                 prismaCompoundInputType
@@ -89,10 +77,6 @@ export class CrudServiceGenerator {
                 /#{uniqueKeyAndVal}/g,
                 `{${compoundkey}: uniqueProps}`
             );
-
-
-
-
         }
 
         crudServiceContent = crudServiceContent.replace(
@@ -116,16 +100,31 @@ export class CrudServiceGenerator {
             /#{moDel}/g,
             lowerCaseFirstChar(this.model.name),
         );
-
-       
-
-
         return crudServiceContent;
     }
 
+    replaceInIdMethods(content: string, fieldNameAndType: FieldNameAndType) {
+        content = content.replace(
+            /#{idName}/g,
+            fieldNameAndType.name
+        );
 
+        content = content.replace(
+            /#{idType}/g,
+            fieldNameAndType.type
+        );
 
+        content = content.replace(
+            /#{uniqueInputType}/g,
+            `Prisma.${this.model.name}WhereUniqueInput`
+        );
 
+        content = content.replace(
+            /#{uniqueKeyAndVal}/g,
+            "uniqueProps"
+        );
+        return content;
+    }
 }
 
 

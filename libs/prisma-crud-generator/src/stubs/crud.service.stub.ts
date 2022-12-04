@@ -13,7 +13,7 @@ import { Prisma, #{Model} } from '@prisma/client';
 import {
     PaginationInterface,
     PrismaService,
-} from '@modded-prisma-utils/nestjs-prisma';
+} from '#{PrismaServiceImportPath}';
 import { err, ok, Result } from 'neverthrow';
 
 @Injectable()
@@ -60,17 +60,7 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async get(uniqueProps: #{uniqueInputType}, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
-        try {
-            const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
-                where: #{uniqueKeyAndVal},
-                include
-            });
-        return ok(result);
-            } catch(e) {
-            return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
-        }
-    }
+    #{getMethod_neverThrow}
 
     async update(
         uniqueProps: #{uniqueInputType},
@@ -102,6 +92,32 @@ export class #{CrudServiceClassName} {
     #{byIdMethods}
 }
 `;
+
+export const get_neverThrow = `
+async get(uniqueProps: #{uniqueInputType}): Promise<Result<#{Model}, Error>> {
+    try {
+        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
+            where: #{uniqueKeyAndVal}
+        });
+    return ok(result);
+        } catch(e) {
+        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
+    }
+}`;
+
+export const getWithInclude_neverThrow = `
+async get(uniqueProps: #{uniqueInputType}, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
+    try {
+        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
+            where: #{uniqueKeyAndVal},
+            include
+        });
+    return ok(result);
+        } catch(e) {
+        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
+    }
+}`;
+
 
 export const idMethods_neverThrow = `
 async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
