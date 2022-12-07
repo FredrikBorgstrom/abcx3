@@ -12,7 +12,7 @@ import { promises as fs } from 'fs';
 import { lowerCaseFirstChar } from '../utils/utils';
 import { FieldNameAndType, PrismaHelper } from '../helpers/prisma.helper';
 
-export class CrudServiceGenerator {
+export class CrudServiceGenerator_old {
 
     private prismaHelper: PrismaHelper;
 
@@ -64,7 +64,7 @@ export class CrudServiceGenerator {
                 ''
             );
 
-           /*  let compoundkey = PrismaHelper.getInstance().getUniqueInputPropertyName(this.model);
+            let compoundkey = PrismaHelper.getInstance().getUniqueInputPropertyName(this.model);
             let compoundType = PrismaHelper.getInstance().getUniqueInputType(this.model);
             let prismaCompoundInputType = `Prisma.${this.model.name}${compoundType}CompoundUniqueInput`;
 
@@ -72,11 +72,11 @@ export class CrudServiceGenerator {
                 /#{uniqueInputType}/g,
                 prismaCompoundInputType
             );
- */
-            /* crudServiceContent = crudServiceContent.replace(
+
+            crudServiceContent = crudServiceContent.replace(
                 /#{uniqueKeyAndVal}/g,
                 `{${compoundkey}: uniqueProps}`
-            ); */
+            );
         }
 
         crudServiceContent = crudServiceContent.replace(
@@ -119,10 +119,10 @@ export class CrudServiceGenerator {
             `Prisma.${this.model.name}WhereUniqueInput`
         );
 
-        /* content = content.replace(
+        content = content.replace(
             /#{uniqueKeyAndVal}/g,
             "uniqueProps"
-        ); */
+        );
         return content;
     }
 }
