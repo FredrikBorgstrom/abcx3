@@ -79,33 +79,34 @@ class MainGenerator {
     }
     async generateEnumFile(tEnum) {
         let content = (0, enum_generator_1.generateEnum)(tEnum);
-        let outputPath = this.createBasePath(tEnum.name, this.options.generator.output?.value);
+        let outputPath = this.createBasePath(tEnum.name);
         const filePath = path.join(outputPath, this.settings.EnumPath, `${tEnum.name.toLowerCase()}.ts`);
         await this.writeFile(filePath, content);
     }
     async generateInputFile(model) {
-        let basePath = this.createBasePath(model.name, this.options.generator.output?.value);
+        let basePath = this.createBasePath(model.name);
         const inputGenerator = new input_generator_1.InputGenerator(this.settings, model);
         const inputContent = await inputGenerator.generateContent();
         const filePath = path.join(basePath, this.settings.InputExportPath, `${model.name.toLowerCase()}.input.ts`);
         await this.writeFile(filePath, inputContent);
     }
     async generateCrudFile(model) {
-        let basePath = this.createBasePath(model.name, this.options.generator.output?.value);
+        let basePath = this.createBasePath(model.name);
         console.log(` > Generating CRUD Service for Model ${model.name}`);
         const crudServiceName = `${model.name}${this.settings.CRUDServiceSuffix}`;
         const crudServiceGenerator = new crud_service_generator_1.CrudServiceGenerator(this.settings, model, crudServiceName);
         const crudServiceContent = await crudServiceGenerator.generateContent();
-        const filePath = path.join(basePath, this.settings.CRUDServicePath, `${model.name.toLowerCase()}.crud.service.ts`);
+        // const filePath = path.join(basePath, this.settings.CRUDServicePath, `${model.name.toLowerCase()}.service.ts`);
+        const filePath = path.join(basePath, this.settings.CRUDServicePath, `${(0, utils_1.lowerCaseFirstChar)(model.name)}.service.ts`);
         await this.writeFile(filePath, crudServiceContent);
     }
-    createBasePath(modelName, outputPath = '') {
-        let folderPath = outputPath;
-        folderPath = folderPath?.replace(/#{Model}/g, modelName);
-        folderPath = folderPath?.replace(/#{model}/g, modelName.toLowerCase());
-        folderPath = folderPath?.replace(/#{MODEL}/g, modelName.toUpperCase());
-        folderPath = folderPath?.replace(/#{moDel}/g, (0, utils_1.lowerCaseFirstChar)(modelName));
-        return folderPath;
+    createBasePath(modelName) {
+        let tPath = this.options.generator.output?.value;
+        tPath = tPath?.replace(/#{Model}/g, modelName);
+        tPath = tPath?.replace(/#{model}/g, modelName.toLowerCase());
+        tPath = tPath?.replace(/#{MODEL}/g, modelName.toUpperCase());
+        tPath = tPath?.replace(/#{moDel}/g, (0, utils_1.lowerCaseFirstChar)(modelName));
+        return tPath || '';
     }
 }
 //# sourceMappingURL=generator.js.map

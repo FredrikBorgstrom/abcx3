@@ -5,6 +5,7 @@ const prettier_1 = require("prettier");
 const formatFile = (content) => new Promise((res, rej) => (0, prettier_1.resolveConfig)(process.cwd()).then((options) => {
     if (!options) {
         // no prettier configuration was found -> do nothing
+        console.log('Prettier not found, cannot format.');
         res(content);
     }
     try {

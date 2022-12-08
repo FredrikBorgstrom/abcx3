@@ -5,6 +5,7 @@ export const formatFile = (content: string): Promise<string> =>
         resolveConfig(process.cwd()).then((options) => {
             if (!options) {
                 // no prettier configuration was found -> do nothing
+                console.log('Prettier not found, cannot format.');
                 res(content);
             }
 
