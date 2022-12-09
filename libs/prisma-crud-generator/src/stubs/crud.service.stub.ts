@@ -33,7 +33,9 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async getAll(
+    getAll = async () => await this.getFiltered();
+
+    async getFiltered(
         filter?: Prisma.#{Model}FindManyArgs,
     ): Promise<Result<PaginationInterface<#{Model}>, Error>> {
         try {
@@ -60,7 +62,7 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async get(uniqueArgs: Prisma.#{Model}FindUniqueOrThrowArgs): Promise<Result<#{Model}, Error>> {
+    async getUnique(uniqueArgs: Prisma.#{Model}FindUniqueOrThrowArgs): Promise<Result<#{Model}, Error>> {
         try {
             const result = await this.prismaService.#{moDel}.findUniqueOrThrow(uniqueArgs);
         return ok(result);
@@ -99,32 +101,6 @@ export class #{CrudServiceClassName} {
     #{byIdMethods}
 }
 `;
-
-export const get_neverThrow = `
-async get(uniqueProps: #{uniqueInputType}): Promise<Result<#{Model}, Error>> {
-    try {
-        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
-            where: #{uniqueKeyAndVal}
-        });
-    return ok(result);
-        } catch(e) {
-        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
-    }
-}`;
-
-export const getWithInclude_neverThrow = `
-async get(uniqueProps: #{uniqueInputType}, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
-    try {
-        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
-            where: #{uniqueKeyAndVal},
-            include
-        });
-    return ok(result);
-        } catch(e) {
-        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
-    }
-}`;
-
 
 export const idMethods_neverThrow = `
 async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {

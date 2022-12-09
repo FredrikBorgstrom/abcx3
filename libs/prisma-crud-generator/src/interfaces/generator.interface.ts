@@ -16,6 +16,8 @@ export interface GeneratorSettings {
 
 
     GenerateServices: 'true' | 'false';
+    GenerateModule: 'true' | 'false';
+    
     CRUDServicePath: string;
     CRUDServiceSuffix: string;
     CRUDStubFile?: string;
@@ -23,4 +25,8 @@ export interface GeneratorSettings {
     PrismaServiceImportPath: string;
 
     EnumPath: string;
+
+    GenerateController?: 'true' | 'false';
+    GuardClass?: String;
+    GuardImportPath?: String;
 }

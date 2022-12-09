@@ -3,9 +3,7 @@ import { DMMF } from '@prisma/generator-helper';
 import {
     crudServiceStub,
     crudServiceStubWithExceptions,
-    idMethods_neverThrow,
-    get_neverThrow,
-    getWithInclude_neverThrow
+    idMethods_neverThrow
 } from './../stubs/crud.service.stub';
 import * as path from 'path';
 import { promises as fs } from 'fs';
@@ -25,15 +23,15 @@ export class CrudServiceGenerator {
      }
 
     public async generateContent() {
-        let crudServiceContent: string;
+        let content: string;
 
         if (this.config.CRUDAddExceptions === 'true') {
-            crudServiceContent = crudServiceStubWithExceptions;
-            crudServiceContent = crudServiceContent.replace(
+            content = crudServiceStubWithExceptions;
+           /*  content = content.replace(
                 /#{getMethod_neverThrow}/g,
-                this.prismaHelper.modelContainsObjectReference(this.model) ? getWithInclude_neverThrow: get_neverThrow);
+                this.prismaHelper.modelContainsObjectReference(this.model) ? getWithInclude_neverThrow: get_neverThrow); */
         } else {
-            crudServiceContent = crudServiceStub;
+            content = crudServiceStub;
         }
 
         if (this.config.CRUDStubFile) {
@@ -44,22 +42,22 @@ export class CrudServiceGenerator {
             console.log(`Loading Stubs from ${stubFullPath}`);
 
             const customStub = await fs.readFile(stubFullPath, { encoding: 'utf-8' });
-            crudServiceContent = customStub.toString();
+            content = customStub.toString();
         }
 
-        crudServiceContent = crudServiceContent.replace(/#{PrismaServiceImportPath}/g, this.config.PrismaServiceImportPath)
+        content = content.replace(/#{PrismaServiceImportPath}/g, this.config.PrismaServiceImportPath)
 
         const idFieldAndType = this.prismaHelper.getIdFieldNameAndType(this.model);
 
         // if the model has a unique ID field we insert '...byId' methods:
         if (idFieldAndType) {
-            crudServiceContent = crudServiceContent.replace(
+            content = content.replace(
                 /#{byIdMethods}/g,
                 idMethods_neverThrow
             );
-            crudServiceContent = this.replaceInIdMethods(crudServiceContent, idFieldAndType);
+            content = this.replaceInIdMethods(content, idFieldAndType);
         } else {
-            crudServiceContent = crudServiceContent.replace(
+            content = content.replace(
                 /#{byIdMethods}/g,
                 ''
             );
@@ -79,28 +77,28 @@ export class CrudServiceGenerator {
             ); */
         }
 
-        crudServiceContent = crudServiceContent.replace(
+        content = content.replace(
             /#{CrudServiceClassName}/g,
             this.className,
         );
 
-        crudServiceContent = crudServiceContent.replace(
+        content = content.replace(
             /#{Model}/g,
             this.model.name,
         );
-        crudServiceContent = crudServiceContent.replace(
+        content = content.replace(
             /#{MODEL}/g,
             this.model.name.toUpperCase(),
         );
-        crudServiceContent = crudServiceContent.replace(
+        content = content.replace(
             /#{model}/g,
             this.model.name.toLowerCase(),
         );
-        crudServiceContent = crudServiceContent.replace(
+        content = content.replace(
             /#{moDel}/g,
             lowerCaseFirstChar(this.model.name),
         );
-        return crudServiceContent;
+        return content;
     }
 
     replaceInIdMethods(content: string, fieldNameAndType: FieldNameAndType) {
