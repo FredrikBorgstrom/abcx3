@@ -7,12 +7,12 @@ THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { #{CrudServiceName} } from './#{CrudServiceFileName}';
+import { #{ServiceName} } from './#{CrudServiceFileName}';
 #{ImportGuardClass}
 
 @Controller('#{model}')
 export class #{ControllerClassName} {
-  constructor(private readonly service: #{CrudServiceName}) {}
+  constructor(private readonly service: #{ServiceName}) {}
 
   #{GuardDecorator}
   @Post()

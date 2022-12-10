@@ -6,29 +6,26 @@ import { lowerCaseFirstChar } from "../utils/utils";
 
 
 export class ControllerGenerator {
-    private prismaHelper: PrismaHelper;
 
     constructor(
         private config: GeneratorSettings,
         private model: DMMF.Model,
-        private className: string,
-        private crudServiceName: string,
-        private crudServiceFileName: string,
-    ) {
-        this.prismaHelper = PrismaHelper.getInstance();
-    }
+        private controllerName: string,
+        private serviceName: string,
+        private serviceFileName: string,
+    ) {}
 
 
     public async generateContent() {
         let content = controllerStub;
 
-        content = content.replace(/#{ControllerClassName}/g, this.className);
+        content = content.replace(/#{ControllerClassName}/g, this.controllerName);
         content = content.replace(/#{Model}/g, this.model.name);
         content = content.replace(/#{model}/g, this.model.name.toLowerCase());
         content = content.replace(/#{moDel}/g, lowerCaseFirstChar(this.model.name));
 
-        content = content.replace(/#{CrudServiceName}/g, this.crudServiceName);
-        content = content.replace(/#{CrudServiceFileName}/g, this.crudServiceFileName);
+        content = content.replace(/#{ServiceName}/g, this.serviceName);
+        content = content.replace(/#{CrudServiceFileName}/g, this.serviceFileName);
 
 
         let guardImportContent: string, guardsContent: string;

@@ -1,14 +1,16 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
 import { GENERATOR_NAME } from './constants';
-import { CrudServiceGenerator } from './generators/crud.service.generator';
+import { CrudServiceGenerator as ServiceGenerator } from './generators/crud.service.generator';
 import { GeneratorSettings } from './interfaces/generator.interface';
 import { version } from './../package.json';
 import { InputGenerator } from './generators/input.generator';
 import { outputToConsole, writeFileSafely } from './utils/writeFileSafely';
 import path = require('path');
-import { lowerCaseFirstChar } from './utils/utils';
+import { lowerCaseFirstChar, upperCaseFirstChar } from './utils/utils';
 import { generateEnum } from './generators/enum.generator';
 import { ControllerGenerator } from './generators/controller.generator';
+import { ModuleGenerator } from './generators/module.generator';
+import { NameGenerator } from './nameGenerator';
 
 const defaultOptions: GeneratorSettings = {
     strict: 'false',
@@ -31,8 +33,7 @@ const defaultOptions: GeneratorSettings = {
     GenerateServices: 'true',
     GenerateController: 'true',
     GenerateModule: 'true',
-    CRUDServicePath: 'services',
-    CRUDServiceSuffix: 'CrudService',
+    ServiceSuffix: 'Service',
     CRUDStubFile: undefined,
     CRUDAddExceptions: 'true',
     PrismaServiceImportPath: '@modded-prisma-utils/nestjs-prisma',
@@ -65,20 +66,25 @@ generatorHandler({
     }
 });
 
-
 class MainGenerator {
 
     private dartFiles: string[] = [];
     private writeFile: (path: string, content: string) => void;
+    private nameGenerator: NameGenerator;
 
     constructor(private options: GeneratorOptions, private settings: GeneratorSettings) {
         this.writeFile = settings.dryRun === 'false' ? writeFileSafely : outputToConsole;
+        this.nameGenerator = new NameGenerator(options.generator.output?.value || 'gen');
     }
 
-    getServiceClassName = (model: DMMF.Model) => `${model.name}${this.settings.CRUDServiceSuffix}`;
+    getServiceClassName = (model: DMMF.Model) => `${model.name}${this.settings.ServiceSuffix}`;
     getServiceFileName = (model: DMMF.Model) => `${lowerCaseFirstChar(model.name)}.service`;
-    getServiceFilePath = (model: DMMF.Model) => path.join(this.getModelPath(model.name), this.settings.CRUDServicePath, this.getServiceFileName(model) + '.ts');
-    getControllerClassName = (model: DMMF.Model) => `${model.name}Controller`;
+    getServiceFilePath = (model: DMMF.Model) => path.join(this.getModelPath(model.name), this.getServiceFileName(model) + '.ts');
+    getControllerName = (model: DMMF.Model) => `${model.name}Controller`;
+    getControllerFileName = (model: DMMF.Model) => `${lowerCaseFirstChar(model.name)}.controller`;
+    getModuleName = (model: DMMF.Model) => `${model.name}Module`;
+
+    
 
     async generateFiles(options = this.options, settings = this.settings) {
 
@@ -125,19 +131,19 @@ class MainGenerator {
 
     async generateCrudFile(model: DMMF.Model) {
         console.log(` > Generating CRUD Service for Model ${model.name}`);
-        const crudServiceName = this.getServiceClassName(model);
-        const crudServiceGenerator = new CrudServiceGenerator(
+        const serviceName = this.getServiceClassName(model);
+        const serviceGenerator = new ServiceGenerator(
             this.settings,
             model,
-            crudServiceName,
+            serviceName,
         );
-        const crudServiceContent = await crudServiceGenerator.generateContent();
+        const crudServiceContent = await serviceGenerator.generateContent();
         const filePath = this.getServiceFilePath(model);
         await this.writeFile(filePath, crudServiceContent);
     }
 
     async generateControllerFile(model: DMMF.Model) {
-        const controllerClassName = this.getControllerClassName(model);
+        const controllerClassName = this.getControllerName(model);
         const controllerGenerator = new ControllerGenerator(
             this.settings,
             model,
@@ -148,6 +154,20 @@ class MainGenerator {
         const controllerContent = await controllerGenerator.generateContent();
         const filePath = path.join(this.getModelPath(model.name), `${lowerCaseFirstChar(model.name)}.controller.ts`);
         await this.writeFile(filePath, controllerContent);
+    }
+
+    async generateModuleFile(model: DMMF.Model) {
+        const moduleName = this.getControllerName(model);
+        const moduleGenerator = new ModuleGenerator({
+            model,
+            settings: this.settings,
+            moduleName: this.getModuleName(model),
+            serviceName: this.getServiceClassName(model),
+            serviceFileName: this.getServiceFileName(model)
+        });
+        const content = await moduleGenerator.generateContent();
+        const filePath = path.join(this.getModelPath(model.name), `${lowerCaseFirstChar(model.name)}.module.ts`);
+        await this.writeFile(filePath, content);
     }
 
 

@@ -1,16 +1,12 @@
 export const moduleStub = `
-/*
------------------------------------------------------
-THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
------------------------------------------------------
-*/
+/*****    AUTO-GENERATED FILE - DO NOT MODIFY   *****/
 
 import { Module } from '@nestjs/common';
-import { #{ServiceName} } from './#{ServicePath}';
-import { DictionariesController } from './dictionaries.controller';
+import { #{ServiceName} } from './#{ServiceFileName}';
+import { #{ControllerName} } from './#{ControllerFileName}';
 
 @Module({
-  controllers: [DictionariesController],
-  providers: [DictionariesService]
+  controllers: [#{ControllerName}],
+  providers: [#{ServiceName}]
 })
-export class DictionariesModule {}`;
+export class #{Model}Module {}`;

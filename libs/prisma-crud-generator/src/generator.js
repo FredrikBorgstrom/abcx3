@@ -10,6 +10,8 @@ const path = require("path");
 const utils_1 = require("./utils/utils");
 const enum_generator_1 = require("./generators/enum.generator");
 const controller_generator_1 = require("./generators/controller.generator");
+const module_generator_1 = require("./generators/module.generator");
+const nameGenerator_1 = require("./nameGenerator");
 const defaultOptions = {
     strict: 'false',
     dryRun: 'false',
@@ -26,8 +28,7 @@ const defaultOptions = {
     GenerateServices: 'true',
     GenerateController: 'true',
     GenerateModule: 'true',
-    CRUDServicePath: 'services',
-    CRUDServiceSuffix: 'CrudService',
+    ServiceSuffix: 'Service',
     CRUDStubFile: undefined,
     CRUDAddExceptions: 'true',
     PrismaServiceImportPath: '@modded-prisma-utils/nestjs-prisma',
@@ -60,15 +61,19 @@ class MainGenerator {
     settings;
     dartFiles = [];
     writeFile;
+    nameGenerator;
     constructor(options, settings) {
         this.options = options;
         this.settings = settings;
         this.writeFile = settings.dryRun === 'false' ? writeFileSafely_1.writeFileSafely : writeFileSafely_1.outputToConsole;
+        this.nameGenerator = new nameGenerator_1.NameGenerator(options.generator.output?.value || 'gen');
     }
-    getServiceClassName = (model) => `${model.name}${this.settings.CRUDServiceSuffix}`;
+    getServiceClassName = (model) => `${model.name}${this.settings.ServiceSuffix}`;
     getServiceFileName = (model) => `${(0, utils_1.lowerCaseFirstChar)(model.name)}.service`;
-    getServiceFilePath = (model) => path.join(this.getModelPath(model.name), this.settings.CRUDServicePath, this.getServiceFileName(model) + '.ts');
-    getControllerClassName = (model) => `${model.name}Controller`;
+    getServiceFilePath = (model) => path.join(this.getModelPath(model.name), this.getServiceFileName(model) + '.ts');
+    getControllerName = (model) => `${model.name}Controller`;
+    getControllerFileName = (model) => `${(0, utils_1.lowerCaseFirstChar)(model.name)}.controller`;
+    getModuleName = (model) => `${model.name}Module`;
     async generateFiles(options = this.options, settings = this.settings) {
         for (const model of options.dmmf.datamodel.models) {
             console.log(`Processing Model ${model.name}`);
@@ -102,18 +107,31 @@ class MainGenerator {
     }
     async generateCrudFile(model) {
         console.log(` > Generating CRUD Service for Model ${model.name}`);
-        const crudServiceName = this.getServiceClassName(model);
-        const crudServiceGenerator = new crud_service_generator_1.CrudServiceGenerator(this.settings, model, crudServiceName);
-        const crudServiceContent = await crudServiceGenerator.generateContent();
+        const serviceName = this.getServiceClassName(model);
+        const serviceGenerator = new crud_service_generator_1.CrudServiceGenerator(this.settings, model, serviceName);
+        const crudServiceContent = await serviceGenerator.generateContent();
         const filePath = this.getServiceFilePath(model);
         await this.writeFile(filePath, crudServiceContent);
     }
     async generateControllerFile(model) {
-        const controllerClassName = this.getControllerClassName(model);
+        const controllerClassName = this.getControllerName(model);
         const controllerGenerator = new controller_generator_1.ControllerGenerator(this.settings, model, controllerClassName, this.getServiceClassName(model), this.getServiceFileName(model));
         const controllerContent = await controllerGenerator.generateContent();
         const filePath = path.join(this.getModelPath(model.name), `${(0, utils_1.lowerCaseFirstChar)(model.name)}.controller.ts`);
         await this.writeFile(filePath, controllerContent);
+    }
+    async generateModuleFile(model) {
+        const moduleName = this.getControllerName(model);
+        const moduleGenerator = new module_generator_1.ModuleGenerator({
+            model,
+            settings: this.settings,
+            moduleName: this.getModuleName(model),
+            serviceName: this.getServiceClassName(model),
+            serviceFileName: this.getServiceFileName(model)
+        });
+        const content = await moduleGenerator.generateContent();
+        const filePath = path.join(this.getModelPath(model.name), `${(0, utils_1.lowerCaseFirstChar)(model.name)}.module.ts`);
+        await this.writeFile(filePath, content);
     }
     getModelPath(modelName) {
         let tPath = this.options.generator.output?.value;

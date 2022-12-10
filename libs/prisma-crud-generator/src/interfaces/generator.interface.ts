@@ -18,8 +18,7 @@ export interface GeneratorSettings {
     GenerateServices: 'true' | 'false';
     GenerateModule: 'true' | 'false';
     
-    CRUDServicePath: string;
-    CRUDServiceSuffix: string;
+    ServiceSuffix: string;
     CRUDStubFile?: string;
     CRUDAddExceptions?: 'true' | 'false';
     PrismaServiceImportPath: string;
