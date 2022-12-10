@@ -1,12 +1,12 @@
 import { GeneratorSettings } from './../interfaces/generator.interface';
 import { DMMF } from '@prisma/generator-helper';
 import {
-    crudServiceStub,
-    crudServiceStubWithExceptions,
-    idMethods_neverThrow,
-    get_neverThrow,
-    getWithInclude_neverThrow
-} from './../stubs/crud.service.stub';
+    crudServiceStub_old,
+    crudServiceStubWithExceptions_old,
+    get_neverThrow_old,
+    getWithInclude_neverThrow_old,
+    idMethods_neverThrow_old
+} from './../stubs/crud.service.stub copy';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { lowerCaseFirstChar } from '../utils/utils';
@@ -28,12 +28,12 @@ export class CrudServiceGenerator_old {
         let crudServiceContent: string;
 
         if (this.config.CRUDAddExceptions === 'true') {
-            crudServiceContent = crudServiceStubWithExceptions;
+            crudServiceContent = crudServiceStubWithExceptions_old;
             crudServiceContent = crudServiceContent.replace(
                 /#{getMethod_neverThrow}/g,
-                this.prismaHelper.modelContainsObjectReference(this.model) ? getWithInclude_neverThrow: get_neverThrow);
+                this.prismaHelper.modelContainsObjectReference(this.model) ? getWithInclude_neverThrow_old: get_neverThrow_old);
         } else {
-            crudServiceContent = crudServiceStub;
+            crudServiceContent = crudServiceStub_old;
         }
 
         if (this.config.CRUDStubFile) {
@@ -55,7 +55,7 @@ export class CrudServiceGenerator_old {
         if (idFieldAndType) {
             crudServiceContent = crudServiceContent.replace(
                 /#{byIdMethods}/g,
-                idMethods_neverThrow
+                idMethods_neverThrow_old
             );
             crudServiceContent = this.replaceInIdMethods(crudServiceContent, idFieldAndType);
         } else {

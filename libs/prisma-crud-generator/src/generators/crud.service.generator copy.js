@@ -24,7 +24,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CrudServiceGenerator_old = void 0;
-const crud_service_stub_1 = require("./../stubs/crud.service.stub");
+const crud_service_stub_copy_1 = require("./../stubs/crud.service.stub copy");
 const path = __importStar(require("path"));
 const fs_1 = require("fs");
 const utils_1 = require("../utils/utils");
@@ -43,11 +43,11 @@ class CrudServiceGenerator_old {
     async generateContent() {
         let crudServiceContent;
         if (this.config.CRUDAddExceptions === 'true') {
-            crudServiceContent = crud_service_stub_1.crudServiceStubWithExceptions;
-            crudServiceContent = crudServiceContent.replace(/#{getMethod_neverThrow}/g, this.prismaHelper.modelContainsObjectReference(this.model) ? crud_service_stub_1.getWithInclude_neverThrow : crud_service_stub_1.get_neverThrow);
+            crudServiceContent = crud_service_stub_copy_1.crudServiceStubWithExceptions_old;
+            crudServiceContent = crudServiceContent.replace(/#{getMethod_neverThrow}/g, this.prismaHelper.modelContainsObjectReference(this.model) ? crud_service_stub_copy_1.getWithInclude_neverThrow_old : crud_service_stub_copy_1.get_neverThrow_old);
         }
         else {
-            crudServiceContent = crud_service_stub_1.crudServiceStub;
+            crudServiceContent = crud_service_stub_copy_1.crudServiceStub_old;
         }
         if (this.config.CRUDStubFile) {
             const stubFullPath = path.join(this.config.schemaPath, this.config.CRUDStubFile);
@@ -59,7 +59,7 @@ class CrudServiceGenerator_old {
         const idFieldAndType = this.prismaHelper.getIdFieldNameAndType(this.model);
         // if the model has a unique ID field we insert '...byId' methods:
         if (idFieldAndType) {
-            crudServiceContent = crudServiceContent.replace(/#{byIdMethods}/g, crud_service_stub_1.idMethods_neverThrow);
+            crudServiceContent = crudServiceContent.replace(/#{byIdMethods}/g, crud_service_stub_copy_1.idMethods_neverThrow_old);
             crudServiceContent = this.replaceInIdMethods(crudServiceContent, idFieldAndType);
         }
         else {

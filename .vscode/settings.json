@@ -21,22 +21,22 @@
     }
   ],
   "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
-    "**/.DS_Store": true,
-    "**/Thumbs.db": true,
     "./not_used": true,
     "**/.classpath": true,
+    "**/.DS_Store": true,
     "**/.factorypath": true,
+    "**/.git": true,
+    "**/.hg": true,
     "**/.project": true,
     "**/.settings": true,
+    "**/.svn": true,
     "**/*.map": true,
+    "**/CVS": true,
+    "**/node_modules": true,
+    "**/Thumbs.db": true,
     "libs/**/*.d.ts": true,
     "libs/**/*.js": true,
-    "libs/**/*.spec.*": true,
-    "**/node_modules": true
+    "libs/**/*.spec.ts": true
 },
   "hide-files.files": []
 }

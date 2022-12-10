@@ -76,6 +76,8 @@ class MainGenerator {
     }
 
     getServiceClassName = (model: DMMF.Model) => `${model.name}${this.settings.CRUDServiceSuffix}`;
+    getServiceFileName = (model: DMMF.Model) => `${lowerCaseFirstChar(model.name)}.service`;
+    getServiceFilePath = (model: DMMF.Model) => path.join(this.getModelPath(model.name), this.settings.CRUDServicePath, this.getServiceFileName(model) + '.ts');
     getControllerClassName = (model: DMMF.Model) => `${model.name}Controller`;
 
     async generateFiles(options = this.options, settings = this.settings) {
@@ -90,7 +92,7 @@ class MainGenerator {
                 await this.generateInputFile(model);
             }
 
-            if (this.settings.GenerateController.toLowerCase() === 'true') {
+            if (this.settings.GenerateController?.toLowerCase() === 'true') {
                 await this.generateControllerFile(model);
             }
         }
@@ -130,7 +132,7 @@ class MainGenerator {
             crudServiceName,
         );
         const crudServiceContent = await crudServiceGenerator.generateContent();
-        const filePath = path.join(this.getModelPath(model.name), this.settings.CRUDServicePath, `${lowerCaseFirstChar(model.name)}.service.ts`);
+        const filePath = this.getServiceFilePath(model);
         await this.writeFile(filePath, crudServiceContent);
     }
 
@@ -139,7 +141,9 @@ class MainGenerator {
         const controllerGenerator = new ControllerGenerator(
             this.settings,
             model,
-            controllerClassName
+            controllerClassName,
+            this.getServiceClassName(model),
+            this.getServiceFileName(model)
         );
         const controllerContent = await controllerGenerator.generateContent();
         const filePath = path.join(this.getModelPath(model.name), `${lowerCaseFirstChar(model.name)}.controller.ts`);

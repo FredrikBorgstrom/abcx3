@@ -9,6 +9,7 @@ const writeFileSafely_1 = require("./utils/writeFileSafely");
 const path = require("path");
 const utils_1 = require("./utils/utils");
 const enum_generator_1 = require("./generators/enum.generator");
+const controller_generator_1 = require("./generators/controller.generator");
 const defaultOptions = {
     strict: 'false',
     dryRun: 'false',
@@ -23,6 +24,8 @@ const defaultOptions = {
     InputCreatePrefix: 'Create',
     InputUpdatePrefix: 'Update',
     GenerateServices: 'true',
+    GenerateController: 'true',
+    GenerateModule: 'true',
     CRUDServicePath: 'services',
     CRUDServiceSuffix: 'CrudService',
     CRUDStubFile: undefined,
@@ -62,6 +65,10 @@ class MainGenerator {
         this.settings = settings;
         this.writeFile = settings.dryRun === 'false' ? writeFileSafely_1.writeFileSafely : writeFileSafely_1.outputToConsole;
     }
+    getServiceClassName = (model) => `${model.name}${this.settings.CRUDServiceSuffix}`;
+    getServiceFileName = (model) => `${(0, utils_1.lowerCaseFirstChar)(model.name)}.service`;
+    getServiceFilePath = (model) => path.join(this.getModelPath(model.name), this.settings.CRUDServicePath, this.getServiceFileName(model) + '.ts');
+    getControllerClassName = (model) => `${model.name}Controller`;
     async generateFiles(options = this.options, settings = this.settings) {
         for (const model of options.dmmf.datamodel.models) {
             console.log(`Processing Model ${model.name}`);
@@ -71,6 +78,9 @@ class MainGenerator {
             if (this.settings.GenerateInputs === 'true') {
                 await this.generateInputFile(model);
             }
+            if (this.settings.GenerateController?.toLowerCase() === 'true') {
+                await this.generateControllerFile(model);
+            }
         }
         for (const tEnum of options.dmmf.datamodel.enums) {
             console.log(`Processing Enum ${tEnum.name}`);
@@ -79,28 +89,33 @@ class MainGenerator {
     }
     async generateEnumFile(tEnum) {
         let content = (0, enum_generator_1.generateEnum)(tEnum);
-        let outputPath = this.createBasePath(tEnum.name);
+        let outputPath = this.getModelPath(tEnum.name);
         const filePath = path.join(outputPath, this.settings.EnumPath, `${tEnum.name.toLowerCase()}.ts`);
         await this.writeFile(filePath, content);
     }
     async generateInputFile(model) {
-        let basePath = this.createBasePath(model.name);
+        let basePath = this.getModelPath(model.name);
         const inputGenerator = new input_generator_1.InputGenerator(this.settings, model);
         const inputContent = await inputGenerator.generateContent();
         const filePath = path.join(basePath, this.settings.InputExportPath, `${model.name.toLowerCase()}.input.ts`);
         await this.writeFile(filePath, inputContent);
     }
     async generateCrudFile(model) {
-        let basePath = this.createBasePath(model.name);
         console.log(` > Generating CRUD Service for Model ${model.name}`);
-        const crudServiceName = `${model.name}${this.settings.CRUDServiceSuffix}`;
+        const crudServiceName = this.getServiceClassName(model);
         const crudServiceGenerator = new crud_service_generator_1.CrudServiceGenerator(this.settings, model, crudServiceName);
         const crudServiceContent = await crudServiceGenerator.generateContent();
-        // const filePath = path.join(basePath, this.settings.CRUDServicePath, `${model.name.toLowerCase()}.service.ts`);
-        const filePath = path.join(basePath, this.settings.CRUDServicePath, `${(0, utils_1.lowerCaseFirstChar)(model.name)}.service.ts`);
+        const filePath = this.getServiceFilePath(model);
         await this.writeFile(filePath, crudServiceContent);
     }
-    createBasePath(modelName) {
+    async generateControllerFile(model) {
+        const controllerClassName = this.getControllerClassName(model);
+        const controllerGenerator = new controller_generator_1.ControllerGenerator(this.settings, model, controllerClassName, this.getServiceClassName(model), this.getServiceFileName(model));
+        const controllerContent = await controllerGenerator.generateContent();
+        const filePath = path.join(this.getModelPath(model.name), `${(0, utils_1.lowerCaseFirstChar)(model.name)}.controller.ts`);
+        await this.writeFile(filePath, controllerContent);
+    }
+    getModelPath(modelName) {
         let tPath = this.options.generator.output?.value;
         tPath = tPath?.replace(/#{Model}/g, modelName);
         tPath = tPath?.replace(/#{model}/g, modelName.toLowerCase());

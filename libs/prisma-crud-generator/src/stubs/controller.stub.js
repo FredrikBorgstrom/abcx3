@@ -1,4 +1,7 @@
-export const controllerStub = `
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.controllerStub = void 0;
+exports.controllerStub = `
 /*
 -----------------------------------------------------
 THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -61,4 +64,5 @@ export class #{ControllerClassName} {
   deleteById(@Param('id') id: string) {
     return this.service.deleteById(+id);
   }
-}`
+}`;
+//# sourceMappingURL=controller.stub.js.map

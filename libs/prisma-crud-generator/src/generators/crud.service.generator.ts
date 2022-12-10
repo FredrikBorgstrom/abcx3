@@ -20,25 +20,22 @@ export class CrudServiceGenerator {
         private className: string,
     ) {
         this.prismaHelper = PrismaHelper.getInstance();
-     }
+    }
 
     public async generateContent() {
         let content: string;
 
         if (this.config.CRUDAddExceptions === 'true') {
             content = crudServiceStubWithExceptions;
-           /*  content = content.replace(
-                /#{getMethod_neverThrow}/g,
-                this.prismaHelper.modelContainsObjectReference(this.model) ? getWithInclude_neverThrow: get_neverThrow); */
+            /*  content = content.replace(
+                 /#{getMethod_neverThrow}/g,
+                 this.prismaHelper.modelContainsObjectReference(this.model) ? getWithInclude_neverThrow: get_neverThrow); */
         } else {
             content = crudServiceStub;
         }
 
         if (this.config.CRUDStubFile) {
-            const stubFullPath = path.join(
-                this.config.schemaPath,
-                this.config.CRUDStubFile,
-            );
+            const stubFullPath = path.join(this.config.schemaPath, this.config.CRUDStubFile);
             console.log(`Loading Stubs from ${stubFullPath}`);
 
             const customStub = await fs.readFile(stubFullPath, { encoding: 'utf-8' });
@@ -61,20 +58,6 @@ export class CrudServiceGenerator {
                 /#{byIdMethods}/g,
                 ''
             );
-
-           /*  let compoundkey = PrismaHelper.getInstance().getUniqueInputPropertyName(this.model);
-            let compoundType = PrismaHelper.getInstance().getUniqueInputType(this.model);
-            let prismaCompoundInputType = `Prisma.${this.model.name}${compoundType}CompoundUniqueInput`;
-
-            crudServiceContent = crudServiceContent.replace(
-                /#{uniqueInputType}/g,
-                prismaCompoundInputType
-            );
- */
-            /* crudServiceContent = crudServiceContent.replace(
-                /#{uniqueKeyAndVal}/g,
-                `{${compoundkey}: uniqueProps}`
-            ); */
         }
 
         content = content.replace(
@@ -82,47 +65,33 @@ export class CrudServiceGenerator {
             this.className,
         );
 
-        content = content.replace(
-            /#{Model}/g,
-            this.model.name,
-        );
-        content = content.replace(
-            /#{MODEL}/g,
-            this.model.name.toUpperCase(),
-        );
-        content = content.replace(
-            /#{model}/g,
-            this.model.name.toLowerCase(),
-        );
-        content = content.replace(
-            /#{moDel}/g,
-            lowerCaseFirstChar(this.model.name),
-        );
+        content = content.replace(/#{Model}/g, this.model.name);
+        content = content.replace(/#{MODEL}/g, this.model.name.toUpperCase());
+        content = content.replace(/#{model}/g, this.model.name.toLowerCase());
+        content = content.replace(/#{moDel}/g, lowerCaseFirstChar(this.model.name));
         return content;
     }
 
     replaceInIdMethods(content: string, fieldNameAndType: FieldNameAndType) {
-        content = content.replace(
-            /#{idName}/g,
-            fieldNameAndType.name
-        );
-
-        content = content.replace(
-            /#{idType}/g,
-            fieldNameAndType.type
-        );
-
-        content = content.replace(
-            /#{uniqueInputType}/g,
-            `Prisma.${this.model.name}WhereUniqueInput`
-        );
-
-        /* content = content.replace(
-            /#{uniqueKeyAndVal}/g,
-            "uniqueProps"
-        ); */
+        content = content.replace(/#{idName}/g, fieldNameAndType.name);
+        content = content.replace(/#{idType}/g, fieldNameAndType.type);
+        content = content.replace(/#{uniqueInputType}/g, `Prisma.${this.model.name}WhereUniqueInput`);
         return content;
     }
 }
 
 
+
+/*  let compoundkey = PrismaHelper.getInstance().getUniqueInputPropertyName(this.model);
+            let compoundType = PrismaHelper.getInstance().getUniqueInputType(this.model);
+            let prismaCompoundInputType = `Prisma.${this.model.name}${compoundType}CompoundUniqueInput`;
+ 
+            crudServiceContent = crudServiceContent.replace(
+                /#{uniqueInputType}/g,
+                prismaCompoundInputType
+            );
+ */
+/* crudServiceContent = crudServiceContent.replace(
+    /#{uniqueKeyAndVal}/g,
+    `{${compoundkey}: uniqueProps}`
+); */

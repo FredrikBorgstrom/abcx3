@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.crudServiceStub = exports.idMethods_neverThrow = exports.getWithInclude_neverThrow = exports.get_neverThrow = exports.crudServiceStubWithExceptions = void 0;
+exports.crudServiceStub = exports.idMethods_neverThrow = exports.crudServiceStubWithExceptions = void 0;
 exports.crudServiceStubWithExceptions = `/*
 -----------------------------------------------------
 THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -36,7 +36,9 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async getAll(
+    getAll = async () => await this.getFiltered();
+
+    async getFiltered(
         filter?: Prisma.#{Model}FindManyArgs,
     ): Promise<Result<PaginationInterface<#{Model}>, Error>> {
         try {
@@ -63,61 +65,45 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    #{getMethod_neverThrow}
+    async getUnique(uniqueArgs: Prisma.#{Model}FindUniqueOrThrowArgs): Promise<Result<#{Model}, Error>> {
+        try {
+            const result = await this.prismaService.#{moDel}.findUniqueOrThrow(uniqueArgs);
+        return ok(result);
+            } catch(e) {
+            return err(new NotFoundException(\`Get operation \${uniqueArgs} on #{Model} failed.\`));
+        }
+    }
 
     async update(
-        uniqueProps: #{uniqueInputType},
+        where: Prisma.#{Model}WhereUniqueInput,
         data: Prisma.#{Model}UpdateInput,
     ): Promise<Result<#{Model}, Error>> {
         try {
             const result = await this.prismaService.#{moDel}.update({
-                where: #{uniqueKeyAndVal},
-                data: data,
+                where,
+                data
             });
             return ok(result);
         } catch (e) {
             return err(new InternalServerErrorException(
-                \`Could not update #{Model} Resource \${uniqueProps}.\`,
+                \`Could not update #{Model} where \${where} with data \${data}.\`,
             ));
         }
     }
 
-    async delete(uniqueProps: #{uniqueInputType}): Promise<Result<#{Model}, Error>> {
+    async delete(where: Prisma.#{Model}WhereUniqueInput): Promise<Result<#{Model}, Error>> {
         try {
-            const result = await this.prismaService.#{moDel}.delete({ where: #{uniqueKeyAndVal} });
+            const result = await this.prismaService.#{moDel}.delete({ where });
             return ok(result);
         } catch (e) {
             return err(new InternalServerErrorException(
-                \`Could not delete #{Model} Resource \${uniqueProps}.\`,
+                \`Could not delete #{Model} where \${where}.\`,
             ));
         }
     }
     #{byIdMethods}
 }
 `;
-exports.get_neverThrow = `
-async get(uniqueProps: #{uniqueInputType}): Promise<Result<#{Model}, Error>> {
-    try {
-        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
-            where: #{uniqueKeyAndVal}
-        });
-    return ok(result);
-        } catch(e) {
-        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
-    }
-}`;
-exports.getWithInclude_neverThrow = `
-async get(uniqueProps: #{uniqueInputType}, include?: Prisma.#{Model}Include): Promise<Result<#{Model}, Error>> {
-    try {
-        const result = await this.prismaService.#{moDel}.findUniqueOrThrow({
-            where: #{uniqueKeyAndVal},
-            include
-        });
-    return ok(result);
-        } catch(e) {
-        return err(new NotFoundException(\`#{Model} Resource with properties \${uniqueProps} was not found.\`));
-    }
-}`;
 exports.idMethods_neverThrow = `
 async getById(#{idName}: #{idType}): Promise<Result<#{Model}, Error>> {
     try {
