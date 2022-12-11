@@ -22,3 +22,5 @@ export const formatFile = (content: string): Promise<string> =>
         }),
     );
 
+
+export const formatContent = (content: string) => format(content, {useTabs: true, tabWidth: 4, parser: 'typescript'});

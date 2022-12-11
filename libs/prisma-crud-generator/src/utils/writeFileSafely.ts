@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { formatFile } from './formatFile';
+import { formatContent } from './formatFile';
 
 export async function writeFileSafely(filePath: string, content: string) {
     if (filePath.match(/.ts$/)) {
-        content = await formatFile(content);
+        // content = await formatFile(content);
+        content = formatContent(content);
     }
     fs.mkdirSync(path.dirname(filePath), {
         recursive: true,
@@ -15,7 +16,7 @@ export async function writeFileSafely(filePath: string, content: string) {
 
 export async function outputToConsole(filePath: string, content: string) {
     if (filePath.match(/.ts$/)) {
-        content = await formatFile(content);
+        content = await formatContent(content);
     }
     console.log(content);
 }

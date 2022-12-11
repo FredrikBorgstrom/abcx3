@@ -44,7 +44,6 @@ export class #{ControllerClassName} {
   }
 
   #{ByIdMethods}
-  
 }`;
 exports.controllerIdMethodsStub = `
 #{GuardDecorator}

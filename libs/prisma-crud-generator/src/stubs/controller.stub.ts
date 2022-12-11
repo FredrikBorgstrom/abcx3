@@ -41,7 +41,6 @@ export class #{ControllerClassName} {
   }
 
   #{ByIdMethods}
-  
 }`;
 
 export const controllerIdMethodsStub = `
