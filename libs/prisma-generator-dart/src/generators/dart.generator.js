@@ -35,8 +35,6 @@ class DartGenerator {
         let content = dart_stub_1.dartBaseClassStub;
         const className = this.model.name;
         content = content.replace(/#{ClassName}/g, className);
-        // ------------------------------------------
-        // handle the parent class (extends)
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
         let constructorArgs = [];
@@ -112,13 +110,7 @@ class DartGenerator {
     generatePropertyContent(field) {
         let content = dart_stub_1.dartPropertyStub;
         content = content.replace(/#{PropName}/g, field.name);
-        //let dartType = this.prismaHelper.getDartTypeFromDMMF(field);
         let dartType = this.getDartType(field);
-        /* let dartType = dartTypeMap[field.type as DartTypeMapKey];
-        if (!dartType) {
-            dartType = field.type;
-            this.addPackageToImport(dartType + '.dart');
-        } */
         let printedType = (field.isList) ? `List<${dartType}>` : dartType;
         content = content.replace(/#{Type}/g, printedType);
         content = this.replaceNullable(content, field);
@@ -129,7 +121,6 @@ class DartGenerator {
     replaceNullable = (content, field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
     replacePropName = (content, field) => content.replace(/#{PropName}/g, field.name);
     replaceType = (content, field) => content.replace(/#{Type}/g, this.getDartType(field));
-    // replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
     generateImportStatements() {
         let result = '';
         const checkedTypes = [];
@@ -141,28 +132,8 @@ class DartGenerator {
                 }
             }
         });
-        // for (const packageName of this.importedPackages) {
-        //     result += `import './${packageName}';\n`;
-        // }
         return result;
     }
 }
 exports.DartGenerator = DartGenerator;
-/*  private addPackageToImport(packageName: string) {
-        if (!this.importedPackages.some(name => name == packageName)) {
-            this.importedPackages.push(packageName);
-        }
-    } */
-/* export const CellType: {
-    startKey: 'start',
-    letterx2: 'letterx2',
-    letterx3: 'letterx3',
-    wordx2: 'wordx2',
-    wordx3: 'wordx3'
-  };
-  
-export type KeyofTypeofCelltype = keyof typeof CellType;
-
-export type CellType = (typeof CellType)[KeyofTypeofCelltype];
- */
 //# sourceMappingURL=dart.generator.js.map

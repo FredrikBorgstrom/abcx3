@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/* eslint-disable */
 exports.default = {
     displayName: 'prisma-crud-generator',
     preset: '../../jest.preset.js',

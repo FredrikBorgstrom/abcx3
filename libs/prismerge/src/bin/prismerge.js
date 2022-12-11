@@ -36,9 +36,7 @@ const process_1 = require("process");
 const glob_1 = require("glob");
 const bootstrap = () => {
     commander_1.program
-        .version(
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('../../package.json').version, '-v, --version', 'Output the current version.')
+        .version(require('../../package.json').version, '-v, --version', 'Output the current version.')
         .description('Merge all defined prisma *.schema files into one big prisma.schema file.')
         .option('-i, --input <path>', 'Path to the PrisMerge File, relative to the current working directory.', './prismerge.json')
         .option('-g, --generate', 'Generate an initial default file first.')
@@ -49,7 +47,6 @@ const bootstrap = () => {
     const basePath = path.join(process.cwd());
     const inputPath = path.join(basePath, options.input);
     const excludeApps = options.excludeApps || [];
-    // check, if we need to generate the prismerge file
     if (options.generate) {
         if (!(0, fs_1.existsSync)(inputPath)) {
             fs.writeFileSync(inputPath, JSON.stringify(prismerge_stub_1.prismergeFileStub), {
@@ -67,9 +64,7 @@ const bootstrap = () => {
         console.log(`Cannot read file ${inputPath}; exiting PrisMerge!`);
         (0, process_1.exit)(1);
     }
-    // now we have everything ready
     const prisMergeContent = JSON.parse((0, fs_1.readFileSync)(inputPath, 'utf8'));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Object.entries(prisMergeContent).forEach(([app, content]) => {
         if (excludeApps.includes(app)) {
             console.log(`Skipping app: ${app}`);
@@ -90,7 +85,6 @@ const bootstrap = () => {
             });
         });
         Object.entries(prismaSchemaFragmentFiles).forEach(([key, filePath]) => {
-            // find key and replace with content from value
             const content = (0, fs_1.readFileSync)(filePath, 'utf8');
             const regEx = new RegExp(`[.]{3}${key}`, 'g');
             prismaContent = prismaContent.replace(regEx, content);
