@@ -1,22 +1,18 @@
 {
     "extends": "../../tsconfig.base.json",
-    "compilerOptions": { 
+    "compilerOptions": {
         "noPropertyAccessFromIndexSignature": true,
         "esModuleInterop": true,
-        "rootDir": ".",
-        "baseUrl": ".",
-        "outDir": "../../dist/prisma-generator-dart",
-
+        // "rootDir": ".",
+        // "baseUrl": ".",
+        // "outDir": "../../dist/prisma-generator-dart",
+        // "paths": {"@prisma-tools/shared": ["../shared/*"]}
     },
     "files": [
         "package.json"
+        // , "../shared/**/*.ts"
     ],
     "include": [
-        "src/**/*.ts"
-    ],
-    "references": [
-        {
-            "path": "./tsconfig.lib.json"
-        }
+        "src/**/*.ts", "../shared/**/*.ts"
     ]
 }

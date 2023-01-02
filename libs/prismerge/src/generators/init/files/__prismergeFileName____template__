@@ -1,7 +1,0 @@
-{
-  "app": {
-    "inputs": [],
-    "fragments": {},
-    "output": "<%= prismaSchemaFilePath %>"
-  }
-}

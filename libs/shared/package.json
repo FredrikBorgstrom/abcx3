@@ -1,0 +1,5 @@
+{
+    "name": "@prisma-tools/shared",
+    "description": "Shared library for prisma-tools",
+    "private": true
+}

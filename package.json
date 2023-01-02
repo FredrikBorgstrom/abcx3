@@ -1,6 +1,6 @@
 {
-  "name": "modded-prisma-utils",
-  "version": "0.0.0",
+  "name": "prisma-tools",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "start": "serve",
@@ -56,9 +56,9 @@
     "npm": "^8.5.5"
   },
   "author": {
-    "name": "Johannes Schobel",
-    "email": "johannes.schobel@googlemail.com",
-    "url": "https://github.com/johannesschobel"
+    "name": "Fredrik Borgström",
+    "email": "expeditioncirkus@gmail.com",
+    "url": "https://github.com/FredrikBorgstrom"
   },
   "workspaces": [
     "libs/*"

@@ -7,6 +7,7 @@
         "composite": true,
         "sourceMap": true,
         "declaration": true,
+        "declarationMap": true,
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
@@ -25,17 +26,20 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@prisma-utils/nestjs-prisma": [
-                "libs/nestjs-prisma/src/index.ts"
+            "@prisma-tools/nestjs-prisma": [
+                "libs/nestjs-prisma/src"
             ],
-            "@prisma-utils/nestjs-request-parser": [
-                "libs/request-parser/src/index.ts"
+            "@prisma-tools/nestjs-request-parser": [
+                "libs/request-parser/src"
             ],
-            "@prisma-utils/prisma-crud-generator": [
-                "libs/prisma-crud-generator/src/index.ts"
+            "@prisma-tools/prisma-crud-generator": [
+                "libs/prisma-crud-generator/src"
             ],
-            "@prisma-utils/prismerge": [
-                "libs/prismerge/src/index.ts"
+            "@prisma-tools/prisma-generator-dart": [
+                "libs/prisma-generator-dart/src"
+            ],
+            "@prisma-tools/shared": [
+                "libs/shared/src"
             ]
         },
         "resolveJsonModule": true

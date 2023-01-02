@@ -1,5 +1,5 @@
 {
-  "name": "@modded-prisma-utils/nestjs-prisma",
+  "name": "@prisma-tools/nestjs-prisma",
   "description": "Helper library for prisma-crud-generator",
   "version": "1.9.0",
   "type": "commonjs",
