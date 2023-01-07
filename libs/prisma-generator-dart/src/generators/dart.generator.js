@@ -43,7 +43,7 @@ class DartGenerator {
         let toJsonKeyVals = [];
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
-            if (commentDirectives.some(directive => directive.name === '@dart_omit')) {
+            if (commentDirectives.some(directive => directive.name === '@ptools_omit')) {
                 continue;
             }
             properties.push(this.generatePropertyContent(field));
