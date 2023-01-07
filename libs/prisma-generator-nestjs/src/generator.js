@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generator_helper_1 = require("@prisma/generator-helper");
-const writeFileSafely_1 = require("libs/shared/src/writeFileSafely");
+const writeFileSafely_1 = require("@prisma-tools/shared/src/writeFileSafely");
 const package_json_1 = require("./../package.json");
 const constants_1 = require("./constants");
 const controller_generator_1 = require("./generators/controller.generator");
