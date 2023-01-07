@@ -9,7 +9,7 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import { FieldNameAndType, PrismaHelper } from '../helpers/prisma.helper';
 import { NameGenerator } from '../nameGenerator';
-import { StringFns } from 'libs/shared/src/stringFns';
+import { StringFns } from '../../../shared/src/stringFns';
 
 export class CrudServiceGenerator {
 

@@ -4,6 +4,7 @@
         "outDir": "dist",
         "types": [],
         "rootDir": ".",
+        "baseUrl": ".",
         "composite": true,
         "sourceMap": true,
         "declaration": true,
@@ -24,25 +25,25 @@
         ],
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
-        "baseUrl": ".",
-        "paths": {
-            "@prisma-tools/nestjs-prisma": [
-                "libs/nestjs-prisma/src"
-            ],
-            "@prisma-tools/nestjs-request-parser": [
-                "libs/request-parser/src"
-            ],
-            "@prisma-tools/prisma-generator-nestjs": [
-                "libs/prisma-generator-nestjs/src"
-            ],
-            "@prisma-tools/prisma-generator-dart": [
-                "libs/prisma-generator-dart/src"
-            ],
-            "@prisma-tools/shared": [
-                "libs/shared/src"
-            ]
-        },
-        "resolveJsonModule": true
+        // "paths": {
+        //     "@prisma-tools/nestjs-prisma": [
+        //         "../../nestjs-prisma/src"
+        //     ],
+        //     "@prisma-tools/nestjs-request-parser": [
+        //         "../../request-parser/src"
+        //     ],
+        //     "@prisma-tools/prisma-generator-nestjs": [
+        //         "../../prisma-generator-nestjs/src"
+        //     ],
+        //     "@prisma-tools/prisma-generator-dart": [
+        //         "../../prisma-generator-dart/src"
+        //     ],
+        //     "@prisma-tools/shared": [
+        //         "../../shared/src"
+        //     ]
+        // },
+        "resolveJsonModule": true,
+        "esModuleInterop": true
     },
     
     "exclude": [

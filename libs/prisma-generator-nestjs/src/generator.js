@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generator_helper_1 = require("@prisma/generator-helper");
-const writeFileSafely_1 = require("@prisma-tools/shared/src/writeFileSafely");
+const src_1 = require("../../shared/src");
 const package_json_1 = require("./../package.json");
 const constants_1 = require("./constants");
 const controller_generator_1 = require("./generators/controller.generator");
@@ -61,7 +61,7 @@ class MainGenerator {
     constructor(options, settings) {
         this.options = options;
         this.settings = settings;
-        this.writeFile = settings?.dryRun ? writeFileSafely_1.outputToConsole : writeFileSafely_1.writeFileSafely;
+        this.writeFile = settings?.dryRun ? src_1.outputToConsole : src_1.writeFileSafely;
         this.nameGenerator = nameGenerator_1.NameGenerator.singleton;
         this.nameGenerator.basePath = options.generator.output?.value || 'gen';
     }

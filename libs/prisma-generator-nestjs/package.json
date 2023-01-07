@@ -8,18 +8,15 @@
     "access": "public"
   },
   "bin": {
-    "prisma-generator-nestjs": "./src/bin/prisma-crud-generator.js"
+    "prisma-generator-nestjs": "./src/bin/prisma-generator-nestjs.js"
   },
   "scripts": {
     "compile": "tsc -b",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
-    "name": "Johannes Schobel",
-    "email": "johannes.schobel@googlemail.com",
-    "url": "https://github.com/johannesschobel"
-  },
-  "dependencies": {
-    "@prisma-tools/shared": "workspace:*"
+    "name": "Fredrik Borgström",
+    "email": "fredrik@abcx3.com",
+    "url": "https://github.com/FredrikBorgstrom"
   }
 }

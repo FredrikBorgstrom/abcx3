@@ -1,5 +1,5 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
-import { outputToConsole, writeFileSafely } from '@prisma-tools/shared/src/writeFileSafely';
+import { outputToConsole, writeFileSafely } from '../../shared/src';
 import { version } from './../package.json';
 import { GENERATOR_NAME } from './constants';
 import { ControllerGenerator } from './generators/controller.generator';

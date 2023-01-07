@@ -87,10 +87,7 @@ importers:
       '@prisma-tools/shared': link:../shared
 
   libs/prisma-generator-nestjs:
-    specifiers:
-      '@prisma-tools/shared': workspace:*
-    dependencies:
-      '@prisma-tools/shared': link:../shared
+    specifiers: {}
 
   libs/request-parser:
     specifiers: {}

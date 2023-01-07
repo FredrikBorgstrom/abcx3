@@ -1,5 +1,5 @@
 import { DMMF } from "@prisma/generator-helper";
-import { StringFns } from "libs/shared/src/stringFns";
+import { StringFns } from "../../../shared/src/stringFns";
 import { PrismaHelper } from "../helpers/prisma.helper";
 import { GeneratorSettings } from "../interfaces/generator.interface";
 import { NameGenerator } from "../nameGenerator";

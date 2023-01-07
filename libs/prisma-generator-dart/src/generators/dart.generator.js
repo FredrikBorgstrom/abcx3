@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DartGenerator = exports.dartTypeMap = void 0;
 const dart_stub_1 = require("../stubs/dart.stub");
-const prisma_helper_1 = require("libs/shared/src/prisma.helper");
-const stringFns_1 = require("libs/shared/src/stringFns");
+const prisma_helper_1 = require("../../../shared/src/prisma.helper");
+const stringFns_1 = require("../../../shared/src/stringFns");
 exports.dartTypeMap = {
     BigInt: 'BigInt',
     Boolean: 'bool',

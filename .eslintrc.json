@@ -1,7 +1,11 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  // "plugins": ["@nrwl/nx"],
+  "settings": {
+    "import/resolver": {
+        "typescript": {}
+      }
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

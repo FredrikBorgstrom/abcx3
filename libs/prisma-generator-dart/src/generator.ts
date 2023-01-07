@@ -6,8 +6,8 @@ import { DartGenerator } from './generators/dart.generator';
 import { generateDartEnum } from './generators/enum.generators';
 import { GeneratorSettings } from './settings.interface';
 
-import { StringFns } from 'libs/shared/src/stringFns';
-import { outputToConsole, writeFileSafely } from 'libs/shared/src/writeFileSafely';
+import { StringFns } from '../../shared/src/stringFns';
+import { outputToConsole, writeFileSafely } from '../../shared/src/writeFileSafely';
 
 // import {w} from '@prisma-tools/shared';
 
