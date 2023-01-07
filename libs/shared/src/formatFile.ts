@@ -1,4 +1,4 @@
-import { resolveConfig, format } from 'prettier';
+/* import { resolveConfig, format } from 'prettier';
 
 export const formatFile = (content: string): Promise<string> =>
     new Promise((res, rej) =>
@@ -21,3 +21,4 @@ export const formatFile = (content: string): Promise<string> =>
         }),
     );
 
+ */

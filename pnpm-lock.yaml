@@ -80,10 +80,13 @@ importers:
   libs/nestjs-prisma:
     specifiers: {}
 
-  libs/prisma-crud-generator:
-    specifiers: {}
-
   libs/prisma-generator-dart:
+    specifiers:
+      '@prisma-tools/shared': workspace:*
+    dependencies:
+      '@prisma-tools/shared': link:../shared
+
+  libs/prisma-generator-nestjs:
     specifiers:
       '@prisma-tools/shared': workspace:*
     dependencies:

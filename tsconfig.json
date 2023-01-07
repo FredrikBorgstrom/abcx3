@@ -28,7 +28,7 @@
     },
     "exclude": ["__dist_old", "dist", "commitlint.config.js", "jest.preset.js", "tools/scripts/publish.mjs", "apps"],
     "references": [
-        {"path": "libs/prisma-crud-generator"},
+        {"path": "libs/prisma-generator-nestjs"},
         {"path": "libs/prisma-generator-dart"},
         {"path": "libs/nestjs-prisma"},
         {"path": "libs/request-parser"},

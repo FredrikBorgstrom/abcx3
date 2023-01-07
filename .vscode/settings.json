@@ -8,7 +8,7 @@
   "favorites.sortOrder": "DESC",
   "favorites.resources": [
     {
-      "filePath": "libs\\prisma-crud-generator\\src\\interfaces\\generator.interface.ts",
+      "filePath": "libs\\prisma-generator-nestjs\\src\\interfaces\\generator.interface.ts",
       "group": "important"
     },
     {

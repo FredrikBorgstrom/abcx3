@@ -32,8 +32,8 @@
             "@prisma-tools/nestjs-request-parser": [
                 "libs/request-parser/src"
             ],
-            "@prisma-tools/prisma-crud-generator": [
-                "libs/prisma-crud-generator/src"
+            "@prisma-tools/prisma-generator-nestjs": [
+                "libs/prisma-generator-nestjs/src"
             ],
             "@prisma-tools/prisma-generator-dart": [
                 "libs/prisma-generator-dart/src"

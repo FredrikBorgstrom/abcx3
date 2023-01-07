@@ -1,6 +1,2 @@
 packages:
-  - "libs/nestjs-prisma"
-  - "libs/prisma-crud-generator"
-  - "libs/prisma-generator-dart"
-  - "libs/request-parser"
-  - "libs/shared"
+  - "libs/*"

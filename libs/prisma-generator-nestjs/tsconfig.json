@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": { 
+        "noPropertyAccessFromIndexSignature": true,
+    },
+    "files": [
+        "package.json"
+    ],
+    "include": [
+        "src/**/*.ts", "../shared/**/*.ts"
+    ]
+}

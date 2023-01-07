@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { formatFile } from './formatFile';
+import { format } from 'prettier';
+
 
 export async function writeFileSafely(filePath: string, content: string) {
     if (filePath.match(/.ts$/)) {
-        content = await formatFile(content);
+        content = format(content, {useTabs: true, tabWidth: 4, parser: 'typescript'});
     }
     fs.mkdirSync(path.dirname(filePath), {
         recursive: true,
@@ -15,7 +16,7 @@ export async function writeFileSafely(filePath: string, content: string) {
 
 export async function outputToConsole(filePath: string, content: string) {
     if (filePath.match(/.ts$/)) {
-        content = await formatFile(content);
+        content = await format(content, {parser: 'typescript'});
     }
     console.log(content);
 }

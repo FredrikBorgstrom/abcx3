@@ -1,5 +1,4 @@
 import { DMMF } from '@prisma/generator-helper';
-import { PrismaHelper } from '../helpers/prisma.helper';
 import { GeneratorSettings } from '../settings.interface';
 import {
     dartBaseClassStub,
@@ -11,7 +10,8 @@ import {
     toJsonPropertyStub,
     toJsonListPropertyStub
 } from '../stubs/dart.stub';
-import { typeToFileName } from '../utils/utils';
+import { PrismaHelper } from 'libs/shared/src/prisma.helper';
+import { StringFns } from 'libs/shared/src/stringFns';
 
 export const dartTypeMap = {
     BigInt: 'BigInt',
@@ -49,7 +49,6 @@ export class DartGenerator {
         const className = this.model.name;
         content = content.replace(/#{ClassName}/g, className);
 
-        // ------------------------------------------
         // handle the parent class (extends)
 
         const parentClassInjection = '';
@@ -61,6 +60,10 @@ export class DartGenerator {
         let toJsonKeyVals: string[] = [];
 
         for (const field of this.model.fields) {
+            const commentDirectives = this.prismaHelper.parseDocumentation(field);
+            if (commentDirectives.some(directive => directive.name === '@dart_omit')) {
+                continue;
+            }
             properties.push(this.generatePropertyContent(field));
             constructorArgs.push(this.generateConstructorArg(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
@@ -78,6 +81,40 @@ export class DartGenerator {
 
         return content;
     }
+
+
+   /*  const documentation = field.documentation;
+        let customDecoratorsContent = '';
+        if (documentation) {
+            // we need to process this properly
+            const customDecorators = this.parseDocumentation(field);
+
+            for (const customDecorator of customDecorators) {
+                // check, if the current field has an @Omit() decorator, so we skip everything
+                if (customDecorator.name === 'Omit') {
+                    this.omitFields.push(field.name);
+                    continue;
+                }
+
+                // if the element has an @Relation() decorator
+                if (customDecorator.name === 'Relation') {
+                    // for now, we do nothing
+                    this.omitFields.push(field.name);
+                    continue;
+                }
+
+                // if the element has an @RelationId() decorator
+                if (customDecorator.name === 'RelationId') {
+                    // for now, we do nothing
+                    this.omitFields.push(field.name);
+                    continue;
+                }
+
+                customDecoratorsContent =
+                    customDecoratorsContent + customDecorator.generateContent();
+                this.addDecoratorToImport(customDecorator);
+            }
+        } */
 
     generateConstructorArg(field: DMMF.Field): string {
         let content = '';
@@ -133,15 +170,7 @@ export class DartGenerator {
         let content = dartPropertyStub;
 
         content = content.replace(/#{PropName}/g, field.name);
-
-        //let dartType = this.prismaHelper.getDartTypeFromDMMF(field);
-
         let dartType = this.getDartType(field);
-        /* let dartType = dartTypeMap[field.type as DartTypeMapKey];
-        if (!dartType) {
-            dartType = field.type;
-            this.addPackageToImport(dartType + '.dart');
-        } */
         let printedType = (field.isList) ? `List<${dartType}>` : dartType;
         content = content.replace(/#{Type}/g, printedType);
         content = this.replaceNullable(content, field);
@@ -157,10 +186,6 @@ export class DartGenerator {
     replacePropName = (content: string, field: DMMF.Field) => content.replace(/#{PropName}/g, field.name);
     replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Type}/g, this.getDartType(field));
 
-    // replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
-
-   
-
     private generateImportStatements(): string {
         let result = '';
         const checkedTypes: string[] = [];
@@ -169,34 +194,11 @@ export class DartGenerator {
             if (!checkedTypes.includes(type)) {
                 checkedTypes.push(type);
                 if (this.isProprietaryType(type)) {
-                    result += `import '${typeToFileName(type)}';\n`;
+                    result += `import '${StringFns.decapitalizeFileName(type, 'dart')}';\n`;
                 }
             }
         });
-
-        // for (const packageName of this.importedPackages) {
-        //     result += `import './${packageName}';\n`;
-        // }
-
         return result;
     }
 }
 
-/*  private addPackageToImport(packageName: string) {
-        if (!this.importedPackages.some(name => name == packageName)) {
-            this.importedPackages.push(packageName);
-        }
-    } */
-
-/* export const CellType: {
-    startKey: 'start',
-    letterx2: 'letterx2',
-    letterx3: 'letterx3',
-    wordx2: 'wordx2',
-    wordx3: 'wordx3'
-  };
-  
-export type KeyofTypeofCelltype = keyof typeof CellType;
-
-export type CellType = (typeof CellType)[KeyofTypeofCelltype];
- */

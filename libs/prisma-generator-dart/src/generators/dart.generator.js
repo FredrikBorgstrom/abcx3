@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DartGenerator = exports.dartTypeMap = void 0;
-const prisma_helper_1 = require("../helpers/prisma.helper");
 const dart_stub_1 = require("../stubs/dart.stub");
-const utils_1 = require("../utils/utils");
+const prisma_helper_1 = require("libs/shared/src/prisma.helper");
+const stringFns_1 = require("libs/shared/src/stringFns");
 exports.dartTypeMap = {
     BigInt: 'BigInt',
     Boolean: 'bool',
@@ -42,6 +42,10 @@ class DartGenerator {
         let fromJsonArgs = [];
         let toJsonKeyVals = [];
         for (const field of this.model.fields) {
+            const commentDirectives = this.prismaHelper.parseDocumentation(field);
+            if (commentDirectives.some(directive => directive.name === '@dart_omit')) {
+                continue;
+            }
             properties.push(this.generatePropertyContent(field));
             constructorArgs.push(this.generateConstructorArg(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
@@ -128,7 +132,7 @@ class DartGenerator {
             if (!checkedTypes.includes(type)) {
                 checkedTypes.push(type);
                 if (this.isProprietaryType(type)) {
-                    result += `import '${(0, utils_1.typeToFileName)(type)}';\n`;
+                    result += `import '${stringFns_1.StringFns.decapitalizeFileName(type, 'dart')}';\n`;
                 }
             }
         });

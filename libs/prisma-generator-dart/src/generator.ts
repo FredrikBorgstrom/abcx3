@@ -5,9 +5,9 @@ import { GENERATOR_NAME } from './constants';
 import { DartGenerator } from './generators/dart.generator';
 import { generateDartEnum } from './generators/enum.generators';
 import { GeneratorSettings } from './settings.interface';
-import { typeToFileName } from './utils/utils';
 
-import { outputToConsole, writeFileSafely } from '@prisma-tools/shared';
+import { StringFns } from 'libs/shared/src/stringFns';
+import { outputToConsole, writeFileSafely } from 'libs/shared/src/writeFileSafely';
 
 // import {w} from '@prisma-tools/shared';
 
@@ -89,7 +89,7 @@ class MainGenerator {
 
     async generateDartEnumFile(tEnum: DMMF.DatamodelEnum) {
         let content = generateDartEnum(tEnum);
-        const fileName = `${typeToFileName(tEnum.name)}`;
+        const fileName = `${StringFns.decapitalizeFileName(tEnum.name, 'dart')}`;
         const filePath = path.join(this.outputPath, fileName);
         console.log(` > Generating enum for Model ${tEnum.name}`);
         await this.writeFile(filePath, content);
@@ -108,7 +108,7 @@ class MainGenerator {
     async generateDartModelFile(model: DMMF.Model) {
         const dartGenerator = new DartGenerator(this.settings, model);
         const dartContent = dartGenerator.generateContent();
-        const fileName = `${typeToFileName(model.name)}`;
+        const fileName = `${StringFns.decapitalizeFileName(model.name, 'dart')}`;
         const filePath = path.join(
             this.outputPath,
             fileName,
