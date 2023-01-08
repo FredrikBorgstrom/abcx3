@@ -2,8 +2,7 @@
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "noPropertyAccessFromIndexSignature": true,
-        "esModuleInterop": true,
-        "outDir": "../../dist",
+        "esModuleInterop": true
         // "rootDir": ".",
         // "baseUrl": ".",
         // "outDir": "../../dist/prisma-generator-dart",
@@ -11,7 +10,6 @@
     },
     "files": [
         "package.json"
-        // , "../shared/**/*.ts"
     ],
     "include": [
         "src/**/*.ts", "../shared/**/*.ts"

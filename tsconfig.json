@@ -4,6 +4,7 @@
         "target": "ES2022",
         "composite": true,
         "module": "commonjs",
+        "outDir": "../dist",
         "lib": [
             "ES2022"
         ],
@@ -28,10 +29,8 @@
     },
     "exclude": ["__dist_old", "dist", "commitlint.config.js", "jest.preset.js", "tools/scripts/publish.mjs", "apps"],
     "references": [
+        {"path": "libs/shared"},
         {"path": "libs/prisma-generator-nestjs"},
-        {"path": "libs/prisma-generator-dart"},
-        {"path": "libs/nestjs-prisma"},
-        {"path": "libs/request-parser"},
-        {"path": "libs/shared"}
+        {"path": "libs/prisma-generator-dart"}
     ]
 }

@@ -12,6 +12,7 @@
     "include": [
         "src/**/*.ts", "../shared/**/*.ts"
     ],
+    "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
     "references": [
         {"path": "../shared"}
     ]

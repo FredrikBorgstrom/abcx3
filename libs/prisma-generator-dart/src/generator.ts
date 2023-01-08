@@ -75,6 +75,7 @@ class MainGenerator {
             const outputPath = options.generator.output?.value;
             exec(`dart format "${outputPath}"`, (error, stdout, stderr) => {
                 if (error) {
+                    console.log('dart format couldn\'t run. Make sure you have Dart installed properly by going to https://dart.dev/get-dart');
                     console.log(`error: ${error.message}`);
                     return;
                 }
