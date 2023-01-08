@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DartGenerator = exports.dartTypeMap = void 0;
 const dart_stub_1 = require("../stubs/dart.stub");
-const prisma_helper_1 = require("../../../shared/src/prisma.helper");
-const stringFns_1 = require("../../../shared/src/stringFns");
+const src_1 = require("../../../shared/src");
 exports.dartTypeMap = {
     BigInt: 'BigInt',
     Boolean: 'bool',
@@ -24,7 +23,7 @@ class DartGenerator {
     constructor(config, model) {
         this.config = config;
         this.model = model;
-        this.prismaHelper = prisma_helper_1.PrismaHelper.getInstance();
+        this.prismaHelper = src_1.PrismaHelper.getInstance();
     }
     generateContent() {
         let content = this.generateBaseInput();
@@ -132,7 +131,7 @@ class DartGenerator {
             if (!checkedTypes.includes(type)) {
                 checkedTypes.push(type);
                 if (this.isProprietaryType(type)) {
-                    result += `import '${stringFns_1.StringFns.decapitalizeFileName(type, 'dart')}';\n`;
+                    result += `import '${src_1.StringFns.decapitalizeFileName(type, 'dart')}';\n`;
                 }
             }
         });

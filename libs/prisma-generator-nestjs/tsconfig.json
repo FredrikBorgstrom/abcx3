@@ -11,5 +11,8 @@
     ],
     "include": [
         "src/**/*.ts", "../shared/**/*.ts"
+    ],
+    "references": [
+        {"path": "../shared"}
     ]
 }

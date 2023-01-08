@@ -37,6 +37,7 @@ importers:
       ts-jest: 29.0.3
       ts-morph: ^17.0.1
       ts-node: 10.9.1
+      ts-project-bundle: ^0.0.12
       tslib: ^2.4.1
       typescript: ~4.9.4
     dependencies:
@@ -75,6 +76,7 @@ importers:
       rimraf: 3.0.2
       ts-jest: 29.0.3_p6ekqnroyms5nhqbfxosryz7rm
       ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
+      ts-project-bundle: 0.0.12
       typescript: 4.9.4
 
   libs/nestjs-prisma:
@@ -2501,6 +2503,15 @@ packages:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
 
+  /fs-extra/10.1.0:
+    resolution: {integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      graceful-fs: 4.2.10
+      jsonfile: 6.1.0
+      universalify: 2.0.0
+    dev: true
+
   /fs-extra/11.1.0:
     resolution: {integrity: sha512-0rcTq621PD5jM/e0a3EJoGC/1TC5ZBCERW82LQuwfGnCa1V8w7dpYH1yNu+SLb6E5dkeCBzKEyLGlFrnr+dUyw==}
     engines: {node: '>=14.14'}
@@ -4451,6 +4462,15 @@ packages:
       typescript: 4.9.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    dev: true
+
+  /ts-project-bundle/0.0.12:
+    resolution: {integrity: sha512-0aWNTKlvNkRgBaOBavsC4JdCk3/IyZgPkAU0nu+e0SCpLJEFPqNXO3iTUzcHM/eRCMbvTGNF9G6hTYnPsytl6w==}
+    hasBin: true
+    dependencies:
+      fs-extra: 10.1.0
+      json5: 2.2.3
+      minimist: 1.2.7
     dev: true
 
   /tslib/1.14.1:

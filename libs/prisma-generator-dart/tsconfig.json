@@ -3,6 +3,7 @@
     "compilerOptions": {
         "noPropertyAccessFromIndexSignature": true,
         "esModuleInterop": true,
+        "outDir": "../../dist",
         // "rootDir": ".",
         // "baseUrl": ".",
         // "outDir": "../../dist/prisma-generator-dart",
@@ -14,5 +15,8 @@
     ],
     "include": [
         "src/**/*.ts", "../shared/**/*.ts"
+    ],
+    "references": [
+        {"path": "../shared"}
     ]
 }

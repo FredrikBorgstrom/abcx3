@@ -11,9 +11,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-
-  "dependencies": {
-    "@prisma-tools/shared": "workspace:*"
-  }
+  "license": "ISC"
 }

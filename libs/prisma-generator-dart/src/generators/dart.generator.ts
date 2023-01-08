@@ -1,4 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
+// import { PrismaHelper, StringFns } from 'libs/shared/src';
 import { GeneratorSettings } from '../settings.interface';
 import {
     dartBaseClassStub,
@@ -10,8 +11,7 @@ import {
     toJsonPropertyStub,
     toJsonListPropertyStub
 } from '../stubs/dart.stub';
-import { PrismaHelper } from '../../../shared/src/prisma.helper';
-import { StringFns } from '../../../shared/src/stringFns';
+import { PrismaHelper, StringFns } from '../../../shared/src';
 
 export const dartTypeMap = {
     BigInt: 'BigInt',
