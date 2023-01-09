@@ -1,13 +1,12 @@
 {
-  "name": "@prisma-tools/prisma-generator-dart",
-  "description": "Generate Dart class files with uding to- and fromJson methods from a Prisma schema",
+  "name": "@abcx3/prisma-generator-dart",
+  "description": "Generate Dart class files with to- and fromJson methods from a Prisma schema",
   "version": "1.0.0",
   "main": "src/generator.js",
   "bin": {
     "prisma-generator-dart": "src/generator.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",

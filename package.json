@@ -1,6 +1,6 @@
 {
-  "name": "prisma-tools",
-  "version": "0.0.1",
+  "name": "abcx3",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "start": "serve",
@@ -12,10 +12,7 @@
   },
   "private": true,
   "dependencies": {
-    "@prisma/generator-helper": "^4.8.1",
-    "glob": "8.0.3",
-    "ts-morph": "^17.0.1",
-    "tslib": "^2.4.1"
+    "@prisma/generator-helper": "^4.8.1"
   },
   "devDependencies": {
     "@types/glob": "^8.0.0",
@@ -23,13 +20,12 @@
     "@typescript-eslint/eslint-plugin": "~5.48.0",
     "@typescript-eslint/parser": "~5.48.0",
     "esbuild": "^0.16.16",
-    "esbuild-node-externals": "^1.6.0",
+    "esbuild-plugin-node-externals": "^1.0.1",
     "eslint": "~8.31.0",
     "eslint-config-prettier": "8.6.0",
     "prisma": "^4.8.1",
     "rimraf": "^3.0.2",
     "ts-node": "10.9.1",
-    "tslib": "^2.4.1",
     "typescript": "~4.9.4"
   },
   "engines": {
@@ -39,7 +35,7 @@
   },
   "author": {
     "name": "Fredrik Borgström",
-    "email": "expeditioncirkus@gmail.com",
+    "email": "fredrik@mp1.se",
     "url": "https://github.com/FredrikBorgstrom"
   },
   "workspaces": [

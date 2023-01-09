@@ -1,0 +1,21 @@
+{
+  "name": "@abcx3/prisma-generator-dart",
+  "description": "Automatically generate Dart classes with to- and fromJson methods from a Prisma schema",
+  "version": "1.0.0",
+  "main": "./prisma-generator-dart.js",
+  "bin": {
+    "prisma-generator-dart": "./prisma-generator-dart.js"
+  },
+  "scripts": {
+  },
+  "keywords": [],
+  "author": {
+    "name": "Fredrik Borgström",
+    "email": "fredrik@mp1.se",
+    "url": "https://github.com/FredrikBorgstrom"
+  }
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/generator-helper": "^4.8.1"
+  }
+}

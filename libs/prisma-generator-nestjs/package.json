@@ -1,7 +1,7 @@
 {
-  "name": "@prisma-tools/prisma-generator-nestjs",
-  "description": "Automagically create CreateDTOs, UpdateDTOs and a CRUD Service based on the Prisma Schema",
-  "version": "1.3.1",
+  "name": "@abcx3/prisma-generator-nestjs",
+  "description": "Automatically creates Nestjs controllers, services and modules from your Prisma Schema.",
+  "version": "1.0.0",
   "type": "commonjs",
   "main": "./src/generator.js",
   "publishConfig": {
