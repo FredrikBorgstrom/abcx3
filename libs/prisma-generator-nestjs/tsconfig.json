@@ -1,7 +1,9 @@
 {
     "extends": "../../tsconfig.base.json",
+    
     "compilerOptions": { 
-        "noPropertyAccessFromIndexSignature": true
+        "noPropertyAccessFromIndexSignature": true,
+        "moduleResolution": "Node",
         // "paths": {
         //     "@prisma-tools/shared": ["../../shared/src"]
         // }

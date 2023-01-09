@@ -23,7 +23,6 @@
         "resolveJsonModule": true,
         "forceConsistentCasingInFileNames": true,
         "types": [
-            "jest",
             "node"
         ]
     },

@@ -19,7 +19,7 @@ esbuild.build({
 
 esbuild.build({
     entryPoints: ['./libs/prisma-generator-dart/src/generator.ts'],
-    outfile: 'built/prisma-generator-dart.js',
+    outfile: 'built/dart/prisma-generator-dart.js',
     bundle: true,
     minify: true,
     platform: 'node',

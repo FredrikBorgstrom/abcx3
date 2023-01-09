@@ -16,7 +16,13 @@
   },
   "author": {
     "name": "Fredrik Borgström",
-    "email": "fredrik@abcx3.com",
+    "email": "fredrik@mp1.se",
     "url": "https://github.com/FredrikBorgstrom"
+  },
+  "dependencies": {
+    "prettier": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/prettier": "^2.7.2"
   }
 }

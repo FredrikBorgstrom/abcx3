@@ -9,6 +9,7 @@ import { InputGenerator } from './generators/input.generator';
 import { ModuleGenerator } from './generators/module.generator';
 import { GeneratorSettings } from './interfaces/generator.interface';
 import { NameGenerator } from './nameGenerator';
+import {format} from 'prettier';
 
 const defaultOptions: GeneratorSettings = {
     strict: false,
@@ -65,9 +66,19 @@ class MainGenerator {
     private nameGenerator: NameGenerator;
 
     constructor(private options: GeneratorOptions, private settings: GeneratorSettings) {
-        this.writeFile = settings?.dryRun ? outputToConsole : writeFileSafely;
+        this.writeFile = settings?.dryRun ? 
+        async (path, content)  => await outputToConsole(path, this.formatContent(path, content)) :
+        async (path, content) => await writeFileSafely(path, this.formatContent(path, content));
         this.nameGenerator = NameGenerator.singleton;
         this.nameGenerator.basePath = options.generator.output?.value || 'gen';
+    }
+
+    formatContent(filePath: string, content: string): string {
+        if (filePath.match(/.ts$/)) {
+            return format(content, {useTabs: true, tabWidth: 4, parser: 'typescript'});
+        } else {
+            return content;
+        }
     }
 
     async generateFiles() {

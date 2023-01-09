@@ -2,11 +2,12 @@
     "compileOnSave": false,
     "compilerOptions": {
         "outDir": "dist",
-        "types": [],
+        "types": ["node"],
         "rootDir": ".",
         "baseUrl": ".",
         "composite": true,
         "sourceMap": true,
+        "emitDeclarationOnly": true,
         "declaration": true,
         "declarationMap": true,
         "moduleResolution": "node",

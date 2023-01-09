@@ -12,35 +12,17 @@
   },
   "private": true,
   "dependencies": {
-    "@nestjs/class-transformer": "^0.4.0",
-    "@nestjs/class-validator": "^0.13.4",
-    "@nestjs/common": "^9.2.1",
-    "@nestjs/core": "^9.2.1",
-    "@nestjs/platform-express": "^9.2.1",
-    "@nestjs/swagger": "^6.1.4",
-    "@prisma/client": "^4.8.1",
     "@prisma/generator-helper": "^4.8.1",
-    "commander": "^9.5.0",
     "glob": "8.0.3",
-    "lodash": "^4.17.21",
-    "pluralize": "8.0.0",
-    "prettier": "^2.8.2",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.0",
     "ts-morph": "^17.0.1",
     "tslib": "^2.4.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.4.0",
-    "@commitlint/config-conventional": "^17.4.0",
-    "@nestjs/schematics": "^9.0.4",
-    "@nestjs/testing": "^9.2.1",
     "@types/glob": "^8.0.0",
-    "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "~5.48.0",
     "@typescript-eslint/parser": "~5.48.0",
-    "esbuild": "^0.16.15",
+    "esbuild": "^0.16.16",
     "esbuild-node-externals": "^1.6.0",
     "eslint": "~8.31.0",
     "eslint-config-prettier": "8.6.0",
@@ -51,8 +33,9 @@
     "typescript": "~4.9.4"
   },
   "engines": {
-    "node": "^18.5.0",
-    "npm": "^8.5.5"
+    "node": "^18.13.0",
+    "npm": "^8.5.5",
+    "pnpm": "^7.12.0"
   },
   "author": {
     "name": "Fredrik Borgström",
