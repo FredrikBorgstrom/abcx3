@@ -4,7 +4,7 @@ const {nodeExternals} = require ('esbuild-plugin-node-externals');
 
 build({
     entryPoints: ['./libs/prisma-generator-dart/src/generator.ts'],
-    outfile: 'built/prisma-generator-dart/prisma-generator-dart.js',
+    outfile: 'built/prisma-generator-dart/index.js',
     bundle: true,
     minify: true,
     platform: 'node',

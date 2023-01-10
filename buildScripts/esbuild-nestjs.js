@@ -8,7 +8,7 @@ const {nodeExternals} = require ('esbuild-plugin-node-externals');
 
 build({
     entryPoints: ['./libs/prisma-generator-nestjs/src/generator.ts'],
-    outfile: 'built/prisma-generator-nestjs/prisma-generator-nestjs.js',
+    outfile: 'built/prisma-generator-nestjs/index.js',
     bundle: true,
     minify: true,
     platform: 'node',

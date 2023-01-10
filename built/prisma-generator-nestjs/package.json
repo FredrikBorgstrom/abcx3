@@ -2,18 +2,19 @@
   "name": "@abcx3/prisma-generator-nestjs",
   "description": "Automatically creates Nestjs controllers, services and modules from your Prisma Schema",
   "version": "1.0.0",
-  "main": "./prisma-generator-nestjs.js",
+  "main": "./index.js",
+  "bin": {
+    "prisma-generator-nestjs": "./src/bin/index.js"
+  },
   "publishConfig": {
     "access": "public"
-  },
-  "bin": {
-    "prisma-generator-nestjs": "./src/bin/prisma-generator-nestjs.js"
   },
   "author": {
     "name": "Fredrik Borgström",
     "email": "fredrik@mp1.se",
     "url": "https://github.com/FredrikBorgstrom"
   },
+  "license": "ISC",
   "dependencies": {
     "prettier": "^2.8.2",
     "@prisma/generator-helper": "^4.8.1"
