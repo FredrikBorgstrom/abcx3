@@ -27,7 +27,7 @@ export class StringFns {
     }
 
     static snakeToCamelCase(str: string) {
-        return str[0].toLowerCase() + str.substring(1).replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+        return str[0].toLowerCase() + str.substring(1).replace(/_[A-Z]/g, letter => `_${letter[1].toLowerCase()}`);
     }
 
 }

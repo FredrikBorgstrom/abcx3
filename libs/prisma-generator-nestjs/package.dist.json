@@ -4,16 +4,15 @@
   "version": "1.0.0",
   "main": "./index.js",
   "bin": {
-    "prisma-generator-nestjs": "./src/bin/index.js"
+    "prisma-generator-nestjs": "./index.js"
   },
-  "publishConfig": {
-    "access": "public"
-  },
+  "keywords": ["prisma", "generator", "nestjs", "typescript"],
   "author": {
     "name": "Fredrik Borgström",
     "email": "fredrik@mp1.se",
     "url": "https://github.com/FredrikBorgstrom"
   },
+  "homepage": "https://github.com/FredrikBorgstrom/abcx3",
   "license": "ISC",
   "dependencies": {
     "prettier": "^2.8.2",
