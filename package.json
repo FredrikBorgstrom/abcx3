@@ -5,8 +5,8 @@
   "scripts": {
     "start": "serve",
     "clean2": "yarn workspaces foreach run clean",
-    "build": "tsc --build",
-    "start:dev": "tsc --build -w",
+    "build": "node buildScripts/build-dart.js && node buildScripts/build-nestjs.js",
+    "start:dev": "node buildScripts/build-and-watch.js",
     "test": "test",
     "clean": "rimraf dist"
   },
