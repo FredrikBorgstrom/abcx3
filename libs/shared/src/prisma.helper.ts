@@ -6,8 +6,10 @@ export interface FieldNameAndType {
     type: string;
 }
 
+export type CommentDirectiveName = 'abcx3_omit' | 'abcx3_disableGetAll';
+
 export interface PrismaCommentDirective {
-    name: string;
+    name: CommentDirectiveName;
     argument?: string;
 } 
 
@@ -62,7 +64,7 @@ export class PrismaHelper {
                 comment.lastIndexOf(')'),
             );
 
-            const directiveName = comment.substring(0, argIndex);
+            const directiveName = comment.substring(0, argIndex) as CommentDirectiveName;
 
             const decorator = {name: directiveName, argument: argument} satisfies PrismaCommentDirective;
 

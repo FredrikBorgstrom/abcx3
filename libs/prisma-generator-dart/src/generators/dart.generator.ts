@@ -1,5 +1,4 @@
 import { DMMF } from '@prisma/generator-helper';
-// import { PrismaHelper, StringFns } from 'libs/shared/src';
 import { GeneratorSettings } from '../settings.interface';
 import {
     dartBaseClassStub,
@@ -27,6 +26,12 @@ export const dartTypeMap = {
 
 type DartTypeMapKey = keyof typeof dartTypeMap;
 
+
+export function helloWorld(name: string): string {
+    return name + "Hello World!";
+}
+
+
 export class DartGenerator {
     private importedPackages: string[] = [];
     private omitFields: string[] = [];
@@ -38,6 +43,7 @@ export class DartGenerator {
 
     generateContent() {
         let content = this.generateBaseInput();
+       
 
         content = content.replace(/#{Imports}/g, this.generateImportStatements());
         return content;
@@ -62,7 +68,7 @@ export class DartGenerator {
 
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
-            if (commentDirectives.some(directive => directive.name === '@ptools_omit')) {
+            if (commentDirectives.some(directive => directive.name === 'abcx3_omit')) {
                 continue;
             }
             properties.push(this.generatePropertyContent(field));
