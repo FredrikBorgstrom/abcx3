@@ -60,10 +60,16 @@ export class ControllerGenerator {
         return content;
     }
 
+    applyMethods(content: string, methodNames: string[], idFieldAndType: FieldNameAndType | undefined) {
+        methodNames.forEach(methodName => {
+            content = content.replace(new RegExp(`#{${methodName}}`, 'g'), controllerIdMethodsStub[methodName]);
+        });
+        return content;
+    }
+
     getMethodsToApply(commentDirectives: PrismaCommentDirective[]): string[] {
 
         const methodNames = enumToArray(ControllerMethodNames);
-
         const appliedMethodNames = [...methodNames];
 
         commentDirectives.forEach(directive => {
@@ -77,7 +83,6 @@ export class ControllerGenerator {
                 });
             } else if (false) {
             } else {
-
             }
         });
         
