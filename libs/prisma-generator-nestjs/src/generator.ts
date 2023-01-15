@@ -1,15 +1,14 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
-import { outputToConsole, writeFileSafely } from '../../shared/src';
 import { version } from './../package.json';
 import { GENERATOR_NAME } from './constants';
 import { ControllerGenerator } from './generators/controller.generator';
 import { CrudServiceGenerator as ServiceGenerator } from './generators/crud.service.generator';
 import { generateEnum } from './generators/enum.generator';
-import { InputGenerator } from './generators/input.generator';
 import { ModuleGenerator } from './generators/module.generator';
 import { GeneratorSettings } from './interfaces/generator.interface';
 import { NameGenerator } from './nameGenerator';
 import {format} from 'prettier';
+import { outputToConsole, writeFileSafely } from '@shared';
 
 const defaultOptions: GeneratorSettings = {
     strict: false,
@@ -19,8 +18,6 @@ const defaultOptions: GeneratorSettings = {
     GenerateServices: true,
     GenerateController: true,
     GenerateModule: true,
-    GenerateInputs: false,
-    GenerateInputSwagger: true,
     InputExportPath: 'data/inputs',
     InputSuffix: 'Input',
     InputValidatorPackage: 'class-validator',
@@ -85,7 +82,7 @@ class MainGenerator {
 
         for (const model of this.options.dmmf.datamodel.models) {
             if (this.settings?.GenerateServices) await this.generateServiceFile(model);
-            if (this.settings.GenerateInputs)  await this.generateInputFile(model);
+            //if (this.settings.GenerateInputs)  await this.generateInputFile(model);
             if (this.settings.GenerateController) await this.generateControllerFile(model);
             if (this.settings.GenerateModule) await this.generateModuleFile(model);
         }
@@ -100,12 +97,12 @@ class MainGenerator {
         await this.writeFile(filePath, content);
     }
 
-    async generateInputFile(model: DMMF.Model) {
+    /* async generateInputFile(model: DMMF.Model) {
         const inputGenerator = new InputGenerator(this.settings, model);
         const inputContent = await inputGenerator.generateContent();
         const filePath = this.nameGenerator.geFilePath(model, 'controller')
         await this.writeFile(filePath, inputContent);
-    }
+    } */
 
     async generateServiceFile(model: DMMF.Model) {
         console.log(` > Generating Service for Model ${model.name}`);

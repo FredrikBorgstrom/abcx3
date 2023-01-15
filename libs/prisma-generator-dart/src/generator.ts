@@ -5,11 +5,8 @@ import { GENERATOR_NAME } from './constants';
 import { DartGenerator } from './generators/dart.generator';
 import { generateDartEnum } from './generators/enum.generators';
 import { GeneratorSettings } from './settings.interface';
+import { StringFns, outputToConsole, writeFileSafely } from '@shared';
 
-import { StringFns } from '../../shared/src/stringFns';
-import { outputToConsole, writeFileSafely } from '../../shared/src/writeFileSafely';
-
-// import {w} from '@prisma-tools/shared';
 
 const { version } = require('../package.json');
 

@@ -10,7 +10,7 @@ import {
     toJsonPropertyStub,
     toJsonListPropertyStub
 } from '../stubs/dart.stub';
-import { PrismaHelper, StringFns } from '../../../shared/src';
+import { PrismaHelper, StringFns } from '@shared';
 
 export const dartTypeMap = {
     BigInt: 'BigInt',

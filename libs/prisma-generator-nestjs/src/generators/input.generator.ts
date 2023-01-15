@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+/* import { DMMF } from '@prisma/generator-helper';
 import { DecoratorHelper } from '../helpers/decorator.helper';
 import { PrismaHelper } from '../helpers/prisma.helper';
 import { GeneratorSettings } from '../interfaces/generator.interface';
@@ -278,3 +278,4 @@ export class InputGenerator {
         return result;
     }
 }
+ */

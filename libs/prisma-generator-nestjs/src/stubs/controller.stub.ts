@@ -10,40 +10,102 @@ import { #{ServiceName} } from './#{CrudServiceFileName}';
 export class #{ControllerClassName} {
   constructor(private readonly service: #{ServiceName}) {}
 
-  #{GuardDecorator}
+#{create}
+
+#{getAll}
+
+#{getFiltered}
+
+#{getUnique}
+ 
+#{update}
+  
+#{getById}
+
+#{updateById}
+
+#{deleteById}
+  
+}`;
+
+
+
+export const controllerCreateStub = `
+#{GuardDecorator}
   @Post()
   create(@Body() #{moDel}CreateInput: Prisma.#{Model}CreateInput) {
     return this.service.create(#{moDel}CreateInput);
   }
+`;
 
-  #{GuardDecorator}
-  @Get()
-  getAll() {
-    return this.service.getAll();
-  }
+export const controllerGetAllStub = `
+#{GuardDecorator}
+@Get()
+getAll() {
+  return this.service.getAll();
+}
+`;
 
-  #{GuardDecorator}
+export const controllerGetFilteredStub = `
+#{GuardDecorator}
   @Post()
   getFiltered(@Body() data: Prisma.#{Model}FindManyArgs) {
     return this.service.getFiltered(data);
   }
+`;
 
-  #{GuardDecorator}
-  @Post()
-  getUnique(@Body() body: Prisma.#{Model}FindUniqueOrThrowArgs) {
-    return this.service.getUnique(body);
-  }
+export const controllerGetUniqueStub = `
+#{GuardDecorator}
+@Post()
+getUnique(@Body() body: Prisma.#{Model}FindUniqueOrThrowArgs) {
+  return this.service.getUnique(body);
+}
+`;
 
-  #{GuardDecorator}
+export const controllerUpdateStub = `
+#{GuardDecorator}
   @Post()
   update(@Body() body: {where: Prisma.#{Model}WhereUniqueInput; data: Prisma.#{Model}UpdateInput}) {
     return this.service.update( body.where, body.data);
   }
+`;
 
-  #{ByIdMethods}
-}`;
+export const controllerGetByIdStub = `
+#{GuardDecorator}
+  @Get(':id')
+  getById(@Param('id') id: string) {
+    return this.service.getById(#{convertToInt}id);
+  }
+`;
 
-export const controllerIdMethodsStub = `
+export const controllerUpdateByIdStub = `
+#{GuardDecorator}
+    @Patch(':id')
+    updateById (@Param('id') id: string, @Body() data: Prisma.#{Model}UpdateInput) {
+        return this.service.updateById(#{convertToInt}id, data);
+    }
+`;
+
+export const controllerDeleteByIdStub = `
+#{GuardDecorator}
+    @Delete(':id')
+    deleteById(@Param('id') id: string) {
+        return this.service.deleteById(#{convertToInt}id);
+    }
+`;
+
+export const controllerMethodStubs = {
+    create: controllerCreateStub,
+    getAll: controllerGetAllStub,
+    getFiltered: controllerGetFilteredStub,
+    getUnique: controllerGetUniqueStub,
+    update: controllerUpdateStub,
+    getById: controllerGetByIdStub,
+    updateById: controllerUpdateByIdStub,
+    deleteById: controllerDeleteByIdStub
+}
+
+/* export const controllerIdMethodsStub = `
 #{GuardDecorator}
   @Get(':id')
   getById(@Param('id') id: string) {
@@ -60,4 +122,4 @@ export const controllerIdMethodsStub = `
   @Delete(':id')
   deleteById(@Param('id') id: string) {
     return this.service.deleteById(#{convertToInt}id);
-  }`
+  }` */

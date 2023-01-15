@@ -1,5 +1,5 @@
 import { DMMF } from "@prisma/generator-helper";
-import { StringFns } from "../../shared/src/stringFns";
+import { StringFns } from "@shared";
 import path = require("path");
 
 

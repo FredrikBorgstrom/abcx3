@@ -7,9 +7,8 @@ import {
 } from './../stubs/crud.service.stub';
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import { FieldNameAndType, PrismaHelper } from '../helpers/prisma.helper';
 import { NameGenerator } from '../nameGenerator';
-import { StringFns } from '../../../shared/src/stringFns';
+import { FieldNameAndType, PrismaHelper, StringFns } from '@shared';
 
 export class CrudServiceGenerator {
 

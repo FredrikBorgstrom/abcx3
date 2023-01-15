@@ -26,6 +26,11 @@
         ],
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
+        "paths": {
+            "@shared": [
+                "libs/shared/src"
+            ],
+        },
         // "paths": {
         //     "@prisma-tools/nestjs-prisma": [
         //         "../../nestjs-prisma/src"
