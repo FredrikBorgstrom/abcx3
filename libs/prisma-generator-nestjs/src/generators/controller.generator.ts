@@ -1,13 +1,14 @@
 import { DMMF } from "@prisma/generator-helper";
-import { ControllerMethodNames, enumToArray, FieldNameAndType, forEachEnum, mapEnum, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
+import { ControllerMethodNames, enumToArray, FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
 import { GeneratorSettings } from "../interfaces/generator.interface";
 import { NameGenerator } from "../nameGenerator";
-import { controllerIdMethodsStub, controllerStub } from "../stubs/controller.stub";
+import { controllerMethodStubs, controllerStub } from "../stubs/controller.stub";
 
 
 export class ControllerGenerator {
 
     private prismaHelper: PrismaHelper;
+    private methodStubs: Record<string, string> = controllerMethodStubs;
 
     constructor(
         private settings: GeneratorSettings,
@@ -31,12 +32,12 @@ export class ControllerGenerator {
 
         // if the model has a unique ID field we insert '...byId' methods: #{convertToIntOperator}
 
-        if (idFieldAndType) {
-            const idMethodsContent = controllerIdMethodsStub.replace(/#{convertToInt}/g, idFieldAndType.type === 'number' ? '+' : '');
-            content = content.replace(/#{ByIdMethods}/g, idMethodsContent);
-        } else {
-            content = content.replace(/#{ByIdMethods}/g, '');
-        }
+        // if (idFieldAndType) {
+        //     const idMethodsContent = controllerIdMethodsStub.replace(/#{convertToInt}/g, idFieldAndType.type === 'number' ? '+' : '');
+        //     content = content.replace(/#{ByIdMethods}/g, idMethodsContent);
+        // } else {
+        //     content = content.replace(/#{ByIdMethods}/g, '');
+        // }
 
         content = content.replace(/#{ControllerClassName}/g, nameGen.getClassName(this.model, 'controller'));
         content = content.replace(/#{Model}/g, this.model.name);
@@ -60,9 +61,18 @@ export class ControllerGenerator {
         return content;
     }
 
-    applyMethods(content: string, methodNames: string[], idFieldAndType: FieldNameAndType | undefined) {
+    applyMethods(content: string, methodNames: string[], idFieldAndType: FieldNameAndType | null) {
         methodNames.forEach(methodName => {
-            content = content.replace(new RegExp(`#{${methodName}}`, 'g'), controllerIdMethodsStub[methodName]);
+            let methodStub = this.methodStubs[methodName];
+            if (methodName.includes('ById')) {
+                if (idFieldAndType) {
+                    methodStub = methodStub.replace(/#{convertToInt}/g, idFieldAndType.type === 'number' ? '+' : '');
+                } else {
+                    methodStub = '';
+                }
+            }
+            content = content.replace(new RegExp(`#{${methodName}}`, 'g'), methodStub);
+            
         });
         return content;
     }
