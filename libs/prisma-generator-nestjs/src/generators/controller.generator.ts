@@ -72,8 +72,10 @@ export class ControllerGenerator {
                 }
             }
             content = content.replace(new RegExp(`#{${methodName}}`, 'g'), methodStub);
-            
         });
+        // remove unused methods
+        const allMethodNames = enumToArray(ControllerMethodNames);
+        allMethodNames.forEach(method => content.replace(new RegExp(`#{${method}}`, 'g'), ''));
         return content;
     }
 
