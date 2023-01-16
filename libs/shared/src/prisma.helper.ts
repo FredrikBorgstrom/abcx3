@@ -6,7 +6,7 @@ export interface FieldNameAndType {
     type: string;
 }
 
-export type CommentDirectiveName = 'abcx3_omit' | 'abcx3_disableControllers' | 'abcx3_enableControllers';
+export type CommentDirectiveName = '@abcx3_omit' | '@abcx3_disableControllers' | '@abcx3_enableControllers';
 
 // export enum ControllerMethodNames { 'create', 'getAll', 'getFiltered', 'getUnique', 'update', 'getById', 'updateById', 'deleteById' };
 export enum ControllerMethodNames { create, getAll, getFiltered, getUnique, update, getById, updateById, deleteById };

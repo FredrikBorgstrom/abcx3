@@ -68,7 +68,7 @@ export class DartGenerator {
 
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
-            if (commentDirectives.some(directive => directive.name === 'abcx3_omit')) {
+            if (commentDirectives.some(directive => directive.name === '@abcx3_omit')) {
                 continue;
             }
             properties.push(this.generatePropertyContent(field));

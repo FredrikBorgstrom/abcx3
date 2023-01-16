@@ -20,7 +20,7 @@ module.exports = {
             entryPoints: [`./${libDir}/${libName}/src/generator.ts`],
             outfile: `${distDir}/${libName}/index.js`,
             bundle: true,
-            minify: true,
+            minify: false,
             platform: 'node',
             sourcemap: false,
             target: 'node18',

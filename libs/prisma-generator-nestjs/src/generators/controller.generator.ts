@@ -75,7 +75,7 @@ export class ControllerGenerator {
         });
         // remove unused methods
         const allMethodNames = enumToArray(ControllerMethodNames);
-        allMethodNames.forEach(method => content.replace(new RegExp(`#{${method}}`, 'g'), ''));
+        allMethodNames.forEach(method => content = content.replace(new RegExp(`#{${method}}`, 'g'), ''));
         return content;
     }
 
@@ -85,7 +85,7 @@ export class ControllerGenerator {
         const appliedMethodNames = [...methodNames];
 
         commentDirectives.forEach(directive => {
-            if (directive.name === 'abcx3_disableControllers') {
+            if (directive.name === '@abcx3_disableControllers') {
                 const disabledMethods = directive.argument?.split(',');
                 disabledMethods?.forEach(methodName => {
                     const idx = appliedMethodNames.indexOf(methodName);
