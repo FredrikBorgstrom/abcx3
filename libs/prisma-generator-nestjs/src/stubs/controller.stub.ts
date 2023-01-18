@@ -32,7 +32,7 @@ export class #{ControllerClassName} {
 
 export const controllerCreateStub = `
 #{GuardDecorator}
-  @Post()
+  @Post('create')
   create(@Body() #{moDel}CreateInput: Prisma.#{Model}CreateInput) {
     return this.service.create(#{moDel}CreateInput);
   }
@@ -48,7 +48,7 @@ getAll() {
 
 export const controllerGetFilteredStub = `
 #{GuardDecorator}
-  @Post()
+  @Post('filtered')
   getFiltered(@Body() data: Prisma.#{Model}FindManyArgs) {
     return this.service.getFiltered(data);
   }
@@ -56,7 +56,7 @@ export const controllerGetFilteredStub = `
 
 export const controllerGetUniqueStub = `
 #{GuardDecorator}
-@Post()
+@Post('unique')
 getUnique(@Body() body: Prisma.#{Model}FindUniqueOrThrowArgs) {
   return this.service.getUnique(body);
 }
@@ -64,7 +64,7 @@ getUnique(@Body() body: Prisma.#{Model}FindUniqueOrThrowArgs) {
 
 export const controllerUpdateStub = `
 #{GuardDecorator}
-  @Post()
+  @Post('update')
   update(@Body() body: {where: Prisma.#{Model}WhereUniqueInput; data: Prisma.#{Model}UpdateInput}) {
     return this.service.update( body.where, body.data);
   }
