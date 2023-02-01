@@ -48,7 +48,7 @@ getAll() {
 
 export const controllerGetFilteredStub = `
 #{GuardDecorator}
-  @Post('filtered')
+  @Post('filter')
   getFiltered(@Body() data: Prisma.#{Model}FindManyArgs) {
     return this.service.getFiltered(data);
   }
