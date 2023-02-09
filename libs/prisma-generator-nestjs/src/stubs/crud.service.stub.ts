@@ -30,6 +30,27 @@ export class #{CrudServiceClassName} {
         }
     }
 
+    async upsert(
+        where: Prisma.#{Model}WhereUniqueInput,
+        create: Prisma.#{Model}CreateInput,
+        update: Prisma.#{Model}UpdateInput
+    ): Promise<Result<#{Model}, Error>> {
+        try {
+            const result = await this.prismaService.#{moDel}.upsert({
+                where,
+                create,
+                update
+            });
+            return ok(result);
+        } catch (e) {
+            return err(
+                new InternalServerErrorException(
+                    'Could not create #{Model} Resource.'
+                )
+            );
+        }
+    }
+
     getAll = async () => await this.getFiltered();
 
     async getFiltered(

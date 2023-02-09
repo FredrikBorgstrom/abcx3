@@ -3,12 +3,13 @@ export const moduleStub = `
 
 import { Module } from '@nestjs/common';
 import { #{ServiceName} } from './#{ServiceFileName}';
-import { #{ControllerName} } from './#{ControllerFileName}';
 import { #{PrismaModuleName} } from '#{PrismaModuleImportPath}';
-
+#{ImportControllerClass}
 @Module({
   controllers: [#{ControllerName}],
   providers: [#{ServiceName}],
   imports: [#{PrismaModuleName}]
 })
 export class #{Model}Module {}`;
+
+export const importControllerStub = `import { #{ControllerName} } from './#{ControllerFileName}';`;

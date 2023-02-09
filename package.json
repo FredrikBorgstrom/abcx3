@@ -12,18 +12,18 @@
   },
   "private": true,
   "dependencies": {
-    "@prisma/generator-helper": "^4.9.0"
+    "@prisma/generator-helper": "^4.10.1"
   },
   "devDependencies": {
     "@types/glob": "^8.0.1",
-    "@types/node": "^18.11.18",
-    "@typescript-eslint/eslint-plugin": "~5.50.0",
-    "@typescript-eslint/parser": "~5.50.0",
-    "esbuild": "^0.17.5",
+    "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "~5.51.0",
+    "@typescript-eslint/parser": "~5.51.0",
+    "esbuild": "^0.17.6",
     "esbuild-plugin-node-externals": "^1.0.1",
     "eslint": "~8.33.0",
     "eslint-config-prettier": "8.6.0",
-    "prisma": "^4.9.0",
+    "prisma": "^4.10.1",
     "rimraf": "^4.1.2",
     "ts-node": "10.9.1",
     "tslib": "^2.5.0",
