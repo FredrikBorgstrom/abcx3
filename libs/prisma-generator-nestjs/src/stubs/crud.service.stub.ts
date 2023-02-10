@@ -30,11 +30,11 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    async upsert(
+    async upsert({where, create, update}:{
         where: Prisma.#{Model}WhereUniqueInput,
         create: Prisma.#{Model}CreateInput,
         update: Prisma.#{Model}UpdateInput
-    ): Promise<Result<#{Model}, Error>> {
+    }): Promise<Result<#{Model}, Error>> {
         try {
             const result = await this.prismaService.#{moDel}.upsert({
                 where,
