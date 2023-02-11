@@ -9,6 +9,7 @@ export class NameGenerator {
 
     private static _singleton: NameGenerator;
     basePath = 'gen';
+    prefix = '';
 
     static get singleton() {
         if (!NameGenerator._singleton) {
@@ -17,14 +18,16 @@ export class NameGenerator {
         return NameGenerator._singleton;
     }
 
-    private constructor() {}
+    private constructor() { }
 
     getClassName = (model: DMMF.Model | DMMF.DatamodelEnum, fileType: NestFileType) =>
-        model.name + StringFns.capitalize(fileType);
+        StringFns.capitalize(this.prefix) + model.name + StringFns.capitalize(fileType);
 
     getFileName = (model: DMMF.Model | DMMF.DatamodelEnum, fileType: NestFileType) =>
-        StringFns.decapitalizeFileName(model.name, fileType);
-
+        this.prefix !== '' ?
+         StringFns.snakeCase(this.prefix) + '_' + StringFns.snakeCase(model.name) + '.' + fileType:
+         StringFns.snakeCase(model.name) + '.' + fileType;
+        // StringFns.decapitalizeFileName(model.name, fileType);
 
     geFilePath = (model: DMMF.Model | DMMF.DatamodelEnum, fileType: NestFileType) =>
         path.join(this.basePath, this.getModelPath(model), this.getFileName(model, fileType) + '.ts');

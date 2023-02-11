@@ -10,6 +10,6 @@ import { #{PrismaModuleName} } from '#{PrismaModuleImportPath}';
   providers: [#{ServiceName}],
   imports: [#{PrismaModuleName}]
 })
-export class #{Model}Module {}`;
+export class #{ModuleName} {}`;
 
 export const importControllerStub = `import { #{ControllerName} } from './#{ControllerFileName}';`;
