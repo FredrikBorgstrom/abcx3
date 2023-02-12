@@ -8,7 +8,8 @@ import { #{PrismaModuleName} } from '#{PrismaModuleImportPath}';
 @Module({
   controllers: [#{ControllerName}],
   providers: [#{ServiceName}],
-  imports: [#{PrismaModuleName}]
+  imports: [#{PrismaModuleName}],
+  exports: [#{ServiceName}]
 })
 export class #{ModuleName} {}`;
 
