@@ -25,14 +25,7 @@ export class ModuleGenerator {
 
         content = content.replace(/#{ServiceName}/g, nameGen.getClassName(this.model, 'service'));
         content = content.replace(/#{ServiceFileName}/g, nameGen.getFileName(this.model, 'service'));
-
-        content = content.replace(/#{Model}/g, this.model.name);
-        // content = content.replace(/#{ModuleName}/g, nameGen.getClassName(this.model, 'module'));
-        // content = content.replace(/#{model}/g, this.model.name.toLowerCase());
-        // content = content.replace(/#{moDel}/g, lowerCaseFirstChar(this.model.name));
-
-        // content = content.replace(/#{ServiceName}/g, this.serviceName);
-        // content = content.replace(/#{CrudServiceFileName}/g, this.serviceFileName);
+        content = content.replace(/#{ModuleName}/g, nameGen.getClassName(this.model, 'module'));
 
         return content;
     }

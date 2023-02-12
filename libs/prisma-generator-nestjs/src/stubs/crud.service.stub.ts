@@ -90,8 +90,7 @@ export class #{CrudServiceClassName} {
     }
 
     async update(
-        where: Prisma.#{Model}WhereUniqueInput,
-        data: Prisma.#{Model}UpdateInput,
+        {where, data}: Prisma.#{Model}UpdateArgs
     ): Promise<Result<#{Model}, Error>> {
         try {
             const result = await this.prismaService.#{moDel}.update({
