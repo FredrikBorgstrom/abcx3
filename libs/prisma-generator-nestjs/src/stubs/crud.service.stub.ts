@@ -6,7 +6,7 @@ import {
     InternalServerErrorException,
     NotFoundException,
 } from '@nestjs/common';
-import { Prisma, #{Model} } from '@prisma/client';
+import { Prisma, #{Model}, #{RelatedFieldTypes} } from '@prisma/client';
 import {
     PaginationInterface,
     PrismaService,
@@ -134,7 +134,7 @@ async get#{RelationFieldType}(where: Prisma.#{Model}WhereUniqueInput): Promise<R
             where,
             include: { #{RelationFieldName} : true },
         });
-        return ok(result);
+        return ok(result.#{RelationFieldName});
     } catch (e) {
         return err(new InternalServerErrorException(
             \`Could not get #{RelationFieldName} relation for #{Model}.\`,
