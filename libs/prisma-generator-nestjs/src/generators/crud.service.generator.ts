@@ -1,6 +1,7 @@
 import { GeneratorSettings } from './../interfaces/generator.interface';
 import { DMMF } from '@prisma/generator-helper';
 import {
+    crudRelationFieldStub,
     crudServiceStub,
     crudServiceStubWithExceptions,
     idMethods_neverThrow
@@ -56,6 +57,10 @@ export class CrudServiceGenerator {
 
         content = content.replace(/#{CrudServiceClassName}/g, nameGen.getClassName(this.model, 'service'));
 
+        
+        content = content.replace(/#{relationFieldMethods}/g, this.addReferenceFieldMethods());
+        
+
         content = content.replace(/#{Model}/g, this.model.name);
         content = content.replace(/#{MODEL}/g, this.model.name.toUpperCase());
         content = content.replace(/#{model}/g, this.model.name.toLowerCase());
@@ -63,9 +68,21 @@ export class CrudServiceGenerator {
         return content;
     }
 
-    replaceInIdMethods(content: string, fieldNameAndType: FieldNameAndType) {
-        content = content.replace(/#{idName}/g, fieldNameAndType.name);
-        content = content.replace(/#{idType}/g, fieldNameAndType.type);
+    addReferenceFieldMethods() {
+        let content = '';
+        const referenceFields = this.prismaHelper.getObjectReferenceFields(this.model);
+        referenceFields.forEach((fieldNameAndType) => {
+            let stub = crudRelationFieldStub;
+            stub = stub.replace(/#{RelationFieldType}/g, fieldNameAndType.type);
+            stub = stub.replace(/#{RelationFieldName}/g, fieldNameAndType.name);
+            content += stub;
+        });
+        return content;
+    }
+
+    replaceInIdMethods(content: string, field: FieldNameAndType) {
+        content = content.replace(/#{idName}/g, field.name);
+        content = content.replace(/#{idType}/g, field.type);
         content = content.replace(/#{uniqueInputType}/g, `Prisma.${this.model.name}WhereUniqueInput`);
         return content;
     }

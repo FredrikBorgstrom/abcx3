@@ -50,16 +50,22 @@ export class PrismaHelper {
     public getIdFieldNameAndType(model: DMMF.Model): FieldNameAndType | null {
         const idField = model.fields.find(field => field.isId === true);
         if (idField) {
-            return {
-                name: idField.name,
-                type: this.convertToTypescriptType(idField)
-            };
+            return this.getFieldNameAndType(idField);
         } else {
             return null;
         }
     }
 
+    public getFieldNameAndType(field: DMMF.Field): FieldNameAndType {
+        return {
+            name: field.name,
+            type: this.convertToTypescriptType(field)
+        };
+    }
+
     public modelContainsObjectReference = (model: DMMF.Model): boolean => model.fields.some(field => field.kind === 'object');
+
+    public getObjectReferenceFields = (model: DMMF.Model): DMMF.Field[] => model.fields.filter(field => field.kind === 'object');
 
     public getUniqueInputPropertyName(model: DMMF.Model): string | null {
         const primaryKey = model.primaryKey;

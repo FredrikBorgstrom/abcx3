@@ -15,7 +15,7 @@ import { err, ok, Result } from 'neverthrow';
 
 @Injectable()
 export class #{CrudServiceClassName} {
-    constructor(private readonly prismaService: PrismaService) {}
+    constructor(protected readonly prismaService: PrismaService) {}
 
     getPrisma() {
         return this.prismaService;
@@ -115,7 +115,31 @@ export class #{CrudServiceClassName} {
             ));
         }
     }
+
+    // get by id methods
+
     #{byIdMethods}
+
+    // relation fields methods
+
+    #{relationFieldMethods}
+
+}
+`;
+
+export const crudRelationFieldStub = `
+async get#{RelationFieldType}(where: Prisma.#{Model}WhereUniqueInput): Promise<Result<#{RelationFieldType}, Error>> {
+    try {
+        const result = await this.prismaService.#{moDel}.findUnique({
+            where,
+            include: { #{RelationFieldName} : true },
+        });
+        return ok(result);
+    } catch (e) {
+        return err(new InternalServerErrorException(
+            \`Could not get #{RelationFieldName} relation for #{Model}.\`,
+        ));
+    }
 }
 `;
 
