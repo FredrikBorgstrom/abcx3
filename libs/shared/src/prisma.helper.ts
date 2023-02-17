@@ -65,7 +65,12 @@ export class PrismaHelper {
 
     public modelContainsObjectReference = (model: DMMF.Model): boolean => model.fields.some(field => field.kind === 'object');
 
-    public getObjectReferenceFields = (model: DMMF.Model): DMMF.Field[] => model.fields.filter(field => field.kind === 'object');
+    // public getObjectReferenceFields = (model: DMMF.Model): DMMF.Field[] => model.fields.filter(field => field.kind === 'object');
+    
+    public getUniqueReferenceFields = (model: DMMF.Model): DMMF.Field[] => model.fields.reduce((acc, field) => {
+        if (field.kind === 'object' && !acc.some(f => f.type === field.type)) acc.push(field);
+        return acc;
+    }, [] as DMMF.Field[]); //(field => field.kind === 'object');
 
     public getUniqueInputPropertyName(model: DMMF.Model): string | null {
         const primaryKey = model.primaryKey;

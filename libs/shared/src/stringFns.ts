@@ -9,7 +9,7 @@ export class StringFns {
         return this.transformFirstCharCase(str, 'toLowerCase');
     }
 
-    static capitalize (str: string): string | null {
+    static capitalize (str: string): string {
         return this.transformFirstCharCase(str, 'toUpperCase');
     }
 
