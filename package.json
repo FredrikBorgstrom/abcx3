@@ -15,11 +15,11 @@
     "@prisma/generator-helper": "^4.10.1"
   },
   "devDependencies": {
-    "@types/glob": "^8.0.1",
-    "@types/node": "^18.13.0",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^18.14.1",
     "@typescript-eslint/eslint-plugin": "~5.51.0",
     "@typescript-eslint/parser": "~5.51.0",
-    "esbuild": "^0.17.8",
+    "esbuild": "^0.17.10",
     "esbuild-plugin-node-externals": "^1.0.1",
     "eslint": "~8.34.0",
     "eslint-config-prettier": "8.6.0",
