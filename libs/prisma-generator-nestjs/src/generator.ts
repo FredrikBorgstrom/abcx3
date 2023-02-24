@@ -88,9 +88,9 @@ class MainGenerator {
             if (this.settings.GenerateController) await this.generateControllerFile(model);
             if (this.settings.GenerateModule) await this.generateModuleFile(model);
         }
-        for (const tEnum of this.options.dmmf.datamodel.enums) {
+        /* for (const tEnum of this.options.dmmf.datamodel.enums) {
             await this.generateEnumFile(tEnum);
-        }
+        } */
     }
 
     async generateEnumFile(tEnum: DMMF.DatamodelEnum) {
