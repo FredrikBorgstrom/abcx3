@@ -125,6 +125,8 @@ export class DartGenerator {
 
     generateConstructorArg(field: DMMF.Field): string {
         let content = '';
+
+        // Does the field have a default value?
         if (field.hasDefaultValue && !(field.default instanceof Object)) {
             content = dartConstructorArgumentWithDefaultValue;
             let defValue = field.default!;
@@ -136,12 +138,16 @@ export class DartGenerator {
             }
             content = content.replace(/#{DefaultValue}/g, valueStr);
             content = content.replace(/#{Required}/g, '');
-        } else {
+        } else  {
             content = dartConstructorArgument;
-            content = content.replace(/#{Required}/g, field.isRequired ? 'required' : '');
+            content = content.replace(/#{Required}/g, this.isFieldRequired(field) ? 'required' : '');
         }
         content = content.replace(/#{PropName}/g, field.name);
         return content;
+    }
+
+    isFieldRequired(field: DMMF.Field): boolean {
+        return false; //field.isRequired && field.type !== 'DateTime' && fi;
     }
 
     printDefaultValue(field: DMMF.Field): string | null {
@@ -189,7 +195,7 @@ export class DartGenerator {
     isProprietaryType = (type: string) => dartTypeMap[type as DartTypeMapKey] ==  null;
     
 
-    replaceNullable = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, field.isRequired ? '' : '?');
+    replaceNullable = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, this.isFieldRequired(field) ? '' : '?');
     replacePropName = (content: string, field: DMMF.Field) => content.replace(/#{PropName}/g, field.name);
     replaceType = (content: string, field: DMMF.Field) => content.replace(/#{Type}/g, this.getDartType(field));
 
