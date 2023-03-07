@@ -51,9 +51,9 @@ export class #{CrudServiceClassName} {
         }
     }
 
-    getAll = async () => await this.getFiltered();
+    getAll = async () => await this.prismaService.#{moDel}.findMany();
 
-    async getFiltered(
+    async getPageFiltered(
         filter?: Prisma.#{Model}FindManyArgs,
     ): Promise<Result<PaginationInterface<#{Model}>, Error>> {
         try {
