@@ -53,7 +53,7 @@ export class #{CrudServiceClassName} {
 
     getAll = async () => await this.prismaService.#{moDel}.findMany();
 
-    async getPageFiltered(
+    async getFilteredPage(
         filter?: Prisma.#{Model}FindManyArgs,
     ): Promise<Result<PaginationInterface<#{Model}>, Error>> {
         try {

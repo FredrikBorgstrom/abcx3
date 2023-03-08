@@ -8,7 +8,9 @@ import {
     dartFromJsonArg,
     dartFromJsonListArg,
     toJsonPropertyStub,
-    toJsonListPropertyStub
+    toJsonListPropertyStub,
+    dartFromJsonEnumListArg,
+    dartFromJsonEnumArg
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -165,11 +167,26 @@ export class DartGenerator {
     }
 
     generateFromJsonArgument(field: DMMF.Field) {
-        let content = (field.isList) ? dartFromJsonListArg : dartFromJsonArg;
-        content = this.replacePropName(content, field);
-        content = this.replaceNullable(content, field);
-        content = this.replaceType(content, field);
-        return content;
+        let code: string;
+
+        if (field.isList) {
+            if (field.kind === 'enum') {
+                code = dartFromJsonEnumListArg;
+            } else {
+                code = dartFromJsonListArg;
+            }
+        } else {
+            if (field.kind === 'enum') {
+                code = dartFromJsonEnumArg;
+            } else {
+                code = dartFromJsonArg;
+            }
+        }
+        // let content = (field.isList) ? dartFromJsonListArg : dartFromJsonArg;
+        code = this.replacePropName(code, field);
+        code = this.replaceNullable(code, field);
+        code = this.replaceType(code, field);
+        return code;
     }
 
     generateToJsonKeyVal(field: DMMF.Field) {
