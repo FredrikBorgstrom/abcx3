@@ -17,7 +17,7 @@ const defaultOptions: GeneratorSettings = {
     prefix: 'gen',
     schemaPath: '',
     GenerateServices: true,
-    GenerateController: false,
+    GenerateControllers: false,
     GenerateModule: true,
     InputExportPath: 'data/inputs',
     InputSuffix: 'Input',
@@ -85,7 +85,7 @@ class MainGenerator {
         for (const model of this.options.dmmf.datamodel.models) {
             if (this.settings?.GenerateServices) await this.generateServiceFile(model);
             //if (this.settings.GenerateInputs)  await this.generateInputFile(model);
-            if (this.settings.GenerateController) await this.generateControllerFile(model);
+            if (this.settings.GenerateControllers) await this.generateControllerFile(model);
             if (this.settings.GenerateModule) await this.generateModuleFile(model);
         }
         /* for (const tEnum of this.options.dmmf.datamodel.enums) {

@@ -8,8 +8,8 @@ export interface FieldNameAndType {
 
 export type CommentDirectiveName = '@abcx3_omit' | '@abcx3_disableControllers' | '@abcx3_enableControllers';
 
-// export enum ControllerMethodNames { 'create', 'getAll', 'getFiltered', 'getUnique', 'update', 'getById', 'updateById', 'deleteById' };
-export enum ControllerMethodNames { create, getAll, getFiltered, getUnique, update, getById, updateById, deleteById };
+// export enum ControllerMethodNames { 'create', 'getAll', 'getFilteredPage', 'getUnique', 'update', 'getById', 'updateById', 'deleteById' };
+export enum ControllerMethodNames { create, getAll, getFilteredPage, getUnique, update, getById, updateById, deleteById };
 
 export type ControllerMethod = keyof typeof ControllerMethodNames;
 

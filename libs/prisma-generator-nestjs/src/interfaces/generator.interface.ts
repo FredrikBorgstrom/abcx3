@@ -6,7 +6,7 @@ export interface GeneratorSettings {
     schemaPath: string;
     GenerateServices?: boolean; 
     // GenerateInputs?: boolean;
-    GenerateController?: boolean;
+    GenerateControllers?: boolean;
     // GenerateInputSwagger?: boolean;
     GenerateModule?: boolean;
 

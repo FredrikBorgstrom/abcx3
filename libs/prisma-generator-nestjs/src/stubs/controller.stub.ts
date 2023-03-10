@@ -14,7 +14,7 @@ export class #{ControllerClassName} {
 
 #{getAll}
 
-#{getFiltered}
+#{getFilteredPage}
 
 #{getUnique}
  
@@ -46,11 +46,11 @@ getAll() {
 }
 `;
 
-export const controllerGetFilteredStub = `
+export const controllergetFilteredPageStub = `
 #{GuardDecorator}
-  @Post('filter')
-  getFiltered(@Body() data: Prisma.#{Model}FindManyArgs) {
-    return this.service.getFiltered(data);
+  @Post('getFilteredPage')
+  getFilteredPage(@Body() data: Prisma.#{Model}FindManyArgs) {
+    return this.service.getFilteredPage(data);
   }
 `;
 
@@ -66,7 +66,7 @@ export const controllerUpdateStub = `
 #{GuardDecorator}
   @Post('update')
   update(@Body() body: {where: Prisma.#{Model}WhereUniqueInput; data: Prisma.#{Model}UpdateInput}) {
-    return this.service.update( body.where, body.data);
+    return this.service.update({where: body.where, data: body.data});
   }
 `;
 
@@ -97,7 +97,7 @@ export const controllerDeleteByIdStub = `
 export const controllerMethodStubs = {
     create: controllerCreateStub,
     getAll: controllerGetAllStub,
-    getFiltered: controllerGetFilteredStub,
+    getFilteredPage: controllergetFilteredPageStub,
     getUnique: controllerGetUniqueStub,
     update: controllerUpdateStub,
     getById: controllerGetByIdStub,

@@ -35,9 +35,10 @@ module.exports = {
         if (watch) {
             // Enable watch mode
             await context.watch();
+        } else {
+            // Manually dispose the context when done
+            context.dispose();
         }
-
-        // context.dispose();
     }
 }
 
