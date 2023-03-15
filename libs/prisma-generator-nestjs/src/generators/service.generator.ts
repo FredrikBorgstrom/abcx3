@@ -1,17 +1,17 @@
-import { GeneratorSettings } from './../interfaces/generator.interface';
+import { GeneratorSettings } from '../interfaces/generator.interface';
 import { DMMF } from '@prisma/generator-helper';
 import {
     crudRelationFieldStub,
     crudServiceStub,
     crudServiceStubWithExceptions,
     idMethods_neverThrow
-} from './../stubs/crud.service.stub';
+} from '../stubs/crud.service.stub';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { NameGenerator } from '../nameGenerator';
 import { FieldNameAndType, PrismaHelper, StringFns } from '@shared';
 
-export class CrudServiceGenerator {
+export class ServiceGenerator {
 
     private prismaHelper: PrismaHelper;
 
@@ -72,7 +72,7 @@ export class CrudServiceGenerator {
 
     addReferenceFieldMethods() {
         let code = '';
-        const referenceFields = this.prismaHelper.getUniqueReferenceFields(this.model);
+        const referenceFields = this.prismaHelper.getReferenceFields(this.model);
         referenceFields.forEach(field => {
             let stub = crudRelationFieldStub;
             stub = stub.replace(/#{RelationMethodReturnType}/g, field.isList ? `${field.type}[]` : field.type);

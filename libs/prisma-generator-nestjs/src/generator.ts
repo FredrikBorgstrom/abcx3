@@ -2,7 +2,7 @@ import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-help
 import { version } from './../package.json';
 import { GENERATOR_NAME } from './constants';
 import { ControllerGenerator } from './generators/controller.generator';
-import { CrudServiceGenerator as ServiceGenerator } from './generators/crud.service.generator';
+import { ServiceGenerator as ServiceGenerator } from './generators/service.generator';
 import { generateEnum } from './generators/enum.generator';
 import { ModuleGenerator } from './generators/module.generator';
 import { GeneratorSettings } from './interfaces/generator.interface';

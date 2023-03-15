@@ -25,6 +25,8 @@ export class #{ControllerClassName} {
 #{updateById}
 
 #{deleteById}
+
+#{referenceField}
   
 }`;
 
@@ -94,6 +96,14 @@ export const controllerDeleteByIdStub = `
     }
 `;
 
+export const controllerReferenceFieldStub = `
+#{GuardDecorator}
+  @Post('#{RelationFieldName}')
+  get#{RelationFieldNameCapitalized}(@Body() body: Prisma.#{Model}WhereUniqueInput) {
+    return this.service.get#{RelationFieldNameCapitalized}(body);
+  }
+`;
+
 export const controllerMethodStubs = {
     create: controllerCreateStub,
     getAll: controllerGetAllStub,
@@ -102,8 +112,11 @@ export const controllerMethodStubs = {
     update: controllerUpdateStub,
     getById: controllerGetByIdStub,
     updateById: controllerUpdateByIdStub,
-    deleteById: controllerDeleteByIdStub
+    deleteById: controllerDeleteByIdStub,
+    referenceField: controllerReferenceFieldStub
 }
+
+export const controllerMethodNames = Object.keys(controllerMethodStubs);
 
 /* export const controllerIdMethodsStub = `
 #{GuardDecorator}

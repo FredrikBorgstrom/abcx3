@@ -1,8 +1,8 @@
 import { DMMF } from "@prisma/generator-helper";
-import { ControllerMethodNames, enumToArray, FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
+import { enumToArray, FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
 import { GeneratorSettings } from "../interfaces/generator.interface";
 import { NameGenerator } from "../nameGenerator";
-import { controllerMethodStubs, controllerStub } from "../stubs/controller.stub";
+import { controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
 
 
 export class ControllerGenerator {
@@ -30,15 +30,6 @@ export class ControllerGenerator {
 
         content = this.applyMethods(content, methodsToApply, idFieldAndType);
 
-        // if the model has a unique ID field we insert '...byId' methods: #{convertToIntOperator}
-
-        // if (idFieldAndType) {
-        //     const idMethodsContent = controllerIdMethodsStub.replace(/#{convertToInt}/g, idFieldAndType.type === 'number' ? '+' : '');
-        //     content = content.replace(/#{ByIdMethods}/g, idMethodsContent);
-        // } else {
-        //     content = content.replace(/#{ByIdMethods}/g, '');
-        // }
-
         content = content.replace(/#{ControllerClassName}/g, nameGen.getClassName(this.model, 'controller'));
         content = content.replace(/#{Model}/g, this.model.name);
         content = content.replace(/#{model}/g, this.model.name.toLowerCase());
@@ -61,6 +52,20 @@ export class ControllerGenerator {
         return content;
     }
 
+    addReferenceFieldMethods() {
+        let code = '';
+        const referenceFields = this.prismaHelper.getReferenceFields(this.model);
+        referenceFields.forEach(field => {
+            let stub = controllerReferenceFieldStub;
+            stub = stub.replace(/#{RelationMethodReturnType}/g, field.isList ? `${field.type}[]` : field.type);
+            stub = stub.replace(/#{RelationFieldType}/g, field.type);
+            stub = stub.replace(/#{RelationFieldName}/g, field.name);
+            stub = stub.replace(/#{RelationFieldNameCapitalized}/g, StringFns.capitalize(field.name));
+            code += stub;
+        });
+        return code;
+    }
+
     applyMethods(content: string, methodNames: string[], idFieldAndType: FieldNameAndType | null) {
         methodNames.forEach(methodName => {
             let methodStub = this.methodStubs[methodName];
@@ -71,17 +76,21 @@ export class ControllerGenerator {
                     methodStub = '';
                 }
             }
+            if (methodName === 'referenceField') {
+                methodStub = this.addReferenceFieldMethods();
+            }
             content = content.replace(new RegExp(`#{${methodName}}`, 'g'), methodStub);
         });
+
         // remove unused methods
-        const allMethodNames = enumToArray(ControllerMethodNames);
+        const allMethodNames = [...controllerMethodNames];
         allMethodNames.forEach(method => content = content.replace(new RegExp(`#{${method}}`, 'g'), ''));
         return content;
     }
 
     getMethodsToApply(commentDirectives: PrismaCommentDirective[]): string[] {
 
-        const methodNames = enumToArray(ControllerMethodNames);
+        const methodNames = [...controllerMethodNames];
         const appliedMethodNames = [...methodNames];
 
         commentDirectives.forEach(directive => {
