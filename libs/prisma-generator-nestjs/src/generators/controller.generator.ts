@@ -1,5 +1,5 @@
 import { DMMF } from "@prisma/generator-helper";
-import { enumToArray, FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
+import { FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
 import { GeneratorSettings } from "../interfaces/generator.interface";
 import { NameGenerator } from "../nameGenerator";
 import { controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
