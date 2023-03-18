@@ -1,11 +1,11 @@
 import { DMMF } from "@prisma/generator-helper";
-import { GeneratorSettings } from "../interfaces/generator.interface";
+import { NestGeneratorSettings } from "../nest_settings.interface";
 import { NameGenerator } from "../nameGenerator";
 import { importControllerStub, moduleStub } from "../stubs/module.stub";
 
 export class ModuleGenerator {
 
-    constructor(private model: DMMF.Model, private settings: GeneratorSettings) { }
+    constructor(private model: DMMF.Model, private settings: NestGeneratorSettings) { }
 
     generateContent() {
         let nameGen = NameGenerator.singleton;

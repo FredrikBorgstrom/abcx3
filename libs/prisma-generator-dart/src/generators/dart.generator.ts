@@ -1,5 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
-import { GeneratorSettings } from '../settings.interface';
+import { DartGeneratorSettings } from '../dart_settings.interface';
 import {
     dartBaseClassStub,
     dartConstructorArgument,
@@ -39,7 +39,7 @@ export class DartGenerator {
     private omitFields: string[] = [];
     private prismaHelper: PrismaHelper;
 
-    constructor(private settings: GeneratorSettings, private model: DMMF.Model) {
+    constructor(private settings: DartGeneratorSettings, private model: DMMF.Model) {
         this.prismaHelper = PrismaHelper.getInstance();
     }
 

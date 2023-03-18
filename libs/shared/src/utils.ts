@@ -18,3 +18,22 @@ export function mapEnum<T>(enumObj: Record<string & number, string>, fn: (str: s
 export function enumToArray(enumObj: Record<string & number, string>) {
     return mapEnum(enumObj, str => str);
 }
+
+export function convertBooleanStrings(obj: Record<string, string>) {
+    const result: Record<string, string | boolean> = {};
+    for (const key in obj) {
+        result[key] = convertBooleanString(obj[key]);
+    }
+    return result;
+}
+
+function convertBooleanString(value: string) {
+    switch (value.toLowerCase()) {
+        case 'true':
+            return true;
+        case 'false':
+            return false;
+        default:
+            return value;
+    }
+}

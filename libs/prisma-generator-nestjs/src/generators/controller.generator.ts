@@ -1,6 +1,6 @@
 import { DMMF } from "@prisma/generator-helper";
 import { FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
-import { GeneratorSettings } from "../interfaces/generator.interface";
+import { NestGeneratorSettings } from "../nest_settings.interface";
 import { NameGenerator } from "../nameGenerator";
 import { controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
 
@@ -11,7 +11,7 @@ export class ControllerGenerator {
     private methodStubs: Record<string, string> = controllerMethodStubs;
 
     constructor(
-        private settings: GeneratorSettings,
+        private settings: NestGeneratorSettings,
         private model: DMMF.Model
     ) {
         this.prismaHelper = PrismaHelper.getInstance();
