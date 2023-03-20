@@ -63,6 +63,14 @@ export class DartGenerator {
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
 
+        if (this.settings.ModelsImplementBaseClass) {
+            content = content.replace(/#{ImplementedClass}/g, 'implements ModelBase ');
+            content = content.replace(/#{OverrideAnnotation}/g, '@override');
+        } else {
+            content = content.replace(/#{ImplementedClass}/g, '');
+            content = content.replace(/#{OverrideAnnotation}/g, '');
+        }
+
         let constructorArgs: string[] = [];
         let properties: string[] = [];
         let fromJsonArgs: string[] = [];
@@ -205,6 +213,9 @@ export class DartGenerator {
         content = content.replace(/#{Type}/g, printedType);
         content = this.replaceNullable(content, field);
         
+        if (this.settings.ModelsImplementBaseClass && field.name === 'id') {
+            content = '@override\n' + content;
+        }
         return content;
     }
 
@@ -219,6 +230,9 @@ export class DartGenerator {
     private generateImportStatements(): string {
         let result = '';
         const checkedTypes: string[] = [];
+        if (this.settings.ModelsImplementBaseClass) {
+            result += `import '${this.settings.ModelsBaseClassFileName}';\n`;
+        }
 
         this.model.fields.forEach(({type}) => {
             if (!checkedTypes.includes(type)) {

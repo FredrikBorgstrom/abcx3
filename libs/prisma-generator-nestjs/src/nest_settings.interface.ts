@@ -1,4 +1,4 @@
-import { GeneratorSettings } from "libs/shared/src/generator_settings";
+import { GeneratorSettings } from "libs/shared/src/generator_settings.interface";
 
 export interface NestGeneratorSettings extends GeneratorSettings {
     
