@@ -10,7 +10,8 @@ import {
     toJsonPropertyStub,
     toJsonListPropertyStub,
     dartFromJsonEnumListArg,
-    dartFromJsonEnumArg
+    dartFromJsonEnumArg,
+    dartFromJsonDateTimeArg
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -99,40 +100,6 @@ export class DartGenerator {
         return content;
     }
 
-
-   /*  const documentation = field.documentation;
-        let customDecoratorsContent = '';
-        if (documentation) {
-            // we need to process this properly
-            const customDecorators = this.parseDocumentation(field);
-
-            for (const customDecorator of customDecorators) {
-                // check, if the current field has an @Omit() decorator, so we skip everything
-                if (customDecorator.name === 'Omit') {
-                    this.omitFields.push(field.name);
-                    continue;
-                }
-
-                // if the element has an @Relation() decorator
-                if (customDecorator.name === 'Relation') {
-                    // for now, we do nothing
-                    this.omitFields.push(field.name);
-                    continue;
-                }
-
-                // if the element has an @RelationId() decorator
-                if (customDecorator.name === 'RelationId') {
-                    // for now, we do nothing
-                    this.omitFields.push(field.name);
-                    continue;
-                }
-
-                customDecoratorsContent =
-                    customDecoratorsContent + customDecorator.generateContent();
-                this.addDecoratorToImport(customDecorator);
-            }
-        } */
-
     generateConstructorArg(field: DMMF.Field): string {
         let content = '';
 
@@ -186,6 +153,8 @@ export class DartGenerator {
         } else {
             if (field.kind === 'enum') {
                 code = dartFromJsonEnumArg;
+            } else if (field.type === 'DateTime' ) {
+                code = dartFromJsonDateTimeArg;
             } else {
                 code = dartFromJsonArg;
             }
@@ -246,3 +215,35 @@ export class DartGenerator {
     }
 }
 
+/*  const documentation = field.documentation;
+        let customDecoratorsContent = '';
+        if (documentation) {
+            // we need to process this properly
+            const customDecorators = this.parseDocumentation(field);
+
+            for (const customDecorator of customDecorators) {
+                // check, if the current field has an @Omit() decorator, so we skip everything
+                if (customDecorator.name === 'Omit') {
+                    this.omitFields.push(field.name);
+                    continue;
+                }
+
+                // if the element has an @Relation() decorator
+                if (customDecorator.name === 'Relation') {
+                    // for now, we do nothing
+                    this.omitFields.push(field.name);
+                    continue;
+                }
+
+                // if the element has an @RelationId() decorator
+                if (customDecorator.name === 'RelationId') {
+                    // for now, we do nothing
+                    this.omitFields.push(field.name);
+                    continue;
+                }
+
+                customDecoratorsContent =
+                    customDecoratorsContent + customDecorator.generateContent();
+                this.addDecoratorToImport(customDecorator);
+            }
+        } */
