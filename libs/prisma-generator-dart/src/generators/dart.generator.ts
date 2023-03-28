@@ -11,7 +11,8 @@ import {
     toJsonListPropertyStub,
     dartFromJsonEnumListArg,
     dartFromJsonEnumArg,
-    dartFromJsonDateTimeArg
+    dartFromJsonDateTimeArg,
+    dartFromJsonRefArg
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -155,6 +156,8 @@ export class DartGenerator {
                 code = dartFromJsonEnumArg;
             } else if (field.type === 'DateTime' ) {
                 code = dartFromJsonDateTimeArg;
+            } else if (field.kind === "object") {
+                code = dartFromJsonRefArg;
             } else {
                 code = dartFromJsonArg;
             }

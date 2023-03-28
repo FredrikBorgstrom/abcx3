@@ -21,7 +21,9 @@ class #{ClassName} #{ParentClass}#{ImplementedClass}{
     `;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
-export const dartFromJsonListArg = `#{PropName}: (json['#{PropName}'] as List<#{Type}>#{Nullable})#{Nullable}.map((item) => #{Type}.fromJson(item as Map<String, dynamic>)).toList()`;
+export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Map<String, dynamic>) : null`;
+
+export const dartFromJsonListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
 export const dartFromJsonEnumArg = `#{PropName}: #{Type}.values.byName(json['#{PropName}'])`;
 export const dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.values.byName(json[item])).toList())`;
 export const dartFromJsonDateTimeArg = `#{PropName}: DateTime.parse(json['#{PropName}'])`;
@@ -42,4 +44,15 @@ export const dartPropertyStubWithDefaultValue = `#{Type}#{Nullable} #{PropName} 
 export const dartModelBaseClassStub = `abstract class ModelBase {
     abstract int? id;
     Map<String, dynamic> toJson();
-  }`;
+  }
+  
+  typedef JsonModelFactory<T> = T Function(Map<String, dynamic> json);
+
+  List<T> createModels<T>(json, JsonModelFactory<T> jsonFactory) {
+    List<T> instances = [];
+    for (final item in json) {
+      instances.add(jsonFactory(item as Map<String, dynamic>));
+    }
+    return instances;
+  }
+  `;
