@@ -101,6 +101,21 @@ export class #{CrudServiceClassName} {
         }
     }
 
+    async getLatest(): Promise<#{Model} | Error> {
+        try {
+            const result = await this.prismaService.#{moDel}.findFirst({
+                orderBy: {
+                    id: 'desc'
+                }
+            });
+            return result;
+        } catch (e) {
+            return new InternalServerErrorException(
+                \`Could not get latest #{Model}\`
+            );
+        }
+    }
+
     async update({where, data}: Prisma.#{Model}UpdateArgs): Promise<#{Model} | Error> {
         try {
             const result = await this.prismaService.#{moDel}.update({
