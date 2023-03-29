@@ -16,6 +16,7 @@ export interface NestGeneratorSettings extends GeneratorSettings {
     GuardImportPath?: String;
     PrismaModuleName?: string;
     PrismaModuleImportPath?: string;
+    secondaryOutputPath?: string;
 }
 
 // InputExportPath: string;
