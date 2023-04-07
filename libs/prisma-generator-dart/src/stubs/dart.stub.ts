@@ -26,7 +26,7 @@ export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{
 export const dartFromJsonListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
 export const dartFromJsonEnumArg = `#{PropName}: #{Type}.values.byName(json['#{PropName}'])`;
 export const dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.values.byName(json[item])).toList())`;
-export const dartFromJsonDateTimeArg = `#{PropName}: DateTime.parse(json['#{PropName}'])`;
+export const dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 
 export const toJsonPropertyStub = `'#{PropName}': #{PropName}`;
 export const toJsonListPropertyStub = `'#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
