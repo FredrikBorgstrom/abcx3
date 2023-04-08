@@ -17,9 +17,9 @@
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/node": "^18.15.11",
-    "@typescript-eslint/eslint-plugin": "~5.57.0",
-    "@typescript-eslint/parser": "~5.57.0",
-    "esbuild": "^0.17.14",
+    "@typescript-eslint/eslint-plugin": "~5.57.1",
+    "@typescript-eslint/parser": "~5.57.1",
+    "esbuild": "^0.17.15",
     "esbuild-plugin-node-externals": "^1.0.1",
     "eslint": "~8.37.0",
     "eslint-config-prettier": "8.8.0",
@@ -27,7 +27,7 @@
     "rimraf": "^4.4.1",
     "ts-node": "10.9.1",
     "tslib": "^2.5.0",
-    "typescript": "~5.0.2"
+    "typescript": "~5.0.4"
   },
   "engines": {
     "node": "^18.13.0",
