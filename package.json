@@ -12,27 +12,27 @@
   },
   "private": true,
   "dependencies": {
-    "@prisma/generator-helper": "^4.12.0"
+    "@prisma/generator-helper": "^4.13.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
-    "@types/node": "^18.15.11",
-    "@typescript-eslint/eslint-plugin": "~5.57.1",
-    "@typescript-eslint/parser": "~5.57.1",
-    "esbuild": "^0.17.15",
+    "@types/node": "^18.15.12",
+    "@typescript-eslint/eslint-plugin": "~5.59.0",
+    "@typescript-eslint/parser": "~5.59.0",
+    "esbuild": "^0.17.17",
     "esbuild-plugin-node-externals": "^1.0.1",
-    "eslint": "~8.37.0",
+    "eslint": "~8.38.0",
     "eslint-config-prettier": "8.8.0",
-    "prisma": "^4.12.0",
-    "rimraf": "^4.4.1",
+    "prisma": "^4.13.0",
+    "rimraf": "^5.0.0",
     "ts-node": "10.9.1",
     "tslib": "^2.5.0",
     "typescript": "~5.0.4"
   },
   "engines": {
     "node": "^18.13.0",
-    "npm": "^8.5.5",
-    "pnpm": "^7.12.0"
+    "npm": "^9.6.5",
+    "pnpm": "^8.3.1"
   },
   "author": {
     "name": "Fredrik Borgström",
