@@ -6,13 +6,14 @@ import {
     dartConstructorArgumentWithDefaultValue,
     dartPropertyStub,
     dartFromJsonArg,
-    dartFromJsonListArg,
+    dartFromJsonModelListArg,
     toJsonPropertyStub,
     toJsonListPropertyStub,
     dartFromJsonEnumListArg,
     dartFromJsonEnumArg,
     dartFromJsonDateTimeArg,
-    dartFromJsonRefArg
+    dartFromJsonRefArg,
+    dartFromJsonScalarListArg
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -35,7 +36,6 @@ export function helloWorld(name: string): string {
     return name + "Hello World!";
 }
 
-
 export class DartGenerator {
     private importedPackages: string[] = [];
     private omitFields: string[] = [];
@@ -47,8 +47,6 @@ export class DartGenerator {
 
     generateContent() {
         let content = this.generateBaseInput();
-       
-
         content = content.replace(/#{Imports}/g, this.generateImportStatements());
         return content;
     }
@@ -146,10 +144,22 @@ export class DartGenerator {
         let code: string;
 
         if (field.isList) {
-            if (field.kind === 'enum') {
-                code = dartFromJsonEnumListArg;
-            } else {
-                code = dartFromJsonListArg;
+
+            switch (field.kind) {
+                case 'object':
+                    code = dartFromJsonModelListArg;
+                    break;
+                case 'enum':
+                    code = dartFromJsonEnumListArg;
+                    break;
+                    
+                case 'scalar':
+                    code = dartFromJsonScalarListArg;
+                    break;
+                    
+                default:
+                    code = dartFromJsonArg;
+                    break;
             }
         } else {
             if (field.kind === 'enum') {
@@ -170,11 +180,12 @@ export class DartGenerator {
     }
 
     generateToJsonKeyVal(field: DMMF.Field) {
-        let content = (field.isList) ? toJsonListPropertyStub : toJsonPropertyStub;
+        let content = (field.isList && field.kind === 'object') ? toJsonListPropertyStub : toJsonPropertyStub;
         content = this.replacePropName(content, field);
         content = this.replaceNullable(content, field);
         return content;
     }
+
 
     generatePropertyContent(field: DMMF.Field) {
         let content = dartPropertyStub;
