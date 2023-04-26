@@ -13,7 +13,8 @@ import {
     dartFromJsonEnumArg,
     dartFromJsonDateTimeArg,
     dartFromJsonRefArg,
-    dartFromJsonScalarListArg
+    dartFromJsonScalarIntListArg,
+    dartFromJsonScalarStringListArg
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -114,7 +115,7 @@ export class DartGenerator {
             }
             content = content.replace(/#{DefaultValue}/g, valueStr);
             content = content.replace(/#{Required}/g, '');
-        } else  {
+        } else {
             content = dartConstructorArgument;
             content = content.replace(/#{Required}/g, this.isFieldRequired(field) ? 'required' : '');
         }
@@ -152,11 +153,16 @@ export class DartGenerator {
                 case 'enum':
                     code = dartFromJsonEnumListArg;
                     break;
-                    
                 case 'scalar':
-                    code = dartFromJsonScalarListArg;
+                    if (field.type === 'Int') {
+                        code = dartFromJsonScalarIntListArg;
+                    } else if (field.type === 'String') {
+                        code = dartFromJsonScalarStringListArg;
+                    } else {
+                        // todo: add other types here
+                        code = dartFromJsonScalarStringListArg; 
+                    }
                     break;
-                    
                 default:
                     code = dartFromJsonArg;
                     break;
@@ -164,7 +170,7 @@ export class DartGenerator {
         } else {
             if (field.kind === 'enum') {
                 code = dartFromJsonEnumArg;
-            } else if (field.type === 'DateTime' ) {
+            } else if (field.type === 'DateTime') {
                 code = dartFromJsonDateTimeArg;
             } else if (field.kind === "object") {
                 code = dartFromJsonRefArg;
@@ -195,7 +201,7 @@ export class DartGenerator {
         let printedType = (field.isList) ? `List<${dartType}>` : dartType;
         content = content.replace(/#{Type}/g, printedType);
         content = this.replaceNullable(content, field);
-        
+
         if (this.settings.ModelsImplementBaseClass && field.name === 'id') {
             content = '@override\n' + content;
         }
@@ -203,8 +209,8 @@ export class DartGenerator {
     }
 
     getDartType = (field: DMMF.Field) => dartTypeMap[field.type as DartTypeMapKey] || field.type;
-    isProprietaryType = (type: string) => dartTypeMap[type as DartTypeMapKey] ==  null;
-    
+    isProprietaryType = (type: string) => dartTypeMap[type as DartTypeMapKey] == null;
+
 
     replaceNullable = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, this.isFieldRequired(field) ? '' : '?');
     replacePropName = (content: string, field: DMMF.Field) => content.replace(/#{PropName}/g, field.name);
@@ -217,7 +223,7 @@ export class DartGenerator {
             result += `import '${this.settings.ModelsBaseClassFileName}';\n`;
         }
 
-        this.model.fields.forEach(({type}) => {
+        this.model.fields.forEach(({ type }) => {
             if (!checkedTypes.includes(type)) {
                 checkedTypes.push(type);
                 if (this.isProprietaryType(type)) {
