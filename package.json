@@ -10,7 +10,7 @@
     "test": "test",
     "clean": "rimraf dist"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@prisma/generator-helper": "^4.13.0"
   },
