@@ -41,16 +41,13 @@ The main parameters for this generator as as follows:
 | provider       | string  | -             | The name of the generator - must be set to `prisma-crud-generator`                                                                                                                                                                                                                                                                                                                       |
 | output         | string  | -             | Path where all the files are generated to. You can use `#{model}` to insert the lowercase name of the currently processed model (i.e., `user`), `#{Model}` for the real model name (written as is, i.e., `User`), `#{MODEL}` for the uppercase name (i.e., `USER`), and `#{moDel}` for the camelCased version of the model name (i.e., `userName`; only the first letter is lowercased). |
 | dryRun         | boolean | false         | don't write any content but output everything to the console instead                                                                                                                                                                                                                                                                                                                     |
-| strict         | boolean | false         | Whether the generated code should use `strict` mode (i.e., for variable initializers)                                                                                                                                                                                                                                                                                                    |
+|                                                                                                                                                                                                                                                                                                  |
 
-## Tips
 
-- You can `disable` the generation of the crud services or the input types by setting the respective `GenerateServices` or `GenerateInputs` to `false`.
-- Note that this package also works in combination with `PrisMerge` (Docs)[https://github.com/prisma-utils/prisma-utils/tree/main/libs/prismerge]
 
 ## Contributing
 
-This library was generated within a pnpm workspace which houses other utils that are a fork from [prisma-utils]([https://github.com/prisma-utils/prisma-utils/) by Johannes Schobel.
+Parts of this code come from a fork of [prisma-utils]([https://github.com/prisma-utils/prisma-utils/) by Johannes Schobel.
 
 ### Building
 
