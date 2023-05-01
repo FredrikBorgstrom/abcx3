@@ -1,3 +1,0 @@
-@prisma-utils/nestjs-prisma
-
-@prisma-utils/nestjs-request-parser
