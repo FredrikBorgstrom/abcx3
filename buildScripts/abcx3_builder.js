@@ -16,6 +16,9 @@ module.exports = {
         fs.copyFileSync(`./${libDir}/${libName}/package.dist.json`,
             `${distDir}/${libName}/package.json`);
 
+        fs.copyFileSync(`./${libDir}/${libName}/README.md`,
+            `${distDir}/${libName}/README.md`);
+
         const context = await esbuild.context({
             entryPoints: [`./${libDir}/${libName}/src/generator.ts`],
             outfile: `${distDir}/${libName}/index.js`,
