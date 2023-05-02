@@ -1,4 +1,3 @@
-# @prisma-utils/prisma-crud-generator
 
 This library automatically creates Dart class files for all your Prisma models. Besides an ordinary constructor it will also create a fromJson constructor for every class.
 
