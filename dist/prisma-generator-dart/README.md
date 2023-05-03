@@ -24,7 +24,7 @@ Open your `prisma.schema` file to add a new `generator`.
 # prisma.schema file
 
 generator dart {
-  provider = "node ./node_modules/prisma-generator-dart/src/generator.js"
+  provider = "node ./node_modules/@abcx3/prisma-generator-nestjs/index.js"
   output = "absolute/path/to/your/flutter/project/lib/generated_models"
   # dryRun = true / false
 }
