@@ -17,6 +17,16 @@ class #{ClassName} #{ParentClass}#{ImplementedClass}{
       Map<String, dynamic> toJson() => ({
         #{toJsonKeyValues}
       });
+
+        #{OverrideAnnotation}
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is #{ClassName} &&
+                runtimeType == other.runtimeType &&
+                #{equalsKeyValues};
+
+        #{OverrideAnnotation}
+        int get hashCode => #{hashCodeKeyValues};
       }
     `;
 
@@ -34,7 +44,10 @@ export const dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null
 
 export const toJsonPropertyStub = `'#{PropName}': #{PropName}`;
 export const toJsonListPropertyStub = `'#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
-//export const toJsonObjectPropertyStub = `'#{PropName}': #{PropName}`;
+
+export const dartEqualsKeyValue = `#{PropName} == other.#{PropName}`;
+
+export const dartHashCodeKeyValue = `#{PropName}.hashCode`;
 
 
 export const dartConstructorArgument = `#{Required} this.#{PropName}`;

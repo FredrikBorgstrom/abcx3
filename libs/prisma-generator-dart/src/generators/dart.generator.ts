@@ -14,7 +14,9 @@ import {
     dartFromJsonDateTimeArg,
     dartFromJsonRefArg,
     dartFromJsonScalarIntListArg,
-    dartFromJsonScalarStringListArg
+    dartFromJsonScalarStringListArg,
+    dartEqualsKeyValue,
+    dartHashCodeKeyValue
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -76,6 +78,8 @@ export class DartGenerator {
         let properties: string[] = [];
         let fromJsonArgs: string[] = [];
         let toJsonKeyVals: string[] = [];
+        let equalsKeyVals: string[] = [];
+        let hashCodeKeyVals: string[] = [];
 
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
@@ -86,20 +90,40 @@ export class DartGenerator {
             constructorArgs.push(this.generateConstructorArg(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
             toJsonKeyVals.push(this.generateToJsonKeyVal(field));
+            equalsKeyVals.push(this.generateEqualsKeyValue(field));
+            hashCodeKeyVals.push(this.generateHashCodeValue(field));
         }
         const propertiesContent = properties.join('\n\t');
         const constructorContent = constructorArgs.join(',\n\t');
         const fromJsonContent = fromJsonArgs.join(',\n\t');
         const toJsonContent = toJsonKeyVals.join(',\n\t');
+        const equalsContent = equalsKeyVals.join(' &&\n\t\t');
+        const hashCodeContent = hashCodeKeyVals.join(' ^\n\t\t');
+
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
         content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
 
         content = content.replace(/#{Properties}/g, propertiesContent);
         content = content.replace(/#{ConstructorArgs}/g, constructorContent);
 
+        content = content.replace(/#{equalsKeyValues}/g, equalsContent);
+        content = content.replace(/#{hashCodeKeyValues}/g, hashCodeContent);
+
         return content;
     }
 
+    generateEqualsKeyValue(field: DMMF.Field): string {
+        let content = dartEqualsKeyValue;
+        content = content.replace(/#{PropName}/g, field.name);
+        return content;
+    }
+
+    generateHashCodeValue(field: DMMF.Field): string {
+        let content = dartHashCodeKeyValue;
+        content = content.replace(/#{PropName}/g, field.name);
+        return content;
+    }
+    
     generateConstructorArg(field: DMMF.Field): string {
         let content = '';
 

@@ -3,7 +3,9 @@ This library automatically creates Dart class files for all your Prisma models. 
 
 ## Features
 
-- fromJson constructors
+- fromJson constructors which also supports nested objects
+- overrides equal operator so that objects with all the same property values are considered equal
+- overrides hashCode based on object's property values
 - handles default values in constructors
 - all model classes and Enums can be encapsulated by a common namespace
 

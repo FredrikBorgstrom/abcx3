@@ -77,6 +77,16 @@ class #{ClassName} #{ParentClass}#{ImplementedClass}{
       Map<String, dynamic> toJson() => ({
         #{toJsonKeyValues}
       });
+
+        #{OverrideAnnotation}
+        bool operator ==(Object other) =>
+            identical(this, other) ||
+            other is #{ClassName} &&
+                runtimeType == other.runtimeType &&
+                #{equalsKeyValues};
+
+        #{OverrideAnnotation}
+        int get hashCode => #{hashCodeKeyValues};
       }
     `;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
@@ -89,6 +99,8 @@ var dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => 
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 var toJsonPropertyStub = `'#{PropName}': #{PropName}`;
 var toJsonListPropertyStub = `'#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
+var dartEqualsKeyValue = `#{PropName} == other.#{PropName}`;
+var dartHashCodeKeyValue = `#{PropName}.hashCode`;
 var dartConstructorArgument = `#{Required} this.#{PropName}`;
 var dartConstructorArgumentWithDefaultValue = `#{Required} this.#{PropName} = #{DefaultValue}`;
 var dartPropertyStub = `#{Type}#{Nullable} #{PropName};`;
@@ -297,6 +309,8 @@ var DartGenerator = class {
     let properties = [];
     let fromJsonArgs = [];
     let toJsonKeyVals = [];
+    let equalsKeyVals = [];
+    let hashCodeKeyVals = [];
     for (const field of this.model.fields) {
       const commentDirectives = this.prismaHelper.parseDocumentation(field);
       if (commentDirectives.some((directive) => directive.name === "@abcx3_omit")) {
@@ -306,15 +320,31 @@ var DartGenerator = class {
       constructorArgs.push(this.generateConstructorArg(field));
       fromJsonArgs.push(this.generateFromJsonArgument(field));
       toJsonKeyVals.push(this.generateToJsonKeyVal(field));
+      equalsKeyVals.push(this.generateEqualsKeyValue(field));
+      hashCodeKeyVals.push(this.generateHashCodeValue(field));
     }
     const propertiesContent = properties.join("\n	");
     const constructorContent = constructorArgs.join(",\n	");
     const fromJsonContent = fromJsonArgs.join(",\n	");
     const toJsonContent = toJsonKeyVals.join(",\n	");
+    const equalsContent = equalsKeyVals.join(" &&\n		");
+    const hashCodeContent = hashCodeKeyVals.join(" ^\n		");
     content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
     content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
     content = content.replace(/#{Properties}/g, propertiesContent);
     content = content.replace(/#{ConstructorArgs}/g, constructorContent);
+    content = content.replace(/#{equalsKeyValues}/g, equalsContent);
+    content = content.replace(/#{hashCodeKeyValues}/g, hashCodeContent);
+    return content;
+  }
+  generateEqualsKeyValue(field) {
+    let content = dartEqualsKeyValue;
+    content = content.replace(/#{PropName}/g, field.name);
+    return content;
+  }
+  generateHashCodeValue(field) {
+    let content = dartHashCodeKeyValue;
+    content = content.replace(/#{PropName}/g, field.name);
     return content;
   }
   generateConstructorArg(field) {
