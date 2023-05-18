@@ -12,21 +12,21 @@
   },
   "private": false,
   "dependencies": {
-    "@prisma/generator-helper": "^4.14.0"
+    "@prisma/generator-helper": "^4.14.1"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
-    "@types/node": "^20.1.7",
+    "@types/node": "^20.2.0",
     "@typescript-eslint/eslint-plugin": "~5.59.6",
     "@typescript-eslint/parser": "~5.59.6",
     "esbuild": "^0.17.19",
     "esbuild-plugin-node-externals": "^1.0.1",
     "eslint": "~8.40.0",
     "eslint-config-prettier": "8.8.0",
-    "prisma": "^4.14.0",
-    "rimraf": "^5.0.0",
+    "prisma": "^4.14.1",
+    "rimraf": "^5.0.1",
     "ts-node": "10.9.1",
-    "tslib": "^2.5.0",
+    "tslib": "^2.5.1",
     "typescript": "~5.0.4"
   },
   "engines": {
