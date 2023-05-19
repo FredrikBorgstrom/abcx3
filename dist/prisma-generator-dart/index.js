@@ -99,7 +99,8 @@ var dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => 
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 var toJsonPropertyStub = `'#{PropName}': #{PropName}`;
 var toJsonListPropertyStub = `'#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
-var dartEqualsKeyValue = `#{PropName} == other.#{PropName}`;
+var dartEqualStub = `#{PropName} == other.#{PropName}`;
+var dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;
 var dartHashCodeKeyValue = `#{PropName}.hashCode`;
 var dartConstructorArgument = `#{Required} this.#{PropName}`;
 var dartConstructorArgumentWithDefaultValue = `#{Required} this.#{PropName} = #{DefaultValue}`;
@@ -117,6 +118,16 @@ var dartModelBaseClassStub = `abstract class ModelBase {
       instances.add(jsonFactory(item as Map<String, dynamic>));
     }
     return instances;
+  }
+
+  bool areListsEqual<T>(List<T>? list1, List<T>? list2) {
+    if (list1 == null && list2 == null) return true;
+    if (list1 == null || list2 == null) return false;
+    if (list1.length != list2.length) return false;
+    for (var i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
   }
   `;
 
@@ -338,7 +349,7 @@ var DartGenerator = class {
     return content;
   }
   generateEqualsKeyValue(field) {
-    let content = dartEqualsKeyValue;
+    let content = field.isList ? dartListsEqualStub : dartEqualStub;
     content = content.replace(/#{PropName}/g, field.name);
     return content;
   }

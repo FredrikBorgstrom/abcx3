@@ -45,7 +45,8 @@ export const dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null
 export const toJsonPropertyStub = `'#{PropName}': #{PropName}`;
 export const toJsonListPropertyStub = `'#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
 
-export const dartEqualsKeyValue = `#{PropName} == other.#{PropName}`;
+export const dartEqualStub = `#{PropName} == other.#{PropName}`;
+export const dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;
 
 export const dartHashCodeKeyValue = `#{PropName}.hashCode`;
 
@@ -71,5 +72,15 @@ export const dartModelBaseClassStub = `abstract class ModelBase {
       instances.add(jsonFactory(item as Map<String, dynamic>));
     }
     return instances;
+  }
+
+  bool areListsEqual<T>(List<T>? list1, List<T>? list2) {
+    if (list1 == null && list2 == null) return true;
+    if (list1 == null || list2 == null) return false;
+    if (list1.length != list2.length) return false;
+    for (var i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
   }
   `;

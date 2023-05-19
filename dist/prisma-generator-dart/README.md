@@ -4,7 +4,7 @@ This library automatically creates Dart class files for all your Prisma models. 
 ## Features
 
 - fromJson constructors which also supports nested objects
-- overrides equal operator so that objects with all the same property values are considered equal
+- overrides equal operator so that objects are considered equal when their property values are equal
 - overrides hashCode based on object's property values
 - handles default values in constructors
 - all model classes and Enums can be encapsulated by a common namespace
@@ -40,7 +40,7 @@ The main parameters for this generator as as follows:
 | Parameter Name | Type    | Default Value | Description                                                                                                                                                                                                                                                                                                                                                                              |
 | -------------- | ------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | provider       | string  | -             | The name of the generator - must be set to `node ./node_modules/@abcx3/prisma-generator-dart/index.js`                                                                                                                                                                                                                                                                                                                       |
-| output         | string  | -             | Path where all the files are generated to. This should be an absolute path to your flutter/dart project. The folder will be created if it doesn't exist. Name it for instance 'gen_models' |
+| output         | string  | -             | Destination path for the generated files. This should be an absolute path to your flutter/dart project. The folder will be created if it doesn't exist. Name it for instance 'gen_models' |
 | dryRun         | boolean | false         | don't write any content but output everything to the console instead                                                                                                                                                                                                                                                                                                                     |
 |                                                                                                                                                                                                                                                                                                  |
 

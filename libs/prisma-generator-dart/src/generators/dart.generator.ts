@@ -15,8 +15,9 @@ import {
     dartFromJsonRefArg,
     dartFromJsonScalarIntListArg,
     dartFromJsonScalarStringListArg,
-    dartEqualsKeyValue,
-    dartHashCodeKeyValue
+    dartEqualStub,
+    dartHashCodeKeyValue,
+    dartListsEqualStub
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -113,7 +114,7 @@ export class DartGenerator {
     }
 
     generateEqualsKeyValue(field: DMMF.Field): string {
-        let content = dartEqualsKeyValue;
+        let content = (field.isList) ? dartListsEqualStub : dartEqualStub;
         content = content.replace(/#{PropName}/g, field.name);
         return content;
     }
