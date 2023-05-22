@@ -42,8 +42,8 @@ export const dartFromJsonEnumArg = `#{PropName}: #{Type}.values.byName(json['#{P
 export const dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.values.byName(json[item])).toList())`;
 export const dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 
-export const toJsonPropertyStub = `'#{PropName}': #{PropName}`;
-export const toJsonListPropertyStub = `'#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
+export const toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
+export const toJsonListPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
 
 export const dartEqualStub = `#{PropName} == other.#{PropName}`;
 export const dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;

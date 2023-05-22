@@ -97,8 +97,8 @@ var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? creat
 var dartFromJsonEnumArg = `#{PropName}: #{Type}.values.byName(json['#{PropName}'])`;
 var dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.values.byName(json[item])).toList())`;
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
-var toJsonPropertyStub = `'#{PropName}': #{PropName}`;
-var toJsonListPropertyStub = `'#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
+var toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
+var toJsonListPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
 var dartEqualStub = `#{PropName} == other.#{PropName}`;
 var dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;
 var dartHashCodeKeyValue = `#{PropName}.hashCode`;
