@@ -6,7 +6,7 @@ import { DartGenerator } from './generators/dart.generator';
 import { generateDartEnum } from './generators/enum.generators';
 import { DartGeneratorSettings } from './dart_settings.interface';
 import { StringFns, outputToConsole, writeFileSafely, convertBooleanStrings } from '@shared';
-import { dartModelBaseClassStub } from './stubs/dart.stub';
+import { dartInterfacesAndModelFunctionsStub } from './stubs/dart.stub';
 
 
 const { version } = require('../package.json');
@@ -97,7 +97,7 @@ class MainGenerator {
     async writeModelBaseFile() {
         const fileName = this.settings.ModelsBaseClassFileName;
         const filePath = path.join(this.outputPath, fileName);
-        const code = dartModelBaseClassStub;
+        const code = dartInterfacesAndModelFunctionsStub;
         await this.writeFile(filePath, code);
     }
 

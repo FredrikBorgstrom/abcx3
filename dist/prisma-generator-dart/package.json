@@ -1,7 +1,7 @@
 {
   "name": "@abcx3/prisma-generator-dart",
   "description": "Automatically generate Dart classes from a Prisma schema",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "main": "./index.js",
   "bin":  "./index.js",
   "keywords": ["prisma", "generator", "dart", "flutter", "orm"],

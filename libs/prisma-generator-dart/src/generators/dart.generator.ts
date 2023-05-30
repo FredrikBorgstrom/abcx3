@@ -67,14 +67,7 @@ export class DartGenerator {
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
 
-        if (this.settings.ModelsImplementBaseClass) {
-            content = content.replace(/#{ImplementedClass}/g, 'implements ModelBase ');
-            content = content.replace(/#{OverrideAnnotation}/g, '@override');
-        } else {
-            content = content.replace(/#{ImplementedClass}/g, '');
-            content = content.replace(/#{OverrideAnnotation}/g, '');
-        }
-
+        let implementsStr = 'implements ToJson';
         let constructorArgs: string[] = [];
         let properties: string[] = [];
         let fromJsonArgs: string[] = [];
@@ -86,6 +79,9 @@ export class DartGenerator {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
             if (commentDirectives.some(directive => directive.name === '@abcx3_omit')) {
                 continue;
+            }
+            if (field.name === 'id') {
+                implementsStr += field.type == 'Int' ? ', Id' : ', IdString';
             }
             properties.push(this.generatePropertyContent(field));
             constructorArgs.push(this.generateConstructorArg(field));
@@ -100,6 +96,14 @@ export class DartGenerator {
         const toJsonContent = toJsonKeyVals.join(',\n\t');
         const equalsContent = equalsKeyVals.join(' &&\n\t\t');
         const hashCodeContent = hashCodeKeyVals.join(' ^\n\t\t');
+
+        if (this.settings.ModelsImplementBaseClass) {
+            content = content.replace(/#{ImplementedClasses}/g, implementsStr + ' ');
+            content = content.replace(/#{OverrideAnnotation}/g, '@override');
+        } else {
+            content = content.replace(/#{ImplementedClasses}/g, '');
+            content = content.replace(/#{OverrideAnnotation}/g, '');
+        }
 
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
         content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);

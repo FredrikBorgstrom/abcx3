@@ -63,7 +63,7 @@ var dartBaseClassStub = `
 
 #{Imports}
 
-class #{ClassName} #{ParentClass}#{ImplementedClass}{
+class #{ClassName} #{ParentClass}#{ImplementedClasses}{
     #{Properties}
     
       #{ClassName}({#{ConstructorArgs}});
@@ -105,8 +105,16 @@ var dartHashCodeKeyValue = `#{PropName}.hashCode`;
 var dartConstructorArgument = `#{Required} this.#{PropName}`;
 var dartConstructorArgumentWithDefaultValue = `#{Required} this.#{PropName} = #{DefaultValue}`;
 var dartPropertyStub = `#{Type}#{Nullable} #{PropName};`;
-var dartModelBaseClassStub = `abstract class ModelBase {
+var dartInterfacesAndModelFunctionsStub = `
+  abstract interface class Id {
     abstract int? id;
+  }
+  
+  abstract interface class IdString {
+    abstract String? id;
+  }
+  
+  abstract interface class ToJson {
     Map<String, dynamic> toJson();
   }
   
@@ -309,13 +317,7 @@ var DartGenerator = class {
     content = content.replace(/#{ClassName}/g, className);
     const parentClassInjection = "";
     content = content.replace(/#{ParentClass}/g, parentClassInjection);
-    if (this.settings.ModelsImplementBaseClass) {
-      content = content.replace(/#{ImplementedClass}/g, "implements ModelBase ");
-      content = content.replace(/#{OverrideAnnotation}/g, "@override");
-    } else {
-      content = content.replace(/#{ImplementedClass}/g, "");
-      content = content.replace(/#{OverrideAnnotation}/g, "");
-    }
+    let implementsStr = "implements ToJson";
     let constructorArgs = [];
     let properties = [];
     let fromJsonArgs = [];
@@ -326,6 +328,9 @@ var DartGenerator = class {
       const commentDirectives = this.prismaHelper.parseDocumentation(field);
       if (commentDirectives.some((directive) => directive.name === "@abcx3_omit")) {
         continue;
+      }
+      if (field.name === "id") {
+        implementsStr += field.type == "Int" ? ", Id" : ", IdString";
       }
       properties.push(this.generatePropertyContent(field));
       constructorArgs.push(this.generateConstructorArg(field));
@@ -340,6 +345,13 @@ var DartGenerator = class {
     const toJsonContent = toJsonKeyVals.join(",\n	");
     const equalsContent = equalsKeyVals.join(" &&\n		");
     const hashCodeContent = hashCodeKeyVals.join(" ^\n		");
+    if (this.settings.ModelsImplementBaseClass) {
+      content = content.replace(/#{ImplementedClasses}/g, implementsStr + " ");
+      content = content.replace(/#{OverrideAnnotation}/g, "@override");
+    } else {
+      content = content.replace(/#{ImplementedClasses}/g, "");
+      content = content.replace(/#{OverrideAnnotation}/g, "");
+    }
     content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
     content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
     content = content.replace(/#{Properties}/g, propertiesContent);
@@ -563,7 +575,7 @@ var MainGenerator = class {
   async writeModelBaseFile() {
     const fileName = this.settings.ModelsBaseClassFileName;
     const filePath = import_path.default.join(this.outputPath, fileName);
-    const code = dartModelBaseClassStub;
+    const code = dartInterfacesAndModelFunctionsStub;
     await this.writeFile(filePath, code);
   }
   async generateDartEnumFile(tEnum) {

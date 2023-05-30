@@ -3,7 +3,7 @@ export const dartBaseClassStub = `
 
 #{Imports}
 
-class #{ClassName} #{ParentClass}#{ImplementedClass}{
+class #{ClassName} #{ParentClass}#{ImplementedClasses}{
     #{Properties}
     
       #{ClassName}({#{ConstructorArgs}});
@@ -59,8 +59,16 @@ export const dartPropertyStub = `#{Type}#{Nullable} #{PropName};`;
 
 export const dartPropertyStubWithDefaultValue = `#{Type}#{Nullable} #{PropName} = #{DefaultValue};`;
 
-export const dartModelBaseClassStub = `abstract class ModelBase {
+export const dartInterfacesAndModelFunctionsStub = `
+  abstract interface class Id {
     abstract int? id;
+  }
+  
+  abstract interface class IdString {
+    abstract String? id;
+  }
+  
+  abstract interface class ToJson {
     Map<String, dynamic> toJson();
   }
   
