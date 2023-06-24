@@ -1,3 +1,5 @@
+## [1.4.0] Added copyWith method with support for nested objects to model classes
+
 ## [1.3.1] Upgraded dependencies in package.json
 
 ## [1.3.0] Prisma-generator-dart: Breaking change! Model classes now implement an 'Id' interface if the model has an integer 'id' property, or the 'IdString' interface if the model has a string 'id' property. You can turn off this behavior, so that the model classes dp not implement any interfaces, by setting the argument "ModelsImplementBaseClass" to false in the dart generator settings in your schema file.

@@ -6,28 +6,36 @@ export const dartBaseClassStub = `
 class #{ClassName} #{ParentClass}#{ImplementedClasses}{
     #{Properties}
     
-      #{ClassName}({#{ConstructorArgs}});
+    #{ClassName}({#{ConstructorArgs}});
 
-      factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
+    factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
       #{ClassName}(
         #{fromJsonArgs}
       );
 
-      #{OverrideAnnotation}
-      Map<String, dynamic> toJson() => ({
+    #{ClassName} copyWith({
+        #{CopyWithArgs}
+        }) {
+        return #{ClassName}(
+            #{CopyWithArgsValues}
+        );
+    }
+
+    #{OverrideAnnotation}
+    Map<String, dynamic> toJson() => ({
         #{toJsonKeyValues}
       });
 
-        #{OverrideAnnotation}
-        bool operator ==(Object other) =>
+    #{OverrideAnnotation}
+    bool operator ==(Object other) =>
             identical(this, other) ||
             other is #{ClassName} &&
                 runtimeType == other.runtimeType &&
                 #{equalsKeyValues};
 
-        #{OverrideAnnotation}
+    #{OverrideAnnotation}
         int get hashCode => #{hashCodeKeyValues};
-      }
+    }
     `;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
