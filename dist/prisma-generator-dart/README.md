@@ -9,6 +9,7 @@ This library automatically creates Dart class files for all your Prisma models. 
 - overrides hashCode based on object's property values
 - handles default values in constructors
 - all model classes and Enums can be encapsulated by a common namespace
+- copyWith method added since version 1.4.0 with support for nested objects
 
 ## Installation
 

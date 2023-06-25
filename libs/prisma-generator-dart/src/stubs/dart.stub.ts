@@ -17,7 +17,13 @@ class #{ClassName} #{ParentClass}#{ImplementedClasses}{
         #{CopyWithArgs}
         }) {
         return #{ClassName}(
-            #{CopyWithArgsValues}
+            #{CopyWithConstructorArgs}
+        );
+    }
+
+    #{ClassName} copyWithInstance(#{ClassName} #{InstanceName}) {
+        return #{ClassName}(
+            #{CopyWithInstanceConstructorArgs}
         );
     }
 
@@ -37,6 +43,11 @@ class #{ClassName} #{ParentClass}#{ImplementedClasses}{
         int get hashCode => #{hashCodeKeyValues};
     }
     `;
+
+export const dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
+export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
+
+export const dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Map<String, dynamic>) : null`;
