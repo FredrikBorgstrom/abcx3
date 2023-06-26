@@ -112,6 +112,11 @@ export class DartGenerator {
             properties.push(`int? $${listField.name}Count;`);
             constructorArgs.push(`this.$${listField.name}Count`);
             fromJsonArgs.push(`$${listField.name}Count: json['_count']?['${listField.name}'] as int?`);
+            equalsKeyVals.push(`$${listField.name}Count == other.$${listField.name}Count`);
+            hashCodeKeyVals.push(`$${listField.name}Count.hashCode`);
+            copyWithArgs.push(`int? $${listField.name}Count`);
+            copyWithConstructorArgs.push(`$${listField.name}Count: $${listField.name}Count ?? this.$${listField.name}Count`);
+            copyWithInstanceConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
             // toJsonKeyVals.push(`if($${listField.name}Count != null) '${listField.name}': $${listField.name}Count`);
         }
 
@@ -122,7 +127,7 @@ export class DartGenerator {
         
         if (listFields.length > 0) {
             let countToJsonStr = 'if (';
-            countToJsonStr = listFields.reduce((prev, curr) => prev + `($${curr.name}Count != null) || `, countToJsonStr).slice(0, -4);
+            countToJsonStr = listFields.reduce((prev, curr) => prev + `$${curr.name}Count != null || `, countToJsonStr).slice(0, -4);
             countToJsonStr += ") '_count': { \n\t\t";
             for (const listField of listFields) {
                 countToJsonStr += `if ($${listField.name}Count != null) '${listField.name}': $${listField.name}Count, \n\t\t`;

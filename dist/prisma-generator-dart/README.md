@@ -9,11 +9,10 @@ This library automatically creates Dart class files for all your Prisma models. 
 - overrides hashCode based on object's property values
 - handles default values in constructors
 - all model classes and Enums can be encapsulated by a common namespace
-- copyWith method added since version 1.4.0 with support for nested objects
+- copyWith and copyWithInstance method added since version 1.4.0 
+- supports queries that generate '_count' for all list-type fields, for instance 'posts' will generate a '$postsCount' property in the Dart class
 
 ## Installation
-
-
 
 ```bash
 npm i prisma-generator-dart -D

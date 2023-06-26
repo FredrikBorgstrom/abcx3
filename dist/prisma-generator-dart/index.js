@@ -93,9 +93,8 @@ class #{ClassName} #{ParentClass}#{ImplementedClasses}{
       });
 
     #{OverrideAnnotation}
-    bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is #{ClassName} &&
+    bool operator == (Object other) =>
+            identical(this, other) || other is #{ClassName} &&
                 runtimeType == other.runtimeType &&
                 #{equalsKeyValues};
 
@@ -372,6 +371,11 @@ var DartGenerator = class {
       properties.push(`int? $${listField.name}Count;`);
       constructorArgs.push(`this.$${listField.name}Count`);
       fromJsonArgs.push(`$${listField.name}Count: json['_count']?['${listField.name}'] as int?`);
+      equalsKeyVals.push(`$${listField.name}Count == other.$${listField.name}Count`);
+      hashCodeKeyVals.push(`$${listField.name}Count.hashCode`);
+      copyWithArgs.push(`int? $${listField.name}Count`);
+      copyWithConstructorArgs.push(`$${listField.name}Count: $${listField.name}Count ?? this.$${listField.name}Count`);
+      copyWithInstanceConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
     }
     const propertiesContent = properties.join("\n	");
     const constructorContent = constructorArgs.join(",\n	") + ",";
@@ -379,7 +383,7 @@ var DartGenerator = class {
     let toJsonContent = toJsonKeyVals.join(",\n	");
     if (listFields.length > 0) {
       let countToJsonStr = "if (";
-      countToJsonStr = listFields.reduce((prev, curr) => prev + `($${curr.name}Count != null) || `, countToJsonStr).slice(0, -4);
+      countToJsonStr = listFields.reduce((prev, curr) => prev + `$${curr.name}Count != null || `, countToJsonStr).slice(0, -4);
       countToJsonStr += ") '_count': { \n		";
       for (const listField of listFields) {
         countToJsonStr += `if ($${listField.name}Count != null) '${listField.name}': $${listField.name}Count, 

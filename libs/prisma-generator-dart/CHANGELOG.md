@@ -1,4 +1,4 @@
-## [1.4.0] Added copyWith method with support for nested objects to model classes
+## [1.4.0] Added copyWith and copyWithInstance methods. Classes supports '_count' properties for list-type fields, for instance 'posts' will generate a '$postsCount' property in the Dart class.
 
 ## [1.3.1] Upgraded dependencies in package.json
 

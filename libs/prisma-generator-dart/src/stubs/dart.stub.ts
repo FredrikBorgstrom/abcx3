@@ -33,9 +33,8 @@ class #{ClassName} #{ParentClass}#{ImplementedClasses}{
       });
 
     #{OverrideAnnotation}
-    bool operator ==(Object other) =>
-            identical(this, other) ||
-            other is #{ClassName} &&
+    bool operator == (Object other) =>
+            identical(this, other) || other is #{ClassName} &&
                 runtimeType == other.runtimeType &&
                 #{equalsKeyValues};
 
