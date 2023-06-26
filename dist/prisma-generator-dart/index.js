@@ -346,6 +346,7 @@ var DartGenerator = class {
     let copyWithArgs = [];
     let copyWithConstructorArgs = [];
     let copyWithInstanceConstructorArgs = [];
+    let listFields = [];
     for (const field of this.model.fields) {
       const commentDirectives = this.prismaHelper.parseDocumentation(field);
       if (commentDirectives.some((directive) => directive.name === "@abcx3_omit")) {
@@ -363,11 +364,29 @@ var DartGenerator = class {
       copyWithArgs.push(this.generateCopyWithArg(field));
       copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
       copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
+      if (field.isList) {
+        listFields.push(field);
+      }
+    }
+    for (const listField of listFields) {
+      properties.push(`int? $${listField.name}Count;`);
+      constructorArgs.push(`this.$${listField.name}Count`);
+      fromJsonArgs.push(`$${listField.name}Count: json['_count']?['${listField.name}'] as int?`);
     }
     const propertiesContent = properties.join("\n	");
-    const constructorContent = constructorArgs.join(",\n	");
+    const constructorContent = constructorArgs.join(",\n	") + ",";
     const fromJsonContent = fromJsonArgs.join(",\n	");
-    const toJsonContent = toJsonKeyVals.join(",\n	");
+    let toJsonContent = toJsonKeyVals.join(",\n	");
+    if (listFields.length > 0) {
+      let countToJsonStr = "if (";
+      countToJsonStr = listFields.reduce((prev, curr) => prev + `($${curr.name}Count != null) || `, countToJsonStr).slice(0, -4);
+      countToJsonStr += ") '_count': { \n		";
+      for (const listField of listFields) {
+        countToJsonStr += `if ($${listField.name}Count != null) '${listField.name}': $${listField.name}Count, 
+		`;
+      }
+      toJsonContent += ",\n		" + countToJsonStr + "},";
+    }
     const equalsContent = equalsKeyVals.join(" &&\n		");
     const hashCodeContent = hashCodeKeyVals.join(" ^\n		");
     const copyWithArgsContent = copyWithArgs.join(",\n		") + ",";

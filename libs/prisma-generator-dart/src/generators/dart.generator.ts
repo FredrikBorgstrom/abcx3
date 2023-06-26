@@ -82,6 +82,7 @@ export class DartGenerator {
         let copyWithArgs: string[] = [];
         let copyWithConstructorArgs: string[] = [];
         let copyWithInstanceConstructorArgs: string[] = [];
+        let listFields: DMMF.Field[] = [];
 
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
@@ -91,6 +92,7 @@ export class DartGenerator {
             if (field.name === 'id') {
                 implementsStr += field.type == 'Int' ? ', Id' : ', IdString';
             }
+            
             properties.push(this.generatePropertyContent(field));
             constructorArgs.push(this.generateConstructorArg(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
@@ -100,11 +102,33 @@ export class DartGenerator {
             copyWithArgs.push(this.generateCopyWithArg(field));
             copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
             copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
+
+            if (field.isList) {
+                listFields.push(field);
+            }
         }
+
+        for (const listField of listFields) {
+            properties.push(`int? $${listField.name}Count;`);
+            constructorArgs.push(`this.$${listField.name}Count`);
+            fromJsonArgs.push(`$${listField.name}Count: json['_count']?['${listField.name}'] as int?`);
+            // toJsonKeyVals.push(`if($${listField.name}Count != null) '${listField.name}': $${listField.name}Count`);
+        }
+
         const propertiesContent = properties.join('\n\t');
-        const constructorContent = constructorArgs.join(',\n\t');
+        const constructorContent = constructorArgs.join(',\n\t')+ ',';
         const fromJsonContent = fromJsonArgs.join(',\n\t');
-        const toJsonContent = toJsonKeyVals.join(',\n\t');
+        let toJsonContent = toJsonKeyVals.join(',\n\t');
+        
+        if (listFields.length > 0) {
+            let countToJsonStr = 'if (';
+            countToJsonStr = listFields.reduce((prev, curr) => prev + `($${curr.name}Count != null) || `, countToJsonStr).slice(0, -4);
+            countToJsonStr += ") '_count': { \n\t\t";
+            for (const listField of listFields) {
+                countToJsonStr += `if ($${listField.name}Count != null) '${listField.name}': $${listField.name}Count, \n\t\t`;
+            }
+            toJsonContent += ',\n\t\t' + countToJsonStr + '},';
+        }
         const equalsContent = equalsKeyVals.join(' &&\n\t\t');
         const hashCodeContent = hashCodeKeyVals.join(' ^\n\t\t');
         const copyWithArgsContent = copyWithArgs.join(',\n\t\t') + ',';
