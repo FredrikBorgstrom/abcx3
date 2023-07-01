@@ -72,7 +72,10 @@ export class DartGenerator {
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
 
-        let implementsStr = 'implements ToJson';
+        let implementsStr = 'implements ';
+        if (this.settings.ModelsImplementBaseClass) {
+            implementsStr += `ModelBase<${className}>, `;
+        }
         let constructorArgs: string[] = [];
         let properties: string[] = [];
         let fromJsonArgs: string[] = [];
@@ -90,7 +93,7 @@ export class DartGenerator {
                 continue;
             }
             if (field.name === 'id') {
-                implementsStr += field.type == 'Int' ? ', Id' : ', IdString';
+                implementsStr += field.type == 'Int' ? 'Id' : 'IdString';
             }
             
             properties.push(this.generatePropertyContent(field));
@@ -321,7 +324,7 @@ export class DartGenerator {
         let result = '';
         const checkedTypes: string[] = [];
         if (this.settings.ModelsImplementBaseClass) {
-            result += `import '${this.settings.ModelsBaseClassFileName}';\n`;
+            result += `import '${this.settings.CommonSourceDirectory}/${this.settings.ModelsBaseClassFileName}';\n`;
         }
 
         this.model.fields.forEach(({ type }) => {

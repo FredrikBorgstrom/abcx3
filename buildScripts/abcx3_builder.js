@@ -13,6 +13,10 @@ module.exports = {
             fs.mkdirSync(`${distDir}/${libName}`, { recursive: true });
         }
 
+        if (libName === 'prisma-generator-dart') {
+            fs.cpSync('./libs/prisma-generator-dart/src/dart_source', `${distDir}/${libName}/dart_source`, { recursive: true });
+        }
+
         fs.copyFileSync(`./${libDir}/${libName}/package.dist.json`,
             `${distDir}/${libName}/package.json`);
 

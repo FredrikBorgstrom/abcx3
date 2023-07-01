@@ -8,11 +8,13 @@ class #{ClassName} #{ParentClass}#{ImplementedClasses}{
     
     #{ClassName}({#{ConstructorArgs}});
 
+    #{OverrideAnnotation}
     factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
       #{ClassName}(
         #{fromJsonArgs}
       );
 
+      #{OverrideAnnotation}  
     #{ClassName} copyWith({
         #{CopyWithArgs}
         }) {
@@ -21,6 +23,7 @@ class #{ClassName} #{ParentClass}#{ImplementedClasses}{
         );
     }
 
+    #{OverrideAnnotation}
     #{ClassName} copyWithInstance(#{ClassName} #{InstanceName}) {
         return #{ClassName}(
             #{CopyWithInstanceConstructorArgs}
