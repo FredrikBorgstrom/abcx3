@@ -338,9 +338,9 @@ var DartGenerator = class {
     content = content.replace(/#{InstanceName}/g, instanceName);
     const parentClassInjection = "";
     content = content.replace(/#{ParentClass}/g, parentClassInjection);
-    let implementsStr = "implements ";
+    let implementsStr = "";
     if (this.settings.ModelsImplementBaseClass) {
-      implementsStr += `ModelBase<${className}>, `;
+      implementsStr = `implements PrismaModel<${className}> `;
     }
     let constructorArgs = [];
     let properties = [];
@@ -357,8 +357,8 @@ var DartGenerator = class {
       if (commentDirectives.some((directive) => directive.name === "@abcx3_omit")) {
         continue;
       }
-      if (field.name === "id") {
-        implementsStr += `Id<${this.getDartBaseType(field)}>`;
+      if (field.name === "id" && this.settings.ModelsImplementBaseClass) {
+        implementsStr = `implements PrismaModelWithId<${className}, ${this.getDartType(field)}>`;
       }
       properties.push(this.generatePropertyContent(field));
       constructorArgs.push(this.generateConstructorArg(field));
@@ -551,6 +551,8 @@ var DartGenerator = class {
   generateImportStatements() {
     let result = "";
     const checkedTypes = [];
+    result += `import '${this.settings.CommonSourceDirectory}/utils.dart';
+`;
     if (this.settings.ModelsImplementBaseClass) {
       result += `import '${this.settings.CommonSourceDirectory}/${this.settings.ModelsBaseClassFileName}';
 `;
@@ -589,7 +591,7 @@ var defaultOptions = {
   MakeAllPropsOptional: true,
   ModelsImplementBaseClass: true,
   CommonSourceDirectory: "common",
-  ModelsBaseClassFileName: "model_base.dart"
+  ModelsBaseClassFileName: "prisma_model.dart"
 };
 (0, import_generator_helper.generatorHandler)({
   onManifest() {

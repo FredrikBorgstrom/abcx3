@@ -21,7 +21,7 @@ const defaultOptions: DartGeneratorSettings = {
     MakeAllPropsOptional: true,
     ModelsImplementBaseClass: true,
     CommonSourceDirectory: 'common',
-    ModelsBaseClassFileName: 'model_base.dart',
+    ModelsBaseClassFileName: 'prisma_model.dart',
 };
 
 generatorHandler({

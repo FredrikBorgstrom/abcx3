@@ -68,9 +68,9 @@ export class DartGenerator {
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
 
-        let implementsStr = 'implements ';
+        let implementsStr = '';
         if (this.settings.ModelsImplementBaseClass) {
-            implementsStr += `ModelBase<${className}>, `;
+            implementsStr = `implements PrismaModel<${className}> `;
         }
         let constructorArgs: string[] = [];
         let properties: string[] = [];
@@ -88,9 +88,9 @@ export class DartGenerator {
             if (commentDirectives.some(directive => directive.name === '@abcx3_omit')) {
                 continue;
             }
-            if (field.name === 'id') {
+            if (field.name === 'id' && this.settings.ModelsImplementBaseClass) {
                 // implementsStr += field.type == 'Int' ? 'Id' : 'IdString';
-                implementsStr += `Id<${this.getDartBaseType(field)}>`;
+                implementsStr = `implements PrismaModelWithId<${className}, ${this.getDartType(field)}>`;
             }
             
             properties.push(this.generatePropertyContent(field));
@@ -320,6 +320,7 @@ export class DartGenerator {
     private generateImportStatements(): string {
         let result = '';
         const checkedTypes: string[] = [];
+        result += `import '${this.settings.CommonSourceDirectory}/utils.dart';\n`;
         if (this.settings.ModelsImplementBaseClass) {
             result += `import '${this.settings.CommonSourceDirectory}/${this.settings.ModelsBaseClassFileName}';\n`;
         }
