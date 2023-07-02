@@ -81,8 +81,8 @@ export const dartPropertyStub = `#{Type}#{Nullable} #{PropName};`;
 export const dartPropertyStubWithDefaultValue = `#{Type}#{Nullable} #{PropName} = #{DefaultValue};`;
 
 export const dartInterfacesAndModelFunctionsStub = `
-  abstract interface class Id {
-    abstract int? id;
+  abstract interface class Id<K>} {
+    abstract K? id;
   }
   
   abstract interface class IdString {

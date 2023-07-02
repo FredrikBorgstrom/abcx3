@@ -125,8 +125,8 @@ var dartConstructorArgument = `#{Required} this.#{PropName}`;
 var dartConstructorArgumentWithDefaultValue = `#{Required} this.#{PropName} = #{DefaultValue}`;
 var dartPropertyStub = `#{Type}#{Nullable} #{PropName};`;
 var dartInterfacesAndModelFunctionsStub = `
-  abstract interface class Id {
-    abstract int? id;
+  abstract interface class Id<K>} {
+    abstract K? id;
   }
   
   abstract interface class IdString {
@@ -358,7 +358,7 @@ var DartGenerator = class {
         continue;
       }
       if (field.name === "id") {
-        implementsStr += field.type == "Int" ? "Id" : "IdString";
+        implementsStr += `Id<${this.getDartBaseType(field)}>`;
       }
       properties.push(this.generatePropertyContent(field));
       constructorArgs.push(this.generateConstructorArg(field));

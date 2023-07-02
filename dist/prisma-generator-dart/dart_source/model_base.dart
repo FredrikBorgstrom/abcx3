@@ -1,9 +1,5 @@
-abstract interface class Id {
-  abstract int? id;
-}
-
-abstract interface class IdString {
-  abstract String? id;
+abstract interface class Id<K> {
+  K? id;
 }
 
 abstract interface class ToJson {

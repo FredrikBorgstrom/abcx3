@@ -39,10 +39,6 @@ export const dartTypeMap = {
 type DartTypeMapKey = keyof typeof dartTypeMap;
 
 
-export function helloWorld(name: string): string {
-    return name + "Hello World!";
-}
-
 export class DartGenerator {
     private importedPackages: string[] = [];
     private omitFields: string[] = [];
@@ -93,7 +89,8 @@ export class DartGenerator {
                 continue;
             }
             if (field.name === 'id') {
-                implementsStr += field.type == 'Int' ? 'Id' : 'IdString';
+                // implementsStr += field.type == 'Int' ? 'Id' : 'IdString';
+                implementsStr += `Id<${this.getDartBaseType(field)}>`;
             }
             
             properties.push(this.generatePropertyContent(field));
