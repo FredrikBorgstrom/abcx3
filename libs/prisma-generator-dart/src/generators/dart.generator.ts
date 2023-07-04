@@ -90,7 +90,7 @@ export class DartGenerator {
             }
             if (field.name === 'id' && this.settings.ModelsImplementBaseClass) {
                 // implementsStr += field.type == 'Int' ? 'Id' : 'IdString';
-                implementsStr = `implements PrismaModelWithId<${className}, ${this.getDartType(field)}>`;
+                implementsStr = `implements PrismaIdModel<${className}, ${this.getDartType(field)}>`;
             }
             
             properties.push(this.generatePropertyContent(field));

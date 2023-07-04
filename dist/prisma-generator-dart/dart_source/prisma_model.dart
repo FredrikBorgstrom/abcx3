@@ -11,4 +11,4 @@ abstract interface class Id<K> {
   K? id;
 }
 
-abstract interface class PrismaModelWithId<M, K> implements PrismaModel<M>, Id<K> {}
+abstract interface class PrismaIdModel<M, K> implements PrismaModel<M>, Id<K> {}
