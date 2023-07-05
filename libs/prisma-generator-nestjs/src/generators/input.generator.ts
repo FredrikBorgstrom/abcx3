@@ -25,7 +25,7 @@ export class InputGenerator {
         const createUpdateStub = this.generateUpdateInput();
         content = content.replace(/#{UpdateClassStub}/g, createUpdateStub);
 
-        content = content.replace(/#{Imports}/g, this.generateImportStatements());
+        content = content.replace(/#{AdditionalImports}/g, this.generateImportStatements());
         return content;
     }
 

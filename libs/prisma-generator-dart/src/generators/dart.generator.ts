@@ -20,7 +20,8 @@ import {
     dartListsEqualStub,
     dartCopyWithArg,
     dartCopyWithConstructorArg,
-    dartCopyWithInstanceConstructorArg
+    dartCopyWithInstanceConstructorArg,
+    dartUniqueIdStub
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -50,7 +51,7 @@ export class DartGenerator {
 
     generateContent() {
         let content = this.generateBaseInput();
-        content = content.replace(/#{Imports}/g, this.generateImportStatements());
+        content = content.replace(/#{AdditionalImports}/g, this.generateImportStatements());
         return content;
     }
 
@@ -68,10 +69,10 @@ export class DartGenerator {
         const parentClassInjection = '';
         content = content.replace(/#{ParentClass}/g, parentClassInjection);
 
-        let implementsStr = '';
-        if (this.settings.ModelsImplementBaseClass) {
+        // let implementsStr = '';
+        /* if (this.settings.ModelsImplementBaseClass) {
             implementsStr = `implements PrismaModel<${className}> `;
-        }
+        } */
         let constructorArgs: string[] = [];
         let properties: string[] = [];
         let fromJsonArgs: string[] = [];
@@ -82,17 +83,19 @@ export class DartGenerator {
         let copyWithConstructorArgs: string[] = [];
         let copyWithInstanceConstructorArgs: string[] = [];
         let listFields: DMMF.Field[] = [];
+        let uniqueIdGetter = '';
 
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
             if (commentDirectives.some(directive => directive.name === '@abcx3_omit')) {
                 continue;
             }
-            if (field.name === 'id' && this.settings.ModelsImplementBaseClass) {
-                // implementsStr += field.type == 'Int' ? 'Id' : 'IdString';
-                implementsStr = `implements PrismaIdModel<${className}, ${this.getDartType(field)}>`;
+            if (field.isId) {
+                uniqueIdGetter = this.generateUniqueIdGetter(field);
+                content = content.replace(/#{UniqueId}/g, uniqueIdGetter);
+                content = content.replace(/#{ImplementsUniqueId}/g, `, UniqueId<${this.getDartType(field)}>`);
             }
-            
+
             properties.push(this.generatePropertyContent(field));
             constructorArgs.push(this.generateConstructorArg(field));
             fromJsonArgs.push(this.generateFromJsonArgument(field));
@@ -121,10 +124,10 @@ export class DartGenerator {
         }
 
         const propertiesContent = properties.join('\n\t');
-        const constructorContent = constructorArgs.join(',\n\t')+ ',';
+        const constructorContent = constructorArgs.join(',\n\t') + ',';
         const fromJsonContent = fromJsonArgs.join(',\n\t');
         let toJsonContent = toJsonKeyVals.join(',\n\t');
-        
+
         if (listFields.length > 0) {
             let countToJsonStr = 'if (';
             countToJsonStr = listFields.reduce((prev, curr) => prev + `$${curr.name}Count != null || `, countToJsonStr).slice(0, -4);
@@ -140,14 +143,15 @@ export class DartGenerator {
         const copyWithConstructorArgsContent = copyWithConstructorArgs.join(',\n\t\t');
         const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(',\n\t\t');
 
-        if (this.settings.ModelsImplementBaseClass) {
-            content = content.replace(/#{ImplementedClasses}/g, implementsStr + ' ');
-            content = content.replace(/#{OverrideAnnotation}/g, '@override');
-        } else {
-            content = content.replace(/#{ImplementedClasses}/g, '');
-            content = content.replace(/#{OverrideAnnotation}/g, '');
-        }
+        //if (this.settings.ModelsImplementBaseClass) {
+        // content = content.replace(/#{ImplementsUniqueId}/g, implementsStr + ' ');
+        content = content.replace(/#{OverrideAnnotation}/g, '@override');
+        // } else {
+        //     content = content.replace(/#{ImplementsUniqueId}/g, '');
+        //     content = content.replace(/#{OverrideAnnotation}/g, '');
+        // }
 
+        content = content.replace(/#{UniqueIdGetter}/g, uniqueIdGetter);
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
         content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
 
@@ -162,6 +166,16 @@ export class DartGenerator {
 
         content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);
 
+        return content;
+    }
+
+    generateUniqueIdGetter(field: DMMF.Field): string {
+        let content = dartUniqueIdStub;
+        content = content.replace(/#{UniqueType}/g, this.getDartType(field));
+        content = content.replace(/#{UniqueId}/g, field.name);
+        content = content.replace(/#{PropName}/g, field.name);
+        content = content.replace(/#{OverrideAnnotation}/g, '@override');
+        content = this.replaceNullable(content, field);
         return content;
     }
 
@@ -197,7 +211,7 @@ export class DartGenerator {
         content = content.replace(/#{PropName}/g, field.name);
         return content;
     }
-    
+
     generateConstructorArg(field: DMMF.Field): string {
         let content = '';
 
@@ -258,7 +272,7 @@ export class DartGenerator {
                         code = dartFromJsonScalarStringListArg;
                     } else {
                         // todo: add other types here
-                        code = dartFromJsonScalarStringListArg; 
+                        code = dartFromJsonScalarStringListArg;
                     }
                     break;
                 default:
@@ -298,9 +312,9 @@ export class DartGenerator {
         content = content.replace(/#{Type}/g, this.getDartType(field));
         content = this.replaceNullable(content, field);
 
-        if (this.settings.ModelsImplementBaseClass && field.name === 'id') {
+        /* if (this.settings.ModelsImplementBaseClass && field.name === 'id') {
             content = '@override\n' + content;
-        }
+        } */
         return content;
     }
 
@@ -320,10 +334,11 @@ export class DartGenerator {
     private generateImportStatements(): string {
         let result = '';
         const checkedTypes: string[] = [];
-        result += `import '${this.settings.CommonSourceDirectory}/utils.dart';\n`;
-        if (this.settings.ModelsImplementBaseClass) {
-            result += `import '${this.settings.CommonSourceDirectory}/${this.settings.ModelsBaseClassFileName}';\n`;
-        }
+        // result += `import '${this.settings.CommonSourceDirectory}/utils.dart';\n`;
+        // result += `import '${this.settings.CommonSourceDirectory}/model_interfaces.dart';\n`;
+        /*  if (this.settings.ModelsImplementBaseClass) {
+             result += `import '${this.settings.CommonSourceDirectory}/${this.settings.ModelsBaseClassFileName}';\n`;
+         } */
 
         this.model.fields.forEach(({ type }) => {
             if (!checkedTypes.includes(type)) {
