@@ -1,3 +1,5 @@
+part of abcx3_prisma;
+
 List<T> createModels<T>(json, JsonModelFactory<T> jsonFactory) {
   List<T> instances = [];
   for (final item in json) {
@@ -6,7 +8,6 @@ List<T> createModels<T>(json, JsonModelFactory<T> jsonFactory) {
   return instances;
 }
 
-typedef JsonModelFactory<T> = T Function(Map<String, dynamic> json);
 
 bool areListsEqual<T>(List<T>? list1, List<T>? list2) {
   if (list1 == null && list2 == null) return true;

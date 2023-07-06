@@ -1,3 +1,5 @@
+part of abcx3_prisma;
+
 abstract interface class StorageInterface<T> {
   void initStorage();
 
@@ -18,18 +20,16 @@ abstract interface class StorageInterface<T> {
   void deleteOne(T item);
 
   void deleteMany(List<T> items);
-
 }
 
-abstract interface class KeyStorageInterface<T, K> extends StorageInterface<T> {
+abstract interface class KeyStorageInterface<T, U> extends StorageInterface<T> {
+  U? getKey(T item);
 
-  K? getKey(T item);
+  T? getOneByKey(U key);
 
-  T? getOneByKey(K key);
+  List<T> getManyByKeys(List<U> keys);
 
-  List<T> getManyByKeys(List<K> keys);
+  void deleteOneByKey(U key);
 
-  void deleteOneByKey(K key);
-
-  void deleteManyByKeys(List<K> keys);
+  void deleteManyByKeys(List<U> keys);
 }

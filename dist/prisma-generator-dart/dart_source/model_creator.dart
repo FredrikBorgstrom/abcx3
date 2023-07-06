@@ -1,18 +1,11 @@
-library model_creators;
-
-import 'dart:convert';
-import 'model_base.dart';
-import 'package:abcx3/services/authentication/auth.library.dart';
-import 'package:abcx3/services/service_manager.dart';
-import 'package:rxdart/rxdart.dart';
-
-part 'model_request.mixin.dart';
+part of abcx3_prisma;
 
 class ModelCreator<T> implements Disposable {
   final JsonModelFactory<T> jsonModelFactory;
   final AuthHttpService authHttp;
 
-  ModelCreator(this.jsonModelFactory) : authHttp = ServiceManager.I.get<AuthHttpService>()!;
+  ModelCreator(this.jsonModelFactory)
+      : authHttp = ServiceManager.I.get<AuthHttpService>()!;
 
   create(json) {
     if (json is List) {

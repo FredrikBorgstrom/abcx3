@@ -1,14 +1,10 @@
-import 'package:abcx3/gen_models/common/prisma_model.dart';
-import 'package:abcx3/gen_models/common/storage.interface.dart';
-import 'package:abcx3/utils/iterable_extensions.dart';
-import 'package:rxdart/rxdart.dart';
+part of abcx3_prisma;
 
-import 'model_store.dart';
+/*typedef ModelStreamStoreMixin<M, U>
+    = _ModelStreamStoreMixin<M, U, UniqueIdAndCopyWith<U, M>>;*/
 
-
-typedef ModelStreamStoreMixin<M, K> = _ModelStreamStoreMixin<M, K, PrismaIdModel<M, K>>;
-
-mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements KeyStorageInterface<T, K> {
+mixin ItemStreamStoreMixin<M, U, T extends UniqueIdAndCopyWith<U, M>>
+    implements KeyStorageInterface<T, U> {
   final BehaviorSubject<List<T>> _models$$ = BehaviorSubject.seeded([]);
 
   late final Stream<List<T>> models$ = _models$$.stream;
@@ -19,22 +15,24 @@ mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements Key
   void initStorage() {}
 
   @override
-  K? getKey(T item) => item.id;
+  U? getKey(T item) => item.uniqueId;
 
   @override
   List<T> getAll() => models; // .whereType<T>().toList();
 
   @override
-  T? getOneByKey(K id) => models.find((i) => i.id == id);
+  T? getOneByKey(U? id) => models.find((i) => i.uniqueId == id);
 
   @override
-  List<T> getManyByKeys(List<K> ids) => ids.map((id) => getOneByKey(id)).whereType<T>().toList();
+  List<T> getManyByKeys(List<U> ids) =>
+      ids.map((id) => getOneByKey(id)).whereType<T>().toList();
 
-  T? getOneByPropertyValue(GetPropertyValue<T, K> getPropVal, K fieldValue) {
+  T? getOneByPropertyValue(GetPropertyValue getPropVal, fieldValue) {
     return models.find((m) => getPropVal(m) == fieldValue);
   }
 
-  List<T> getManyByFieldValue(GetPropertyValue<T, K> getPropVal, K fieldValue) {
+  List<T> getManyByFieldValue<K>(
+      GetPropertyValue<T, K> getPropVal, fieldValue) {
     return models.where((m) => getPropVal(m) == fieldValue).toList();
   }
 
@@ -42,7 +40,8 @@ mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements Key
   void addOne(T model) => _models$$.add([...models, model]);
 
   @override
-  void addMany(List<T> addedModels) => _models$$.add([...models, ...addedModels]);
+  void addMany(List<T> addedModels) =>
+      _models$$.add([...models, ...addedModels]);
 
   @override
   void deleteOne(T model) {
@@ -52,10 +51,11 @@ mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements Key
   }
 
   @override
-  void deleteMany(List<T> removedModels) => _models$$.add(models.removeList(removedModels).toList());
+  void deleteMany(List<T> removedModels) =>
+      _models$$.add(models.removeList(removedModels).toList());
 
   @override
-  void deleteOneByKey(K key) {
+  void deleteOneByKey(U key) {
     final model = getOneByKey(key);
     if (model != null) {
       deleteOne(getOneByKey(key)!);
@@ -63,7 +63,7 @@ mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements Key
   }
 
   @override
-  void deleteManyByKeys(List<K> keys) {
+  void deleteManyByKeys(List<U> keys) {
     for (var key in keys) {
       deleteOneByKey(key);
     }
@@ -71,8 +71,8 @@ mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements Key
 
   @override
   T? updateOne(T model) {
-    if (model.id != null) {
-      T? existingModel = getOneByKey(model.id as K);
+    if (model.uniqueId != null) {
+      T? existingModel = getOneByKey(model.uniqueId);
       if (existingModel != null) {
         T updatedModel = existingModel.copyWithInstance(model as M) as T;
         deleteOne(existingModel);
@@ -94,7 +94,7 @@ mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements Key
 
   @override
   T? upsertOne(T item) {
-    final existingModel = getOneByKey(item.id as K);
+    final existingModel = getOneByKey(item.uniqueId);
     if (existingModel != null) {
       return updateOne(item);
     } else {
@@ -111,6 +111,4 @@ mixin _ModelStreamStoreMixin<M, K, T extends PrismaIdModel<M, K>> implements Key
     }
     return updatedModels;
   }
-
-
 }

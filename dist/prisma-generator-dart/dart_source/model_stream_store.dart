@@ -1,12 +1,9 @@
-import 'package:abcx3/gen_models/common/prisma_model.dart';
-import 'package:abcx3/gen_models/common/storage.interface.dart';
-import 'package:abcx3/utils/iterable_extensions.dart';
-import 'package:rxdart/rxdart.dart';
+part of abcx3_prisma;
 
+typedef ModelStreamStore<M, U> = _ModelStreamStore<M, U, PrismaModel<M, U>>;
 
-typedef ModelStreamStore<M, K> = _ModelStreamStore<M, K, PrismaIdModel<M, K>>;
-
-class _ModelStreamStore<M, K, T extends PrismaIdModel<M, K>> implements KeyStorageInterface<T, K> {
+class _ModelStreamStore<M, K, T extends PrismaModel<M, K>>
+    implements KeyStorageInterface<T, K> {
   final BehaviorSubject<List<T>> _models$$ = BehaviorSubject.seeded([]);
 
   late final Stream<List<T>> models$ = _models$$.stream;
@@ -14,27 +11,27 @@ class _ModelStreamStore<M, K, T extends PrismaIdModel<M, K>> implements KeyStora
   List<T> get models => _models$$.value;
 
   @override
-  void initStorage() {
-
-  }
+  void initStorage() {}
 
   @override
-  K? getKey(T item) => item.id;
+  K? getKey(T item) => item.uniqueId;
 
   @override
   List<T> getAll() => models; // .whereType<T>().toList();
 
   @override
-  T? getOneByKey(K id) => models.find((i) => i.id == id);
+  T? getOneByKey(K? id) => models.find((item) => getKey(item) == id);
 
   @override
-  List<T> getManyByKeys(List<K> ids) => ids.map((id) => getOneByKey(id)).whereType<T>().toList();
+  List<T> getManyByKeys(List<K> ids) =>
+      ids.map((id) => getOneByKey(id)).whereType<T>().toList();
 
   @override
   void addOne(T model) => _models$$.add([...models, model]);
 
   @override
-  void addMany(List<T> addedModels) => _models$$.add([...models, ...addedModels]);
+  void addMany(List<T> addedModels) =>
+      _models$$.add([...models, ...addedModels]);
 
   @override
   void deleteOne(T model) {
@@ -44,7 +41,8 @@ class _ModelStreamStore<M, K, T extends PrismaIdModel<M, K>> implements KeyStora
   }
 
   @override
-  void deleteMany(List<T> removedModels) => _models$$.add(models.removeList(removedModels).toList());
+  void deleteMany(List<T> removedModels) =>
+      _models$$.add(models.removeList(removedModels).toList());
 
   @override
   void deleteOneByKey(K key) {
@@ -63,8 +61,9 @@ class _ModelStreamStore<M, K, T extends PrismaIdModel<M, K>> implements KeyStora
 
   @override
   T? updateOne(T model) {
-    if (model.id != null) {
-      T? existingModel = getOneByKey(model.id as K);
+    K? keyVal = getKey(model);
+    if (keyVal != null) {
+      T? existingModel = getOneByKey(keyVal);
       if (existingModel != null) {
         T updatedModel = existingModel.copyWithInstance(model as M) as T;
         deleteOne(existingModel);
@@ -86,7 +85,7 @@ class _ModelStreamStore<M, K, T extends PrismaIdModel<M, K>> implements KeyStora
 
   @override
   T? upsertOne(T item) {
-    final existingModel = getOneByKey(item.id as K);
+    final existingModel = getOneByKey(getKey(item));
     if (existingModel != null) {
       return updateOne(item);
     } else {
@@ -103,6 +102,4 @@ class _ModelStreamStore<M, K, T extends PrismaIdModel<M, K>> implements KeyStora
     }
     return updatedModels;
   }
-
-
 }

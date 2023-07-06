@@ -1,18 +1,22 @@
-part of model_creators;
+part of abcx3_prisma;
 
 mixin ModelRequestMixin<T> on ModelCreator<T> {
   final Map<String, Stream<dynamic>> _cachedStreams = {};
 
-  Stream<T> getOne$({dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
+  Stream<T> getOne$(
+      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
     return get$<T>(param: param, endpoint: endpoint, body: body);
   }
 
-  Stream<List<T>> getMany$({dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
+  Stream<List<T>> getMany$(
+      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
     return get$<List<T>>(param: param, endpoint: endpoint, body: body);
   }
 
-  Stream<U> get$<U>({dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
-    final serializedRequest = _serializeRequest(param: param, endpoint: endpoint);
+  Stream<U> get$<U>(
+      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
+    final serializedRequest =
+        _serializeRequest(param: param, endpoint: endpoint);
     final cachedRequest = _getCachedRequest(serializedRequest);
 
     if (cachedRequest != null) {
