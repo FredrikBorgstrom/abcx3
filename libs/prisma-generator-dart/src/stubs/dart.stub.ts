@@ -4,7 +4,7 @@ export const dartBaseClassStub = `
 import 'common/abcx3_prisma.library.dart';
 #{AdditionalImports}
 
-class #{ClassName} #{ParentClass} implements FromJson, ToJson, CopyWith<#{ClassName}> #{ImplementsUID}{
+class #{ClassName} #{ParentClass} implements JsonSerializable, CopyWith<#{ClassName}> #{ImplementsUID} #{ImplementsId} {
     #{Properties}
     
     #{ClassName}({#{ConstructorArgs}});
@@ -51,7 +51,7 @@ class #{ClassName} #{ParentClass} implements FromJson, ToJson, CopyWith<#{ClassN
 
 export const dartUIDStub = `
 #{OverrideAnnotation}
-#{UIDType}#{Nullable} get $uid => #{UID};`;
+#{Type}#{Nullable} get $uid => #{PropName};`;
 
 export const dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
@@ -78,10 +78,8 @@ export const dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})
 
 export const dartHashCodeKeyValue = `#{PropName}.hashCode`;
 
-
 export const dartConstructorArgument = `#{Required} this.#{PropName}`;
 export const dartConstructorArgumentWithDefaultValue = `#{Required} this.#{PropName} = #{DefaultValue}`;
-
 
 export const dartPropertyStub = `#{Type}#{Nullable} #{PropName};`;
 

@@ -64,12 +64,12 @@ var dartBaseClassStub = `
 import 'common/abcx3_prisma.library.dart';
 #{AdditionalImports}
 
-class #{ClassName} #{ParentClass} implements FromJson, ToJson, CopyWith<#{ClassName}> #{ImplementsUniqueId}{
+class #{ClassName} #{ParentClass} implements JsonSerializable, CopyWith<#{ClassName}> #{ImplementsUID} #{ImplementsId} {
     #{Properties}
     
     #{ClassName}({#{ConstructorArgs}});
 
-    #{UniqueIdGetter}
+    #{UIDGetter}
 
     #{OverrideAnnotation}
     factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
@@ -108,9 +108,9 @@ class #{ClassName} #{ParentClass} implements FromJson, ToJson, CopyWith<#{ClassN
         int get hashCode => #{hashCodeKeyValues};
     }
     `;
-var dartUniqueIdStub = `
+var dartUIDStub = `
 #{OverrideAnnotation}
-#{UniqueType}#{Nullable} get uniqueId => #{UniqueId};`;
+#{Type}#{Nullable} get $uid => #{PropName};`;
 var dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 var dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 var dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
@@ -354,16 +354,17 @@ var DartGenerator = class {
     let copyWithConstructorArgs = [];
     let copyWithInstanceConstructorArgs = [];
     let listFields = [];
-    let uniqueIdGetter = "";
+    let uidGetter = "";
     for (const field of this.model.fields) {
       const commentDirectives = this.prismaHelper.parseDocumentation(field);
       if (commentDirectives.some((directive) => directive.name === "@abcx3_omit")) {
         continue;
       }
       if (field.isId) {
-        uniqueIdGetter = this.generateUniqueIdGetter(field);
-        content = content.replace(/#{UniqueId}/g, uniqueIdGetter);
-        content = content.replace(/#{ImplementsUniqueId}/g, `, UniqueId<${this.getDartType(field)}>`);
+        uidGetter = this.generateUIDGetter(field);
+        content = content.replace(/#{UID}/g, uidGetter);
+        content = content.replace(/#{ImplementsUID}/g, `, UID<${this.getDartType(field)}>`);
+        content = content.replace(/#{ImplementsId}/g, field.name == "id" ? `, Id<${this.getDartType(field)}>` : "");
       }
       properties.push(this.generatePropertyContent(field));
       constructorArgs.push(this.generateConstructorArg(field));
@@ -408,7 +409,7 @@ var DartGenerator = class {
     const copyWithConstructorArgsContent = copyWithConstructorArgs.join(",\n		");
     const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(",\n		");
     content = content.replace(/#{OverrideAnnotation}/g, "@override");
-    content = content.replace(/#{UniqueIdGetter}/g, uniqueIdGetter);
+    content = content.replace(/#{UIDGetter}/g, uidGetter);
     content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
     content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
     content = content.replace(/#{Properties}/g, propertiesContent);
@@ -420,10 +421,9 @@ var DartGenerator = class {
     content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);
     return content;
   }
-  generateUniqueIdGetter(field) {
-    let content = dartUniqueIdStub;
-    content = content.replace(/#{UniqueType}/g, this.getDartType(field));
-    content = content.replace(/#{UniqueId}/g, field.name);
+  generateUIDGetter(field) {
+    let content = dartUIDStub;
+    content = content.replace(/#{Type}/g, this.getDartType(field));
     content = content.replace(/#{PropName}/g, field.name);
     content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = this.replaceNullable(content, field);
@@ -543,6 +543,9 @@ var DartGenerator = class {
     content = content.replace(/#{PropName}/g, field.name);
     content = content.replace(/#{Type}/g, this.getDartType(field));
     content = this.replaceNullable(content, field);
+    if (field.name === "id" && field.isId) {
+      content = "@override\n" + content;
+    }
     return content;
   }
   getDartType(field) {

@@ -1,3 +1,4 @@
+/*
 abstract interface class Id<K> {
   K? id;
 }
@@ -34,3 +35,4 @@ bool areListsEqual<T>(List<T>? list1, List<T>? list2) {
   }
   return true;
 }
+*/

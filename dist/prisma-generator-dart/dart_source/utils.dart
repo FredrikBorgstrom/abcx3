@@ -8,7 +8,6 @@ List<T> createModels<T>(json, JsonModelFactory<T> jsonFactory) {
   return instances;
 }
 
-
 bool areListsEqual<T>(List<T>? list1, List<T>? list2) {
   if (list1 == null && list2 == null) return true;
   if (list1 == null || list2 == null) return false;

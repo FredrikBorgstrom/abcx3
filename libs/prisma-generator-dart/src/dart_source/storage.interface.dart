@@ -22,14 +22,14 @@ abstract interface class StorageInterface<T> {
   void deleteMany(List<T> items);
 }
 
-abstract interface class KeyStorageInterface<T, U> extends StorageInterface<T> {
-  U? getKey(T item);
+abstract interface class KeyStorageInterface<T, K> extends StorageInterface<T> {
+  K? getKey(T item);
 
-  T? getByKey(U key);
+  T? getByKey(K key);
 
-  List<T> getManyByKeys(List<U> keys);
+  List<T> getManyByKeys(List<K> keys);
 
-  void deleteByKey(U key);
+  void deleteByKey(K key);
 
-  void deleteManyByKeys(List<U> keys);
+  void deleteManyByKeys(List<K> keys);
 }

@@ -94,6 +94,7 @@ export class DartGenerator {
                 uidGetter = this.generateUIDGetter(field);
                 content = content.replace(/#{UID}/g, uidGetter);
                 content = content.replace(/#{ImplementsUID}/g, `, UID<${this.getDartType(field)}>`);
+                content = content.replace(/#{ImplementsId}/g, (field.name == 'id') ? `, Id<${this.getDartType(field)}>`  : '');
             }
 
             properties.push(this.generatePropertyContent(field));
@@ -171,8 +172,7 @@ export class DartGenerator {
 
     generateUIDGetter(field: DMMF.Field): string {
         let content = dartUIDStub;
-        content = content.replace(/#{UniqueType}/g, this.getDartType(field));
-        content = content.replace(/#{UniqueId}/g, field.name);
+        content = content.replace(/#{Type}/g, this.getDartType(field));
         content = content.replace(/#{PropName}/g, field.name);
         content = content.replace(/#{OverrideAnnotation}/g, '@override');
         content = this.replaceNullable(content, field);
@@ -312,9 +312,9 @@ export class DartGenerator {
         content = content.replace(/#{Type}/g, this.getDartType(field));
         content = this.replaceNullable(content, field);
 
-        /* if (this.settings.ModelsImplementBaseClass && field.name === 'id') {
+        if (field.name === 'id' && field.isId) {
             content = '@override\n' + content;
-        } */
+        } 
         return content;
     }
 
