@@ -21,7 +21,7 @@ import {
     dartCopyWithArg,
     dartCopyWithConstructorArg,
     dartCopyWithInstanceConstructorArg,
-    dartUniqueIdStub
+    dartUIDStub
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -83,7 +83,7 @@ export class DartGenerator {
         let copyWithConstructorArgs: string[] = [];
         let copyWithInstanceConstructorArgs: string[] = [];
         let listFields: DMMF.Field[] = [];
-        let uniqueIdGetter = '';
+        let uidGetter = '';
 
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
@@ -91,9 +91,9 @@ export class DartGenerator {
                 continue;
             }
             if (field.isId) {
-                uniqueIdGetter = this.generateUniqueIdGetter(field);
-                content = content.replace(/#{UniqueId}/g, uniqueIdGetter);
-                content = content.replace(/#{ImplementsUniqueId}/g, `, UniqueId<${this.getDartType(field)}>`);
+                uidGetter = this.generateUIDGetter(field);
+                content = content.replace(/#{UID}/g, uidGetter);
+                content = content.replace(/#{ImplementsUID}/g, `, UID<${this.getDartType(field)}>`);
             }
 
             properties.push(this.generatePropertyContent(field));
@@ -151,7 +151,7 @@ export class DartGenerator {
         //     content = content.replace(/#{OverrideAnnotation}/g, '');
         // }
 
-        content = content.replace(/#{UniqueIdGetter}/g, uniqueIdGetter);
+        content = content.replace(/#{UIDGetter}/g, uidGetter);
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
         content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
 
@@ -169,8 +169,8 @@ export class DartGenerator {
         return content;
     }
 
-    generateUniqueIdGetter(field: DMMF.Field): string {
-        let content = dartUniqueIdStub;
+    generateUIDGetter(field: DMMF.Field): string {
+        let content = dartUIDStub;
         content = content.replace(/#{UniqueType}/g, this.getDartType(field));
         content = content.replace(/#{UniqueId}/g, field.name);
         content = content.replace(/#{PropName}/g, field.name);

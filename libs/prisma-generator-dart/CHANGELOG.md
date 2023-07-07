@@ -1,4 +1,4 @@
-## [2.0.0] Breaking changes: Removed the option ModelsImplementBaseClass and all classes now implement multiple interfaces. If there is a field which is set as ID for the model, it will generate a 'uniqueId' getter for that method, which means that the ID field can have any name and type.
+## [2.0.0] Breaking changes: Removed the option ModelsImplementBaseClass and all classes now implement multiple interfaces. If there is a field which is set as ID for the model, it will generate a '$uid' getter for that method, which means that the ID field can have any name and type.
 
 ## [1.4.0] Added copyWith and copyWithInstance methods. Classes supports '_count' properties for list-type fields, for instance 'posts' will generate a '$postsCount' property in the Dart class.
 

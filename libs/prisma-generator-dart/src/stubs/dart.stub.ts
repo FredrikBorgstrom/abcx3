@@ -4,12 +4,12 @@ export const dartBaseClassStub = `
 import 'common/abcx3_prisma.library.dart';
 #{AdditionalImports}
 
-class #{ClassName} #{ParentClass} implements FromJson, ToJson, CopyWith<#{ClassName}> #{ImplementsUniqueId}{
+class #{ClassName} #{ParentClass} implements FromJson, ToJson, CopyWith<#{ClassName}> #{ImplementsUID}{
     #{Properties}
     
     #{ClassName}({#{ConstructorArgs}});
 
-    #{UniqueIdGetter}
+    #{UIDGetter}
 
     #{OverrideAnnotation}
     factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
@@ -49,9 +49,9 @@ class #{ClassName} #{ParentClass} implements FromJson, ToJson, CopyWith<#{ClassN
     }
     `;
 
-export const dartUniqueIdStub = `
+export const dartUIDStub = `
 #{OverrideAnnotation}
-#{UniqueType}#{Nullable} get uniqueId => #{UniqueId};`;
+#{UIDType}#{Nullable} get $uid => #{UID};`;
 
 export const dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
