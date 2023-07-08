@@ -13,9 +13,8 @@ class ModelStore<U, T extends UID<U>> extends ModelCreator<T>
 
   T? getById(U id) => getByPropertyValue(getId, id);
 
-  getById$(U id, {bool useCache = true}) =>
-      getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache)
-          .first;
+  /*getById$(U id, {bool useCache = true}) =>
+      getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache);
 
   Stream<T?> getByFieldValue$<W>(
       {required GetPropertyValue<T, W> getPropVal,
@@ -45,7 +44,5 @@ class ModelStore<U, T extends UID<U>> extends ModelCreator<T>
     return getMany$<T>(
             endpoint: Abc3Route.player_byGameId_$gameId_get, param: fieldValue)
         .doOnData((models) => addMany(models));
-  }
+  }*/
 }
-
-

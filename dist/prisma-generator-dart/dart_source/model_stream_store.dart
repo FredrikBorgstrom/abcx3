@@ -12,7 +12,25 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
   @override
   set items(List<T> items) => _items$$.add(items);
 
-  getManyByPropertyValue$<K>({
+  getById$(U id, {bool useCache = true}) =>
+      getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache);
+
+  Stream<T?> getByFieldValue$<W>(
+      {required GetPropertyValue<T, W> getPropVal,
+        required dynamic fieldValue,
+        bool useCache = true}) {
+    if (useCache) {
+      final model = getByPropertyValue(getPropVal, fieldValue);
+      if (model != null) {
+        return Stream.value(model);
+      }
+    }
+    return getOne$(
+        endpoint: Abc3Route.player_byGameId_$gameId_get, param: fieldValue)
+        .doOnData((model) => add(model));
+  }
+
+  getManyByFieldValue$<K>({
     required GetPropertyValue<T, K> getPropVal,
     required dynamic value,
     required Endpoint endpoint,

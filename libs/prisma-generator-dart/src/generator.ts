@@ -8,6 +8,7 @@ import { DartGeneratorSettings } from './dart_settings.interface';
 import { StringFns, outputToConsole, writeFileSafely, convertBooleanStrings } from '@shared';
 import { dartInterfacesAndModelFunctionsStub } from './stubs/dart.stub';
 import * as fs from 'fs';
+import { DartStoreGenerator } from './generators/dart_store.generator';
 
 
 const { version } = require('../package.json');
@@ -54,6 +55,7 @@ class MainGenerator {
 
     //private dartFiles: string[] = [];
     private dartFiles: Record<string, string> = {};
+    private dartStoreFiles: Record<string, string> = {};
 
     writeFile: (path: string, content: string) => void;
     outputPath: string;
@@ -158,6 +160,19 @@ class MainGenerator {
         console.log(` > Generating Dart class for Model ${model.name}`);
         await this.writeFile(filePath, dartContent);
     }
+
+    async generateDartStoreFile(model: DMMF.Model) {
+
+        const dartStoreGenerator = new DartStoreGenerator(this.settings, model);
+        const dartContent = dartStoreGenerator.generateContent();
+        const fileName = `${StringFns.snakeCase(model.name)}_store.dart`;
+        const filePath = path.join(
+            this.outputPath,
+            fileName,
+        );
+        this.dartStoreFiles[model.name] = fileName;
+        console.log(` > Generating Dart class for Model ${model.name}`);
+        await this.writeFile(filePath, dartContent);
 }
 
 

@@ -19,26 +19,22 @@ class _#{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
 
   _#{Model}Store._() : super(#{Model}.fromJson as JsonModelFactory<T>);
 
-  int getPlayerUserId(Player player) => player.userId!;
 
-  int getPlayerGameId(Player player) => player.gameId!;
-
-  List<T> byUserId(int userId) => getManyByPropertyValue(getPlayerUserId, userId);
-
-  List<T> byGameId(int gameId) => getManyByPropertyValue(getPlayerGameId, gameId);
+  #{GetValMethods}
 
 
-  Stream<List<T>?> byGameId$(int gameId, {bool useCache = true}) =>
-      getManyByFieldValue$<int>(getPropVal: getPlayerGameId, value: gameId, endpoint: Abc3Route.player_byGameId_$gameId_get, useCache: useCache);
+  #{GetByPropertyVal$}
 
-  Stream<List<T>?> byUserId$(int userId, {bool useCache = true}) =>
-      getManyByFieldValue$<int>(getPropVal: getPlayerUserId, value: userId, endpoint: Abc3Route.player_$id_get, useCache: useCache);
+  #{GetManyByPropertyVal$}
+
 }
-
 `;
 
 export const dartStoreGetVal = `#{FieldType} get#{Model}#{FieldName}(#{Model} #{model}) => #{model}.{#fieldName}!`;
 
 export const dartStoreGetByPropertyVal = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: Abc3Route.#{model}_by#{FieldName}_$#{fieldName}_get, useCache: useCache);`;
+
+export const dartStoreGetManyByPropertyVal = `Stream<List<T?>> getManyBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
+getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: Abc3Route.#{model}_by#{FieldName}_$#{fieldName}_get, useCache: useCache);`;
 
