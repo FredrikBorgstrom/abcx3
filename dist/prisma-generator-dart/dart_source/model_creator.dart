@@ -1,7 +1,7 @@
 part of abcx3_prisma;
 
 class ModelCreator<T> implements Disposable {
-  final JsonModelFactory<T> jsonModelFactory;
+  final JsonFactory<T> jsonModelFactory;
   final AuthHttpService authHttp;
 
   ModelCreator(this.jsonModelFactory)

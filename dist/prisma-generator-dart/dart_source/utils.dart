@@ -1,6 +1,6 @@
 part of abcx3_prisma;
 
-List<T> createModels<T>(json, JsonModelFactory<T> jsonFactory) {
+List<T> createModels<T>(json, JsonFactory<T> jsonFactory) {
   List<T> instances = [];
   for (final item in json) {
     instances.add(jsonFactory(item as Map<String, dynamic>));

@@ -1,7 +1,7 @@
 part of abcx3_prisma;
 
 class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
-  ModelStreamStore(JsonModelFactory<T> fromJson) : super(fromJson);
+  ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);
 
   final BehaviorSubject<List<T>> _items$$ = BehaviorSubject.seeded([]);
   late final Stream<List<T>> items$ = _items$$.stream;
@@ -12,21 +12,22 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
   @override
   set items(List<T> items) => _items$$.add(items);
 
-  getById$(U id, {bool useCache = true}) =>
-      getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache);
+  /*getById$(U id, {bool useCache = true}) =>
+      getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache);*/
 
   Stream<T?> getByFieldValue$<W>(
       {required GetPropertyValue<T, W> getPropVal,
-        required dynamic fieldValue,
-        bool useCache = true}) {
+      required dynamic value,
+        required Endpoint endpoint,
+      bool useCache = true}) {
     if (useCache) {
-      final model = getByPropertyValue(getPropVal, fieldValue);
+      final model = getByPropertyValue(getPropVal, value);
       if (model != null) {
         return Stream.value(model);
       }
     }
     return getOne$(
-        endpoint: Abc3Route.player_byGameId_$gameId_get, param: fieldValue)
+            endpoint: endpoint, param: value)
         .doOnData((model) => add(model));
   }
 

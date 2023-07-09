@@ -17,7 +17,7 @@ class _#{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
     return _instance;
   }
 
-  _#{Model}Store._() : super(#{Model}.fromJson as JsonModelFactory<T>);
+  _#{Model}Store._() : super(#{Model}.fromJson as JsonFactory<T>);
 
 
   #{GetValMethods}
@@ -30,7 +30,7 @@ class _#{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
 }
 `;
 
-export const dartStoreGetVal = `#{FieldType} get#{Model}#{FieldName}(#{Model} #{model}) => #{model}.{#fieldName}!`;
+export const dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{model}) => #{model}.#{fieldName};`;
 
 export const dartStoreGetByPropertyVal = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: Abc3Route.#{model}_by#{FieldName}_$#{fieldName}_get, useCache: useCache);`;

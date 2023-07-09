@@ -1,6 +1,6 @@
 part of abcx3_prisma;
 
-typedef JsonModelFactory<T> = T Function(Map<String, dynamic> json);
+typedef JsonFactory<T> = T Function(Map<String, dynamic> json);
 
 abstract interface class JsonSerializable {
   factory JsonSerializable.fromJson(Map<String, dynamic> json) {
@@ -32,7 +32,7 @@ abstract interface class FromJson {
 }
 
 abstract interface class FromJsonFactory<T> {
-  JsonModelFactory<T> get fromJsonFactory;
+  JsonFactory<T> get fromJsonFactory;
 }
 
 abstract interface class ToJson {

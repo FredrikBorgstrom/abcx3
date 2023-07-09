@@ -74,6 +74,7 @@ class MainGenerator {
         for (const model of options.dmmf.datamodel.models) {        
             console.log(`Processing Model ${model.name}`); 
             await this.generateDartModelFile(model);
+            await this.generateDartStoreFile(model);
         }
 
         for (const tEnum of options.dmmf.datamodel.enums) {
@@ -168,11 +169,11 @@ class MainGenerator {
         const fileName = `${StringFns.snakeCase(model.name)}_store.dart`;
         const filePath = path.join(
             this.outputPath,
+            'stores',
             fileName,
         );
         this.dartStoreFiles[model.name] = fileName;
-        console.log(` > Generating Dart class for Model ${model.name}`);
+        console.log(` > Generating Dart Store class for Model ${model.name}`);
         await this.writeFile(filePath, dartContent);
+    }
 }
-
-
