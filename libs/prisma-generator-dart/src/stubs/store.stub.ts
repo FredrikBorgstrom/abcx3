@@ -6,7 +6,7 @@ import 'package:abcx3/gen_backend_routes.dart';
 import 'package:abcx3/gen_models/common/abcx3_prisma.library.dart';
 import 'package:abcx3/gen_models/models_library.dart';
 
-typedef #{Model}Store = _#{Model}Store<#{Model}>
+typedef #{Model}Store = _#{Model}Store<#{Model}>;
 
 class _#{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
 

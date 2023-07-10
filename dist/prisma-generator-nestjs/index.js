@@ -5,7 +5,6 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -22,10 +21,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
 
 // libs/prisma-generator-nestjs/src/generator.ts
 var import_generator_helper = require("@prisma/generator-helper");
@@ -88,7 +83,8 @@ var PrismaTypeScriptTypeMap = {
   Json: "object",
   String: "string"
 };
-var _PrismaHelper = class {
+var PrismaHelper = class _PrismaHelper {
+  static instance;
   static getInstance() {
     if (_PrismaHelper.instance) {
       return _PrismaHelper.instance;
@@ -159,8 +155,6 @@ var _PrismaHelper = class {
     return result;
   }
 };
-var PrismaHelper = _PrismaHelper;
-__publicField(PrismaHelper, "instance");
 
 // libs/shared/src/utils.ts
 function convertBooleanStrings(obj) {
@@ -183,7 +177,8 @@ function convertBooleanString(value) {
 
 // libs/prisma-generator-nestjs/src/nameGenerator.ts
 var path2 = require("path");
-var _NameGenerator = class {
+var NameGenerator = class _NameGenerator {
+  static _singleton;
   basePath = "gen";
   prefix = "";
   static get singleton() {
@@ -200,8 +195,6 @@ var _NameGenerator = class {
   geFilePath = (model, fileType) => path2.join(this.basePath, this.getModelPath(model), this.getFileName(model, fileType) + ".ts");
   getModelPath = (model) => StringFns.decapitalize(model.name);
 };
-var NameGenerator = _NameGenerator;
-__publicField(NameGenerator, "_singleton");
 
 // libs/prisma-generator-nestjs/src/stubs/controller.stub.ts
 var controllerStub = `
