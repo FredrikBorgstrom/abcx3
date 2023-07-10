@@ -2,7 +2,7 @@ import { DMMF } from "@prisma/generator-helper";
 import { FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
 import { NestGeneratorSettings } from "../nest_settings.interface";
 import { NameGenerator } from "../nameGenerator";
-import { controllerGetByFieldValuesStub, controllerGetManyByFieldValuesStub, controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
+import { controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
 
 const controllerCommentDirectives: Record<string, PrismaCommentDirective> = {
     omit: { name: '@abcx3_omit' },
@@ -31,8 +31,9 @@ export class ControllerGenerator {
 
         const commentDirectives = this.prismaHelper.parseDocumentation(this.model);
 
-        // const methodsToApply = this.getMethodsToApply(commentDirectives);
-        // content = this.applyMethods(content, methodsToApply, idFieldAndType);
+        const methodsToApply = this.getMethodsToApply(commentDirectives);
+
+        content = this.applyMethods(content, methodsToApply, idFieldAndType);
 
         content = content.replace(/#{ControllerClassName}/g, nameGen.getClassName(this.model, 'controller'));
         content = content.replace(/#{Model}/g, this.model.name);
@@ -40,8 +41,6 @@ export class ControllerGenerator {
         content = content.replace(/#{moDel}/g, StringFns.decapitalize(this.model.name));
         content = content.replace(/#{ServiceName}/g, nameGen.getClassName(this.model, 'service'));
         content = content.replace(/#{CrudServiceFileName}/g, nameGen.getFileName(this.model, 'service'));
-
-        content = content.replace(/#{getByFieldValues}/g, this.createFieldRoutes());
 
         let guardImportContent: string, guardsContent: string;
 
@@ -57,27 +56,6 @@ export class ControllerGenerator {
 
         return content;
     }
-
-    private createFieldRoutes() {
-        let code = '';
-        this.model.fields.forEach(field => {
-            if (field.kind != 'object') {
-
-                let content = (field.isUnique || field.isId) ? controllerGetByFieldValuesStub : controllerGetManyByFieldValuesStub;
-
-                content = content.replace(/#{GuardDecorator}/g, this.settings?.GuardClass ? `@UseGuards(${this.settings.GuardClass})` : '');
-                const tsType = this.prismaHelper.convertToTypescriptType(field);
-
-                content = content.replace(/#{convertToInt}/g, (tsType === 'number') ? '+' : '');
-                content = content.replace(/#{FieldType}/g, tsType);
-                content = content.replace(/#{fieldName}/g, field.name);
-                content = content.replace(/#{FieldNameCapitalized}/g, StringFns.capitalize(field.name));
-                code += content + '\n\n';
-            }
-        });
-        return code;
-    }
-
 
     addReferenceFieldMethods() {
         let code = '';
@@ -133,11 +111,11 @@ export class ControllerGenerator {
             } else {
             }
         });
-
+        
         // content = content.replace(new RegExp(`#{${methodName}}`, 'g'), controllerIdMethodsStub[methodName]);
 
         // content = content.replace(/#{CommentDirectives}/g, commentDirectives.join(' '));
-
+     
         return appliedMethodNames;
     }
 }

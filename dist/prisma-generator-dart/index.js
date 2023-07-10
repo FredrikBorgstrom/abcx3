@@ -222,7 +222,7 @@ var PrismaHelper = class _PrismaHelper {
   }
   convertToTypescriptType(field) {
     let tsType = PrismaTypeScriptTypeMap[field.type];
-    return !tsType ? field.type : tsType;
+    return tsType != null ? tsType : field.type;
   }
   getIdFieldNameAndType(model) {
     const idField = model.fields.find((field) => field.isId === true);
@@ -237,6 +237,8 @@ var PrismaHelper = class _PrismaHelper {
       name: field.name,
       type: this.convertToTypescriptType(field)
     };
+  }
+  getReferingField(model, referedField) {
   }
   modelContainsObjectReference = (model) => model.fields.some((field) => field.kind === "object");
   getReferenceFields = (model) => model.fields.filter((field) => field.kind === "object");

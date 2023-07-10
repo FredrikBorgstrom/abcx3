@@ -55,6 +55,8 @@ export class #{CrudServiceClassName} {
 
     #{relationFieldMethods}
 
+    printObject = (obj: any) => JSON.stringify(obj, null, 2);
+
 }
 `;
 

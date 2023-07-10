@@ -39,7 +39,7 @@ export class PrismaHelper {
 
     public convertToTypescriptType(field: DMMF.Field): string {
         let tsType = PrismaTypeScriptTypeMap[field.type as keyof typeof PrismaTypeScriptTypeMap];
-        return (!tsType) ? field.type : tsType;
+        return (tsType != null) ? tsType : field.type;
     }
 
     public getIdFieldNameAndType(model: DMMF.Model): FieldNameAndType | null {
@@ -56,6 +56,11 @@ export class PrismaHelper {
             name: field.name,
             type: this.convertToTypescriptType(field)
         };
+    }
+
+    public getReferingField(model: DMMF.Model, referedField: DMMF.Field): DMMF.Field | null {
+        // const referingField = model.fields.find(field => field.kind === 'object' && field.type === referencedModel.name);
+        // return referingField || null;
     }
 
     public modelContainsObjectReference = (model: DMMF.Model): boolean => model.fields.some(field => field.kind === 'object');
