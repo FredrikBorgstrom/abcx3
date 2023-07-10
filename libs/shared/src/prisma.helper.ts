@@ -6,11 +6,7 @@ export interface FieldNameAndType {
     type: string;
 }
 
-export type CommentDirectiveName = '@abcx3_omit' | '@abcx3_disableControllers' | '@abcx3_enableControllers';
-
-// export enum ControllerMethodNames { create, getAll, getFilteredPage, getUnique, update, getById, updateById, deleteById, referenceField };
-
-// export type ControllerMethod = keyof typeof ControllerMethodNames;
+export type CommentDirectiveName = '@abcx3_omit' | '@abcx3_disableControllers' | '@abcx3_enableControllers' | '@abcx3_enableCreate' | '@abcx3_enableUpdate' | '@abcx3_enableDelete' | '@abcx3_enableGetAll' | '@abcx3_enableGetById' | '@abcx3enableCreateWithUser' | '@abcx3_enableUpdateWithUser' | '@abcx3_enableDeleteWithUser' | '@abcx3_enableGetAllWithUser' | '@abcx3_enableGetByIdWithUser';
 
 
 export interface PrismaCommentDirective {

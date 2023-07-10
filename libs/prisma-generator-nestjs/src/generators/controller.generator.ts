@@ -4,6 +4,11 @@ import { NestGeneratorSettings } from "../nest_settings.interface";
 import { NameGenerator } from "../nameGenerator";
 import { controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
 
+const controllerCommentDirectives: Record<string, PrismaCommentDirective> = {
+    omit: { name: '@abcx3_omit' },
+    disableControllers: { name: '@abcx3_disableControllers' },
+    enableCreate: { name: '@abcx3_enableCreate' }
+}
 
 export class ControllerGenerator {
 

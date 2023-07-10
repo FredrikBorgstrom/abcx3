@@ -21,119 +21,29 @@ export class #{CrudServiceClassName} {
         return this.prismaService;
     }
 
-    async getAll(): Promise<#{Model}[] | Error> {
-        try {
-            const result = await this.prismaService.#{moDel}.findMany();
-            return result;
-        } catch (e) {
-            return new InternalServerErrorException(\`Could not get #{Model} item\`);
-        }
-    }
-
-    async create(data: Prisma.#{Model}CreateInput): Promise<#{Model} | Error> {
-        try {
-            const result = await this.prismaService.#{moDel}.create({ data: data });
-            return result;
-        } catch (e) {
-            return new InternalServerErrorException(\`Could not create #{Model} item\`);
-        }
-    }
-
-    async upsert({where, create, update}:{
-        where: Prisma.#{Model}WhereUniqueInput,
-        create: Prisma.#{Model}CreateInput,
-        update: Prisma.#{Model}UpdateInput
-    }): Promise<#{Model} | Error> {
-        try {
-            const result = await this.prismaService.#{moDel}.upsert({
-                where,
-                create,
-                update
-            });
-            return result;
-        } catch (e) {
-            return new InternalServerErrorException('Could not create #{Model}');
-        }
-    }
-
-    async getFiltered(filter?: Prisma.#{Model}FindManyArgs): Promise<#{Model}[] | Error> {
-        try {
-            const result = await this.prismaService.#{moDel}.findMany(filter);
-            return result;
-        }
-        catch(e) {
-            return new InternalServerErrorException('Could not get filtered #{Model} items');
-        }
-    }
-
-    async getFilteredPage(filter?: Prisma.#{Model}FindManyArgs): Promise<PaginationInterface<#{Model}> | Error> {
-        try {
-            const [items, count] = await this.prismaService.$transaction([
-                this.prismaService.#{moDel}.findMany(filter),
-                this.prismaService.#{moDel}.count({ where: filter?.where }),
-            ]);
-
-            const take = filter?.take ? filter?.take : count;
-            const skip = filter?.skip ? filter?.skip : 0;
-
-            const result = {
-                items: items,
-                meta: {
-                totalItems: count,
-                items: items.length,
-                totalPages: Math.ceil(count / take),
-                page: skip / take + 1,
-                }
-            };
-            return result;
-        }
-        catch(e) {
-            return new InternalServerErrorException('Could not get #{Model} items.');
-        }
-    }
-
-    async getUnique(uniqueArgs: Prisma.#{Model}FindUniqueOrThrowArgs): Promise<#{Model} | Error> {
-        try {
-            const result = await this.prismaService.#{moDel}.findUniqueOrThrow(uniqueArgs);
-        return result;
-            } catch(e) {
-            return new NotFoundException(\`Get operation \${uniqueArgs} on #{Model} failed\`);
-        }
-    }
-
-    async getLatest(): Promise<#{Model} | Error> {
+    async getByFieldValues(fieldsAndValues: Record<string, number | string>): Promise<#{Model} | Error> {
         try {
             const result = await this.prismaService.#{moDel}.findFirst({
-                orderBy: {
-                    id: 'desc'
-                }
+                where: fieldsAndValues
             });
             return result;
         } catch (e) {
             return new InternalServerErrorException(
-                \`Could not get latest #{Model}\`
+                \`Could not get one #{Model} by \${this.printObject(fieldsAndValues)}}\`
             );
         }
     }
 
-    async update({where, data}: Prisma.#{Model}UpdateArgs): Promise<#{Model} | Error> {
+    async getManyByFieldValues(fieldsAndValues: Record<string, number | string>): Promise<#{Model}[] | Error> {
         try {
-            const result = await this.prismaService.#{moDel}.update({
-                where,
-                data
+            const result = await this.prismaService.#{moDel}.findMany({
+                where: fieldsAndValues
             });
             return result;
         } catch (e) {
-            return new InternalServerErrorException(\`Could not update #{Model} where \${where} with data \${data}\`);
-        }
-    }
-
-    async delete(where: Prisma.#{Model}WhereUniqueInput): Promise<#{Model} | Error> {
-        try {
-            const result = await this.prismaService.#{moDel}.delete({ where });
-            return result;
-        } catch (e) {
-            return new InternalServerErrorException(\`Could not delete #{Model} where \${where}\`);
+            return new InternalServerErrorException(
+                \`Could not get any #{Model} by \${this.printObject(fieldsAndValues)}}\`
+            );
         }
     }
 
