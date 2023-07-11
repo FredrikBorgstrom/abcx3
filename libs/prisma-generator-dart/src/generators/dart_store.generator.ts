@@ -1,7 +1,7 @@
 import { DMMF } from "@prisma/generator-helper";
 import { PrismaHelper, StringFns } from "@shared";
 import { DartGeneratorSettings } from "../dart_settings.interface";
-import { dartStoreGetByPropertyVal, dartStoreGetManyByPropertyVal, dartStoreGetVal, dartStoreStub } from "../stubs/store.stub";
+import { dartStoreEndpoint, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetByPropertyVal, dartStoreGetManyByPropertyVal, dartStoreGetVal, dartStoreStub } from "../stubs/store.stub";
 import { get } from "http";
 import { DartGenerator } from "./dart.generator";
 
@@ -26,20 +26,24 @@ export class DartStoreGenerator {
         let getValMethods: string[] = [];
         let getUniqueByPropertyVal$: string[] = [];
         let getByPropertyVal$: string[] = [];
+        let endpoints: string[] = [];
 
         for (const field of this.model.fields) {
-
+            if (field.kind === 'object') continue;
             getValMethods.push(this.generateGetValMethod(field));
             if (field.isUnique || field.isId) {
-                getUniqueByPropertyVal$.push(this.generateGetUniqueByPropertyVal$(field));
+                getUniqueByPropertyVal$.push(this.generateGetByPropertyVal$(field));
+                endpoints.push(this.generateEndpoint(field));
             } else {
-                getByPropertyVal$.push(this.generateGetByPropertyVal$(field));
+                getByPropertyVal$.push(this.generateGetManyByPropertyVal$(field));
+                endpoints.push(this.generateEndpointMany(field));
             }
         }
 
         content = content.replace(/#{GetValMethods}/g, getValMethods.join('\n\n\t'));
         content = content.replace(/#{GetByPropertyVal\$}/g, getUniqueByPropertyVal$.join('\n\n\t'));
         content = content.replace(/#{GetManyByPropertyVal\$}/g, getByPropertyVal$.join('\n\n\t'));
+        content = content.replace(/#{Endpoints}/g, endpoints.join(',\n\t'));
 
         return content;
     }
@@ -50,13 +54,27 @@ export class DartStoreGenerator {
         return this.replaceAllVariables(content, field);
     }
 
-    generateGetUniqueByPropertyVal$(field: DMMF.Field) {
+    generateGetByPropertyVal$(field: DMMF.Field) {
         let content = dartStoreGetByPropertyVal;
+        content = content.replace(/#{EndPointName}/g, this.generateEndpointName(true));
         return this.replaceAllVariables(content, field);
     }
 
-    generateGetByPropertyVal$(field: DMMF.Field) {
+    generateGetManyByPropertyVal$(field: DMMF.Field) {
         let content = dartStoreGetManyByPropertyVal;
+        content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
+        return this.replaceAllVariables(content, field);
+    }
+
+    generateEndpoint(field: DMMF.Field) {
+        let content = dartStoreEndpoint;
+        content = content.replace(/#{EndPointName}/g, this.generateEndpointName(true));
+        return this.replaceAllVariables(content, field);
+    }
+
+    generateEndpointMany(field: DMMF.Field) {
+        let content = dartStoreEndpointMany;
+        content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
         return this.replaceAllVariables(content, field);
     }
 
@@ -68,5 +86,9 @@ export class DartStoreGenerator {
         content = content.replace(/#{model}/g, StringFns.decapitalize(this.model.name));
         content = content.replace(/#{Model}/g, this.model.name);
         return content;
+    }
+
+    generateEndpointName(returnsSingleRecord: boolean) {
+        return returnsSingleRecord ? dartStoreEndpointName : dartStoreEndpointManyName;
     }
 }

@@ -2,10 +2,9 @@ part of abcx3_prisma;
 
 class ModelCreator<T> implements Disposable {
   final JsonFactory<T> jsonModelFactory;
-  final AuthHttpService authHttp;
+  final HttpService authHttp;
 
-  ModelCreator(this.jsonModelFactory)
-      : authHttp = ServiceManager.I.get<AuthHttpService>()!;
+  ModelCreator(this.jsonModelFactory) : authHttp = ServiceManager.I.get<AuthHttpService>()! as HttpService;
 
   create(json) {
     if (json is List) {
