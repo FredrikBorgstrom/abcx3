@@ -18,6 +18,6 @@
   "homepage": "https://github.com/FredrikBorgstrom/abcx3",
   "license": "ISC",
   "dependencies": {
-    "@prisma/generator-helper": "^4.8.1"
+    "@prisma/generator-helper": "^5.0.0"
   }
 }

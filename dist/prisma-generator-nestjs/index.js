@@ -207,8 +207,8 @@ import { #{ServiceName} } from './#{CrudServiceFileName}';
 #{ImportGuardClass}
 
 @Controller('#{model}')
-export class #{ControllerClassName} {
-  constructor(private readonly service: #{ServiceName}) {}
+export class #{ControllerClassName}<T extends #{ServiceName}> {
+  constructor(protected readonly service: T) {}
 
 #{getByFieldValues}
 

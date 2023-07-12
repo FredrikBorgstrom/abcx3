@@ -12,7 +12,7 @@
   },
   "private": false,
   "dependencies": {
-    "@prisma/generator-helper": "^4.16.2"
+    "@prisma/generator-helper": "^5.0.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -23,7 +23,7 @@
     "esbuild-plugin-node-externals": "^1.0.1",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
-    "prisma": "^4.16.2",
+    "prisma": "^5.0.0",
     "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.0",

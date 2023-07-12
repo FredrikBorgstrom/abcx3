@@ -19,6 +19,6 @@
   "license": "ISC",
   "dependencies": {
     "prettier": "^2.8.7",
-    "@prisma/generator-helper": "^4.8.1"
+    "@prisma/generator-helper": "^5.0.0"
   }
 }

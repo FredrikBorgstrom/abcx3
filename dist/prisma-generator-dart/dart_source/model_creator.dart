@@ -4,8 +4,7 @@ class ModelCreator<T> implements Disposable {
   final JsonFactory<T> jsonModelFactory;
   final HttpService authHttp;
 
-  ModelCreator(this.jsonModelFactory)
-      : authHttp = ServiceManager.I.get<AuthHttpService>()! as HttpService;
+  ModelCreator(this.jsonModelFactory) : authHttp = ServiceManager.I.get<AuthHttpService>()! as HttpService;
 
   create(json) {
     if (json is List) {
