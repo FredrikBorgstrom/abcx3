@@ -14,7 +14,7 @@ import {
 import { err, ok, Result } from 'neverthrow';
 
 @Injectable()
-export class #{CrudServiceClassName} {
+export class #{ServiceClassName} {
     constructor(protected readonly prismaService: PrismaService) {}
 
     getPrisma() {
@@ -211,7 +211,7 @@ import {
 } from '@prisma-utils/nestjs-prisma';
 
 @Injectable()
-export class #{CrudServiceClassName} {
+export class #{ServiceClassName} {
   constructor(private readonly prismaService: PrismaService) {}
 
   getPrisma() {

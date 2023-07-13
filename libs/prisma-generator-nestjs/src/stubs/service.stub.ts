@@ -14,11 +14,18 @@ import {
 #{NeverthrowImport}
 
 @Injectable()
-export class #{CrudServiceClassName} {
+export class #{ServiceClassName} {
     constructor(protected readonly prismaService: PrismaService) {}
 
-    getPrisma() {
-        return this.prismaService;
+    async getAll(): Promise<#{Model}[] | Error> {
+        try {
+            const result = await this.prismaService.#{moDel}.findMany();
+            return result;
+        } catch (e) {
+            return new InternalServerErrorException(
+                \`Could not get all #{Model}.\`
+            );
+        }
     }
 
     async getByFieldValues(fieldsAndValues: Record<string, number | string>): Promise<#{Model} | Error> {

@@ -14,7 +14,7 @@ import {
 #{NeverthrowImport}
 
 @Injectable()
-export class #{CrudServiceClassName} {
+export class #{ServiceClassName} {
     constructor(protected readonly prismaService: PrismaService) {}
 
     getPrisma() {

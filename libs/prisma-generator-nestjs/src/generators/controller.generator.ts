@@ -31,8 +31,8 @@ export class ControllerGenerator {
 
         const commentDirectives = this.prismaHelper.parseDocumentation(this.model);
 
-        // const methodsToApply = this.getMethodsToApply(commentDirectives);
-        // content = this.applyMethods(content, methodsToApply, idFieldAndType);
+        const methodsToApply = this.getMethodsToApply(commentDirectives);
+        content = this.applyMethods(content, methodsToApply, idFieldAndType);
 
         content = content.replace(/#{ControllerClassName}/g, nameGen.getClassName(this.model, 'controller'));
         content = content.replace(/#{Model}/g, this.model.name);

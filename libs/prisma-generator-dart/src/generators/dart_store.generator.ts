@@ -1,7 +1,7 @@
 import { DMMF } from "@prisma/generator-helper";
 import { PrismaHelper, StringFns } from "@shared";
 import { DartGeneratorSettings } from "../dart_settings.interface";
-import { dartStoreEndpoint, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetByPropertyVal, dartStoreGetManyByPropertyVal, dartStoreGetVal, dartStoreStub } from "../stubs/store.stub";
+import { dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal$, dartStoreGetVal, dartStoreStub } from "../stubs/store.stub";
 import { get } from "http";
 import { DartGenerator } from "./dart.generator";
 
@@ -28,6 +28,8 @@ export class DartStoreGenerator {
         let getByPropertyVal$: string[] = [];
         let endpoints: string[] = [];
 
+        endpoints.push(this.generateEndpointAll());
+
         for (const field of this.model.fields) {
             if (field.kind === 'object') continue;
             getValMethods.push(this.generateGetValMethod(field));
@@ -40,6 +42,7 @@ export class DartStoreGenerator {
             }
         }
 
+        content = content.replace(/#{GetAll\$}/g, this.generateGetAll$());
         content = content.replace(/#{GetValMethods}/g, getValMethods.join('\n\n\t'));
         content = content.replace(/#{GetByPropertyVal\$}/g, getUniqueByPropertyVal$.join('\n\n\t'));
         content = content.replace(/#{GetManyByPropertyVal\$}/g, getByPropertyVal$.join('\n\n\t'));
@@ -54,14 +57,20 @@ export class DartStoreGenerator {
         return this.replaceAllVariables(content, field);
     }
 
+    generateGetAll$() {
+        let content = dartStoreGetAll$;
+        content = content.replace(/#{EndPointAllName}/g, dartStoreEndpointAllName);
+        return this.replaceAllVariables(content);
+    }
+
     generateGetByPropertyVal$(field: DMMF.Field) {
-        let content = dartStoreGetByPropertyVal;
+        let content = dartStoreGetByPropertyVal$;
         content = content.replace(/#{EndPointName}/g, this.generateEndpointName(true));
         return this.replaceAllVariables(content, field);
     }
 
     generateGetManyByPropertyVal$(field: DMMF.Field) {
-        let content = dartStoreGetManyByPropertyVal;
+        let content = dartStoreGetManyByPropertyVal$;
         content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
         return this.replaceAllVariables(content, field);
     }
@@ -78,11 +87,19 @@ export class DartStoreGenerator {
         return this.replaceAllVariables(content, field);
     }
 
-    replaceAllVariables(content: string, field: DMMF.Field) {
-        content = content.replace(/#{FieldType}/g, this.dartGenerator.getDartType(field));
+    generateEndpointAll() {
+        let content = dartStoreEndpointAll;
+        content = content.replace(/#{EndPointAllName}/g, dartStoreEndpointAllName);
+        return this.replaceAllVariables(content);
+    }
+
+    replaceAllVariables(content: string, field?: DMMF.Field) {
+        if (field) {
+            content = content.replace(/#{FieldType}/g, this.dartGenerator.getDartType(field));
+            content = content.replace(/#{fieldName}/g, field.name);
+            content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
+        }
         content = content.replace(/#{Nullable}/g, '?');
-        content = content.replace(/#{fieldName}/g, field.name);
-        content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
         content = content.replace(/#{model}/g, StringFns.decapitalize(this.model.name));
         content = content.replace(/#{Model}/g, this.model.name);
         return content;

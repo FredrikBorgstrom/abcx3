@@ -68,9 +68,11 @@ mixin KeyStoreMixin<K, T extends UID<K>> implements KeyStorageInterface<T, K> {
 
   @override
   T? update(T item) {
-    T? existingItem = getByKey(getKey(item) as K);
-    if (existingItem != null) {
-      items = [...items]..remove(existingItem);
+    int index = items.indexWhere((element) => getKey(element) == getKey(item));
+    if (index != -1) {
+      items = [...items]
+        ..removeAt(index)
+        ..insert(index, item);
       return item;
     } else {
       return null;
@@ -87,7 +89,7 @@ mixin KeyStoreMixin<K, T extends UID<K>> implements KeyStorageInterface<T, K> {
   }
 
   @override
-  T? upsert(T item) {
+  T upsert(T item) {
     final updatedItem = update(item);
     if (updatedItem != null) {
       return updatedItem;
@@ -98,12 +100,12 @@ mixin KeyStoreMixin<K, T extends UID<K>> implements KeyStorageInterface<T, K> {
   }
 
   @override
-  List<T?> upsertMany(List<T> items) {
-    final updatedItems = <T?>[];
+  List<T> upsertMany(List<T> items) {
+    final upsertedItems = <T>[];
     for (var item in items) {
-      updatedItems.add(upsert(item));
+      upsertedItems.add(upsert(item));
     }
-    return updatedItems;
+    return upsertedItems;
   }
 }
 

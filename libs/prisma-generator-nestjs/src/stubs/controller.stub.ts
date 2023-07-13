@@ -9,11 +9,11 @@ import { #{ServiceName} } from './#{CrudServiceFileName}';
 export class #{ControllerClassName}<T extends #{ServiceName}> {
   constructor(protected readonly service: T) {}
 
+#{getAll}
+
 #{getByFieldValues}
 
 // #{create}
-
-// #{getAll}
 
 // #{getFilteredPage}
 
@@ -120,10 +120,10 @@ export const controllerReferenceFieldStub = `
 `;
 
 export const controllerMethodStubs = {
+    getAll: controllerGetAllStub,
     // getByFieldValues: controllerGetByFieldValuesStub,
     // getManyByFieldValues: controllerGetManyByFieldValuesStub,
     // create: controllerCreateStub,
-    // getAll: controllerGetAllStub,
     // getFilteredPage: controllergetFilteredPageStub,
     // getUnique: controllerGetUniqueStub,
     // update: controllerUpdateStub,

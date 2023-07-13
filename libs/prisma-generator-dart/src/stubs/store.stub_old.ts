@@ -5,22 +5,22 @@ export const dartStoreStub = `
 import 'package:abcx3/gen_models/common/abcx3_prisma.library.dart';
 import 'package:abcx3/gen_models/models_library.dart';
 
+typedef #{Model}Store = _#{Model}Store<#{Model}>;
 
-class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
+class _#{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
 
-  static late final #{Model}Store _instance;
+  static late final _#{Model}Store _instance;
 
-  static #{Model}Store get instance {
-    _instance ??= #{Model}Store();
+  static get instance {
+    _instance ??= _#{Model}Store._();
     return _instance;
   }
 
-  #{Model}Store() : super(#{Model}.fromJson as JsonFactory<T>);
+  _#{Model}Store._() : super(#{Model}.fromJson as JsonFactory<T>);
 
 
   #{GetValMethods}
 
-  #{GetAll$}
 
   #{GetByPropertyVal$}
 
@@ -54,12 +54,10 @@ enum #{Model}Route implements Endpoint {
 
 export const dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{model}) => #{model}.#{fieldName};`;
 
-export const dartStoreGetAll$ = `Stream<List<T?>> getAll$({bool useCache = true}) => getAllItems$(endpoint: #{Model}Route.#{EndPointAllName}, useCache: useCache);`;
-
-export const dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
+export const dartStoreGetByPropertyVal = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Route.#{EndPointName}, useCache: useCache);`;
 
-export const dartStoreGetManyByPropertyVal$ = `Stream<List<T?>> getManyBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
+export const dartStoreGetManyByPropertyVal = `Stream<List<T?>> getManyBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Route.#{EndPointManyName}, useCache: useCache);`;
 
 // export const dartStoreEndpointName = `by#{FieldName}_$#{fieldName}_get_one`;
@@ -70,13 +68,9 @@ export const dartStoreEndpointName = `getBy#{FieldName}`;
 
 export const dartStoreEndpointManyName = `getManyBy#{FieldName}`;
 
-export const dartStoreEndpointAllName = `getAll`;
-
 export const dartStoreEndpoint = `#{EndPointName}('/#{model}/by#{FieldName}/:#{fieldName}', HttpMethod.get, #{Model})`;
 
 export const dartStoreEndpointMany = `#{EndPointManyName}('/#{model}/by#{FieldName}/:#{fieldName}', HttpMethod.get, List<#{Model}>)`;
-
-export const dartStoreEndpointAll = `#{EndPointAllName}('/#{model}', HttpMethod.get, List<#{Model}>)`;
 
 
 

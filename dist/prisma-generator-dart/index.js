@@ -588,22 +588,22 @@ var dartStoreStub = `
 import 'package:abcx3/gen_models/common/abcx3_prisma.library.dart';
 import 'package:abcx3/gen_models/models_library.dart';
 
-typedef #{Model}Store = _#{Model}Store<#{Model}>;
 
-class _#{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
+class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
 
-  static late final _#{Model}Store _instance;
+  static late final #{Model}Store _instance;
 
-  static get instance {
-    _instance ??= _#{Model}Store._();
+  static #{Model}Store get instance {
+    _instance ??= #{Model}Store();
     return _instance;
   }
 
-  _#{Model}Store._() : super(#{Model}.fromJson as JsonFactory<T>);
+  #{Model}Store() : super(#{Model}.fromJson as JsonFactory<T>);
 
 
   #{GetValMethods}
 
+  #{GetAll$}
 
   #{GetByPropertyVal$}
 
@@ -633,14 +633,17 @@ enum #{Model}Route implements Endpoint {
 }
 `;
 var dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{model}) => #{model}.#{fieldName};`;
-var dartStoreGetByPropertyVal = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
+var dartStoreGetAll$ = `Stream<List<T?>> getAll$({bool useCache = true}) => getAllItems$(endpoint: #{Model}Route.#{EndPointAllName}, useCache: useCache);`;
+var dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Route.#{EndPointName}, useCache: useCache);`;
-var dartStoreGetManyByPropertyVal = `Stream<List<T?>> getManyBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
+var dartStoreGetManyByPropertyVal$ = `Stream<List<T?>> getManyBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Route.#{EndPointManyName}, useCache: useCache);`;
 var dartStoreEndpointName = `getBy#{FieldName}`;
 var dartStoreEndpointManyName = `getManyBy#{FieldName}`;
+var dartStoreEndpointAllName = `getAll`;
 var dartStoreEndpoint = `#{EndPointName}('/#{model}/by#{FieldName}/:#{fieldName}', HttpMethod.get, #{Model})`;
 var dartStoreEndpointMany = `#{EndPointManyName}('/#{model}/by#{FieldName}/:#{fieldName}', HttpMethod.get, List<#{Model}>)`;
+var dartStoreEndpointAll = `#{EndPointAllName}('/#{model}', HttpMethod.get, List<#{Model}>)`;
 
 // libs/prisma-generator-dart/src/generators/dart_store.generator.ts
 var DartStoreGenerator = class {
@@ -660,6 +663,7 @@ var DartStoreGenerator = class {
     let getUniqueByPropertyVal$ = [];
     let getByPropertyVal$ = [];
     let endpoints = [];
+    endpoints.push(this.generateEndpointAll());
     for (const field of this.model.fields) {
       if (field.kind === "object")
         continue;
@@ -672,6 +676,7 @@ var DartStoreGenerator = class {
         endpoints.push(this.generateEndpointMany(field));
       }
     }
+    content = content.replace(/#{GetAll\$}/g, this.generateGetAll$());
     content = content.replace(/#{GetValMethods}/g, getValMethods.join("\n\n	"));
     content = content.replace(/#{GetByPropertyVal\$}/g, getUniqueByPropertyVal$.join("\n\n	"));
     content = content.replace(/#{GetManyByPropertyVal\$}/g, getByPropertyVal$.join("\n\n	"));
@@ -682,13 +687,18 @@ var DartStoreGenerator = class {
     let content = dartStoreGetVal;
     return this.replaceAllVariables(content, field);
   }
+  generateGetAll$() {
+    let content = dartStoreGetAll$;
+    content = content.replace(/#{EndPointAllName}/g, dartStoreEndpointAllName);
+    return this.replaceAllVariables(content);
+  }
   generateGetByPropertyVal$(field) {
-    let content = dartStoreGetByPropertyVal;
+    let content = dartStoreGetByPropertyVal$;
     content = content.replace(/#{EndPointName}/g, this.generateEndpointName(true));
     return this.replaceAllVariables(content, field);
   }
   generateGetManyByPropertyVal$(field) {
-    let content = dartStoreGetManyByPropertyVal;
+    let content = dartStoreGetManyByPropertyVal$;
     content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
     return this.replaceAllVariables(content, field);
   }
@@ -702,11 +712,18 @@ var DartStoreGenerator = class {
     content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
     return this.replaceAllVariables(content, field);
   }
+  generateEndpointAll() {
+    let content = dartStoreEndpointAll;
+    content = content.replace(/#{EndPointAllName}/g, dartStoreEndpointAllName);
+    return this.replaceAllVariables(content);
+  }
   replaceAllVariables(content, field) {
-    content = content.replace(/#{FieldType}/g, this.dartGenerator.getDartType(field));
+    if (field) {
+      content = content.replace(/#{FieldType}/g, this.dartGenerator.getDartType(field));
+      content = content.replace(/#{fieldName}/g, field.name);
+      content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
+    }
     content = content.replace(/#{Nullable}/g, "?");
-    content = content.replace(/#{fieldName}/g, field.name);
-    content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
     content = content.replace(/#{model}/g, StringFns.decapitalize(this.model.name));
     content = content.replace(/#{Model}/g, this.model.name);
     return content;

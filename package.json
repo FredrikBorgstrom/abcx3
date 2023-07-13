@@ -16,10 +16,10 @@
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
-    "@types/node": "^20.4.1",
+    "@types/node": "^20.4.2",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "esbuild": "^0.18.11",
+    "esbuild": "^0.18.12",
     "esbuild-plugin-node-externals": "^1.0.1",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",

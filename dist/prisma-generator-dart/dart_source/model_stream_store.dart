@@ -18,7 +18,7 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
   Stream<T?> getByFieldValue$<W>(
       {required GetPropertyValue<T, W> getPropVal,
       required dynamic value,
-        required Endpoint endpoint,
+      required Endpoint endpoint,
       bool useCache = true}) {
     if (useCache) {
       final model = getByPropertyValue(getPropVal, value);
@@ -26,9 +26,8 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
         return Stream.value(model);
       }
     }
-    return getOne$(
-            endpoint: endpoint, param: value)
-        .doOnData((model) => add(model));
+    return getOne$(endpoint: endpoint, param: value)
+        .doOnData((model) => upsert(model));
   }
 
   getManyByFieldValue$<K>({
@@ -43,7 +42,17 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
         return Stream.value(models);
       }
     }
-    return getMany$<T>(endpoint: endpoint, param: value)
-        .doOnData((models) => addMany(models));
+    return getMany$(endpoint: endpoint, param: value)
+        .doOnData((models) => upsertMany(models));
+  }
+
+  getAllItems$({required Endpoint endpoint, bool useCache = true}) {
+    if (useCache) {
+      final models = getAll();
+      if (models.isNotEmpty) {
+        return Stream.value(models);
+      }
+    }
+    return getMany$(endpoint: endpoint).doOnData((models) => upsertMany(models));
   }
 }

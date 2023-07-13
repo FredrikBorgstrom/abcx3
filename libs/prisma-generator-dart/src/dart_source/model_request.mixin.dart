@@ -8,9 +8,9 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     return get$<T>(param: param, endpoint: endpoint, body: body);
   }
 
-  Stream<List<U>> getMany$<U>(
+  Stream<List<T>> getMany$(
       {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
-    return get$<List<U>>(param: param, endpoint: endpoint, body: body);
+    return get$<List<T>>(param: param, endpoint: endpoint, body: body);
   }
 
   Stream<U> get$<U>(
