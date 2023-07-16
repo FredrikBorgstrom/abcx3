@@ -1,3 +1,4 @@
+import { Dictionary } from "@prisma/generator-helper";
 
 export function forEachEnum(enumObj: Record<string & number, string>, fn: (str: string) => any) {
     const enumArr = Object.values(enumObj) as Array<string & number>;
@@ -19,10 +20,10 @@ export function enumToArray(enumObj: Record<string & number, string>) {
     return mapEnum(enumObj, str => str);
 }
 
-export function convertBooleanStrings(obj: Record<string, string>) {
+export function convertBooleanStrings(obj: Dictionary<string>) {
     const result: Record<string, string | boolean> = {};
     for (const key in obj) {
-        result[key] = convertBooleanString(obj[key]);
+        if (obj[key] != undefined) result[key] = convertBooleanString(obj[key] as string);
     }
     return result;
 }

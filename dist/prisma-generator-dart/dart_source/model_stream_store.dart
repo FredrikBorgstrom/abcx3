@@ -1,18 +1,19 @@
 part of abcx3_prisma;
 
 class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
-
   ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);
 
   final BehaviorSubject<List<T>> _items$$ = BehaviorSubject.seeded([]);
-
   late final Stream<List<T>> items$ = _items$$.stream;
 
   @override
-  get items => _items$$!.value;
+  get items => _items$$.value;
 
   @override
-  set items(List<T> items) => _items$$!.add(items);
+  set items(List<T> items) => _items$$.add(items);
+
+  /*getById$(U id, {bool useCache = true}) =>
+      getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache);*/
 
   Stream<T?> getByFieldValue$<W>(
       {required GetPropertyValue<T, W> getPropVal,
@@ -52,7 +53,6 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
         return Stream.value(models);
       }
     }
-    return getMany$(endpoint: endpoint)
-        .doOnData((models) => upsertMany(models));
+    return getMany$(endpoint: endpoint).doOnData((models) => upsertMany(models));
   }
 }

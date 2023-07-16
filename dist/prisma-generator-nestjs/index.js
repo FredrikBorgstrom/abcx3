@@ -162,7 +162,8 @@ var PrismaHelper = class _PrismaHelper {
 function convertBooleanStrings(obj) {
   const result = {};
   for (const key in obj) {
-    result[key] = convertBooleanString(obj[key]);
+    if (obj[key] != void 0)
+      result[key] = convertBooleanString(obj[key]);
   }
   return result;
 }
