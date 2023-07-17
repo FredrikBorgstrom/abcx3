@@ -20,7 +20,7 @@ export function enumToArray(enumObj: Record<string & number, string>) {
     return mapEnum(enumObj, str => str);
 }
 
-export function convertBooleanStrings(obj: Dictionary<string>) {
+export function convertBooleanStrings(obj: Dictionary<string | string[]>) {
     const result: Record<string, string | boolean> = {};
     for (const key in obj) {
         if (obj[key] != undefined) result[key] = convertBooleanString(obj[key] as string);

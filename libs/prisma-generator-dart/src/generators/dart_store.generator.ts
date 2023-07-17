@@ -1,4 +1,4 @@
-import { DMMF } from "@prisma/generator-helper";
+import { DMMF, GeneratorOptions } from "@prisma/generator-helper";
 import { PrismaHelper, StringFns } from "@shared";
 import { DartGeneratorSettings } from "../dart_settings.interface";
 import { dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal$, dartStoreGetRelatedModels$, dartStoreGetRelatedModelsWithId$, dartStoreGetVal, dartStoreStub } from "../stubs/store.stub";
@@ -11,7 +11,7 @@ export class DartStoreGenerator {
     private prismaHelper: PrismaHelper;
     private dartGenerator: DartGenerator;
 
-    constructor(private settings: DartGeneratorSettings, private model: DMMF.Model) {
+    constructor(private settings: DartGeneratorSettings, private model: DMMF.Model, private options: GeneratorOptions) {
         this.prismaHelper = PrismaHelper.getInstance();
         this.dartGenerator = new DartGenerator(settings, model);
     }
@@ -100,10 +100,12 @@ export class DartStoreGenerator {
     }
 
     generateGetRelatedModels$(field: DMMF.Field, relatedModelType: string, relatedModelStore: string) {
+        let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '');
         let content = dartStoreGetRelatedModels$;
         content = content.replace(/#{RelatedModelType}/g, relatedModelType);
         content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-        content = content.replace(/#{ReturnsList}/g, relatedModelType.includes('List<') ? 'Many' : '');
+        content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
+        //content = content.replace(/#{ReturnsList}/g, relatedModelType.includes('List<') ? 'Many' : '');
 
         return this.replaceAllVariables(content, field);
     }

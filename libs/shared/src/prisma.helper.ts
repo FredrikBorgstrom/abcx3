@@ -1,4 +1,4 @@
-import { DMMF } from '@prisma/generator-helper';
+import { DMMF, GeneratorOptions } from '@prisma/generator-helper';
 import { StringFns } from './stringFns';
 
 export interface FieldNameAndType {
@@ -51,6 +51,28 @@ export class PrismaHelper {
         }
     }
 
+    public getRelationToFieldName(sourceField: DMMF.Field, options: GeneratorOptions) : string | null {
+        const relationName = sourceField.relationName;
+        const relationModelName = sourceField.type;
+        const relationModel = this.getModelByName(relationModelName, options);
+
+        if (relationModel != null) {
+            const relationField = this.getFieldWithRelationName(relationModel, relationName!);
+            const relationFromFields = relationField?.relationFromFields;
+            if (relationFromFields != null && relationFromFields.length > 0) {
+                const fromFieldName = relationFromFields[0];
+                return fromFieldName;
+            }
+        }
+        return null;
+    }
+
+    public getModelByName = (modelName: string, options: GeneratorOptions): DMMF.Model | undefined =>
+        options.dmmf.datamodel.models.find(model => model.name === modelName);
+
+    public getFieldWithRelationName = (model: DMMF.Model, relationName: string): DMMF.Field | undefined =>
+        model.fields.find(field => field.relationName === relationName);
+
     public getFieldNameAndType(field: DMMF.Field): FieldNameAndType {
         return {
             name: field.name,
@@ -58,15 +80,15 @@ export class PrismaHelper {
         };
     }
 
-    public getReferingField(model: DMMF.Model, referedField: DMMF.Field): DMMF.Field | null {
-        // const referingField = model.fields.find(field => field.kind === 'object' && field.type === referencedModel.name);
-        // return referingField || null;
-    }
+    // public getReferingField(model: DMMF.Model, referedField: DMMF.Field): DMMF.Field | null {
+    // const referingField = model.fields.find(field => field.kind === 'object' && field.type === referencedModel.name);
+    // return referingField || null;
+    // }
 
     public modelContainsObjectReference = (model: DMMF.Model): boolean => model.fields.some(field => field.kind === 'object');
 
     public getReferenceFields = (model: DMMF.Model): DMMF.Field[] => model.fields.filter(field => field.kind === 'object');
-    
+
     public getUniqueReferenceFields = (model: DMMF.Model): DMMF.Field[] => model.fields.reduce((acc, field) => {
         if (field.kind === 'object' && !acc.some(f => f.type === field.type)) acc.push(field);
         return acc;

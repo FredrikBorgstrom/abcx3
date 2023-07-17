@@ -171,7 +171,7 @@ class MainGenerator {
 
     async generateDartStoreFile(model: DMMF.Model) {
 
-        const dartStoreGenerator = new DartStoreGenerator(this.settings, model);
+        const dartStoreGenerator = new DartStoreGenerator(this.settings, model, this.options);
         const dartContent = dartStoreGenerator.generateContent();
         const fileName = `${StringFns.snakeCase(model.name)}_store.dart`;
         const filePath = path.join(

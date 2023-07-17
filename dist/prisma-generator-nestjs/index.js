@@ -104,14 +104,32 @@ var PrismaHelper = class _PrismaHelper {
       return null;
     }
   }
+  getRelationToFieldName(sourceField, options) {
+    const relationName = sourceField.relationName;
+    const relationModelName = sourceField.type;
+    const relationModel = this.getModelByName(relationModelName, options);
+    if (relationModel != null) {
+      const relationField = this.getFieldWithRelationName(relationModel, relationName);
+      const relationFromFields = relationField?.relationFromFields;
+      if (relationFromFields != null && relationFromFields.length > 0) {
+        const fromFieldName = relationFromFields[0];
+        return fromFieldName;
+      }
+    }
+    return null;
+  }
+  getModelByName = (modelName, options) => options.dmmf.datamodel.models.find((model) => model.name === modelName);
+  getFieldWithRelationName = (model, relationName) => model.fields.find((field) => field.relationName === relationName);
   getFieldNameAndType(field) {
     return {
       name: field.name,
       type: this.convertToTypescriptType(field)
     };
   }
-  getReferingField(model, referedField) {
-  }
+  // public getReferingField(model: DMMF.Model, referedField: DMMF.Field): DMMF.Field | null {
+  // const referingField = model.fields.find(field => field.kind === 'object' && field.type === referencedModel.name);
+  // return referingField || null;
+  // }
   modelContainsObjectReference = (model) => model.fields.some((field) => field.kind === "object");
   getReferenceFields = (model) => model.fields.filter((field) => field.kind === "object");
   getUniqueReferenceFields = (model) => model.fields.reduce((acc, field) => {

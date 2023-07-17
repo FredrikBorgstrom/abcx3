@@ -232,14 +232,32 @@ var PrismaHelper = class _PrismaHelper {
       return null;
     }
   }
+  getRelationToFieldName(sourceField, options) {
+    const relationName = sourceField.relationName;
+    const relationModelName = sourceField.type;
+    const relationModel = this.getModelByName(relationModelName, options);
+    if (relationModel != null) {
+      const relationField = this.getFieldWithRelationName(relationModel, relationName);
+      const relationFromFields = relationField?.relationFromFields;
+      if (relationFromFields != null && relationFromFields.length > 0) {
+        const fromFieldName = relationFromFields[0];
+        return fromFieldName;
+      }
+    }
+    return null;
+  }
+  getModelByName = (modelName, options) => options.dmmf.datamodel.models.find((model) => model.name === modelName);
+  getFieldWithRelationName = (model, relationName) => model.fields.find((field) => field.relationName === relationName);
   getFieldNameAndType(field) {
     return {
       name: field.name,
       type: this.convertToTypescriptType(field)
     };
   }
-  getReferingField(model, referedField) {
-  }
+  // public getReferingField(model: DMMF.Model, referedField: DMMF.Field): DMMF.Field | null {
+  // const referingField = model.fields.find(field => field.kind === 'object' && field.type === referencedModel.name);
+  // return referingField || null;
+  // }
   modelContainsObjectReference = (model) => model.fields.some((field) => field.kind === "object");
   getReferenceFields = (model) => model.fields.filter((field) => field.kind === "object");
   getUniqueReferenceFields = (model) => model.fields.reduce((acc, field) => {
@@ -648,7 +666,7 @@ var dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} 
 var dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true}) => getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, useCache: useCache);`;
 var dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);`;
-var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getManyBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
+var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);`;
 var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(#{Model} #{model}, {bool useCache = true}) {
     if (#{model}.#{fieldName} != null && useCache) {
@@ -664,7 +682,7 @@ var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(
     if (#{model}.#{fieldName} != null && useCache) {
         return Stream.value(#{model}.#{fieldName}!);
       } else {
-        return #{RelatedModelStore}.instance.get#{ReturnsList}By#{Model}Id$(#{model}.$uid!)
+        return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{model}.$uid!)
             .doOnData((#{fieldName}) {
                 #{model}.#{fieldName} = #{fieldName};
         });
@@ -679,9 +697,10 @@ var dartStoreEndpointAll = `#{EndPointAllName}('/#{model}', HttpMethod.get, List
 
 // libs/prisma-generator-dart/src/generators/dart_store.generator.ts
 var DartStoreGenerator = class {
-  constructor(settings, model) {
+  constructor(settings, model, options) {
     this.settings = settings;
     this.model = model;
+    this.options = options;
     this.prismaHelper = PrismaHelper.getInstance();
     this.dartGenerator = new DartGenerator(settings, model);
   }
@@ -755,10 +774,11 @@ var DartStoreGenerator = class {
     return this.replaceAllVariables(content, field);
   }
   generateGetRelatedModels$(field, relatedModelType, relatedModelStore) {
+    let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? "");
     let content = dartStoreGetRelatedModels$;
     content = content.replace(/#{RelatedModelType}/g, relatedModelType);
     content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-    content = content.replace(/#{ReturnsList}/g, relatedModelType.includes("List<") ? "Many" : "");
+    content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
     return this.replaceAllVariables(content, field);
   }
   generateEndpoint(field) {
@@ -938,7 +958,7 @@ var MainGenerator = class {
     await this.writeFile(filePath, dartContent);
   }
   async generateDartStoreFile(model) {
-    const dartStoreGenerator = new DartStoreGenerator(this.settings, model);
+    const dartStoreGenerator = new DartStoreGenerator(this.settings, model, this.options);
     const dartContent = dartStoreGenerator.generateContent();
     const fileName = `${StringFns.snakeCase(model.name)}_store.dart`;
     const filePath = import_path.default.join(

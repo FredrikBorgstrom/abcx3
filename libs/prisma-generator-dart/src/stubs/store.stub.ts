@@ -71,7 +71,7 @@ export const dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true})
 export const dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);`;
 
-export const dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getManyBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
+export const dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
 getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);`;
 
 
@@ -90,7 +90,7 @@ export const dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}?> get#{Fie
     if (#{model}.#{fieldName} != null && useCache) {
         return Stream.value(#{model}.#{fieldName}!);
       } else {
-        return #{RelatedModelStore}.instance.get#{ReturnsList}By#{Model}Id$(#{model}.$uid!)
+        return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{model}.$uid!)
             .doOnData((#{fieldName}) {
                 #{model}.#{fieldName} = #{fieldName};
         });
