@@ -6,7 +6,5 @@ import 'package:abcx3/gen_models/models_library.dart';
 import 'package:rxdart/rxdart.dart';
 
 #{StoreParts}
-
-part 'stores/game_store_copy.dart';
 `;
 
