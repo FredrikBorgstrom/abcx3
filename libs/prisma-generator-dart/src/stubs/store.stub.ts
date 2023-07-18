@@ -7,11 +7,11 @@ part of abcx3_stores;
 
 class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
 
-  static late final #{Model}Store _instance;
+  static #{Model}Store? _instance;
 
   static #{Model}Store get instance {
     _instance ??= #{Model}Store();
-    return _instance;
+    return _instance!;
   }
 
   #{Model}Store() : super(#{Model}.fromJson as JsonFactory<T>);

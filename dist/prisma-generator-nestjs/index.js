@@ -225,7 +225,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, } fr
 import { #{ServiceName} } from './#{CrudServiceFileName}';
 #{ImportGuardClass}
 
-@Controller('#{model}')
+@Controller('#{moDel}')
 export class #{ControllerClassName}<T extends #{ServiceName}> {
   constructor(protected readonly service: T) {}
 
