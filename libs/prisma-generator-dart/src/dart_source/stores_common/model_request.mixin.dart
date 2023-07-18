@@ -1,4 +1,4 @@
-part of abcx3_prisma;
+part of abcx3_stores;
 
 mixin ModelRequestMixin<T> on ModelCreator<T> {
   final Map<String, Stream<dynamic>> _cachedStreams = {};

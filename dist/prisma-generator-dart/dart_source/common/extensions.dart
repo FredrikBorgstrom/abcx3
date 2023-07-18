@@ -1,4 +1,4 @@
-part of abcx3_prisma;
+part of abcx3_common;
 
 extension IterableX<T> on Iterable<T> {
   T? find(bool Function(T) test) {

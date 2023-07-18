@@ -1,4 +1,4 @@
-part of abcx3_prisma;
+part of abcx3_stores;
 
 class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
   ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);
@@ -7,7 +7,7 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
   late final Stream<List<T>> items$ = _items$$.stream;
 
   @override
-  get items => _items$$.value;
+  List<T> get items => _items$$.value;
 
   @override
   set items(List<T> items) => _items$$.add(items);
@@ -53,6 +53,7 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
         return Stream.value(models);
       }
     }
-    return getMany$(endpoint: endpoint).doOnData((models) => upsertMany(models));
+    return getMany$(endpoint: endpoint)
+        .doOnData((models) => upsertMany(models));
   }
 }

@@ -1,4 +1,4 @@
-part of abcx3_prisma;
+part of abcx3_stores;
 
 abstract interface class StorageInterface<T> {
   void initStorage();

@@ -6,7 +6,7 @@ export interface DartGeneratorSettings extends GeneratorSettings {
     FormatWithDart: boolean;
     MakeAllPropsOptional: boolean;
     // ModelsImplementBaseClass?: boolean;
-    CommonSourceDirectory: string;
-    ModelsBaseClassFileName: string;
+    // CommonSourceDirectory: string;
+    // ModelsBaseClassFileName: string;
 
 }

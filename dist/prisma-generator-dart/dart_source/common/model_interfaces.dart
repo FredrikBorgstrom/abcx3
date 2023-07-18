@@ -1,4 +1,4 @@
-part of abcx3_prisma;
+part of abcx3_common;
 
 typedef JsonFactory<T> = T Function(Map<String, dynamic> json);
 

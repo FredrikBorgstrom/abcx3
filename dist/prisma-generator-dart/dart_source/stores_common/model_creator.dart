@@ -1,10 +1,11 @@
-part of abcx3_prisma;
+part of abcx3_stores;
 
-class ModelCreator<T> implements Disposable {
+class ModelCreator<T> {
   final JsonFactory<T> jsonModelFactory;
   final HttpService authHttp;
 
-  ModelCreator(this.jsonModelFactory) : authHttp = ServiceManager.I.get<AuthHttpService>()!;
+  ModelCreator(this.jsonModelFactory)
+      : authHttp = ServiceManager.I.get<AuthHttpService>()!;
 
   create(json) {
     if (json is List) {
@@ -26,6 +27,6 @@ class ModelCreator<T> implements Disposable {
     return jsonModelFactory(json as Map<String, dynamic>);
   }
 
-  @override
-  void dispose() {}
+  // @override
+  // void dispose() {}
 }

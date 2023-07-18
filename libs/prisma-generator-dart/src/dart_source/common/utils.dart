@@ -1,4 +1,4 @@
-part of abcx3_prisma;
+part of abcx3_common;
 
 List<T> createModels<T>(json, JsonFactory<T> jsonFactory) {
   List<T> instances = [];
