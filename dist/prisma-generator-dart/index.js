@@ -642,7 +642,7 @@ class #{Model}Include implements StoreIncludes {
   
       #{IncludeConstructors}
   }`;
-var dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({this.useCache = true, #{FieldType}Include? include}) {
+var dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({this.useCache = true, #{IncludeType} include}) {
     method = (#{moDel}) => #{Model}Store.instance.get#{FieldName}$(#{moDel}, useCache: useCache, include: include);
 }`;
 var dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.useCache = true});`;
@@ -674,7 +674,7 @@ var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{Field
     }
 }
 `;
-var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, List<#{FieldType}Include>? include}) {
+var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -685,11 +685,11 @@ var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}?> get#{FieldN
         if (include == null || include.isEmpty) {
             return item$;
         } else {
-            return getIncluding$<T>(item$, include);
+            return getIncluding$<#{RelatedModelType}>(item$, include);
         }
       }
 }`;
-var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, List<#{FieldType}Include>? include}) {
+var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -700,7 +700,7 @@ var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(
         if (include == null || include.isEmpty) {
             return items$;
         } else {
-            return getIncluding$<T>(items$, include);
+            return getIncluding$<#{RelatedModelType}>(items$, include);
         }
       }
 }`;
@@ -738,7 +738,7 @@ var DartStoreGenerator = class {
       if (field.kind === "object") {
         includesConstructor.push(this.generateIncludesConstructor(field));
         const relationFromFields = field.relationFromFields;
-        const relatedModelType = field.isList ? `List<${field.type}>` : field.type;
+        const relatedModelType = field.isList ? `List<${field.type}>` : field.type + "?";
         if (relationFromFields != null && relationFromFields?.length > 0) {
           const relatedFieldName = relationFromFields[0];
           GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedModelType, relatedFieldName));

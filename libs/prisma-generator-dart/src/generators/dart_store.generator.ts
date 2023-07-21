@@ -38,7 +38,7 @@ export class DartStoreGenerator {
             if (field.kind === 'object') {
                 includesConstructor.push(this.generateIncludesConstructor(field));
                 const relationFromFields = field.relationFromFields;
-                const relatedModelType = field.isList ? `List<${field.type}>` : field.type;
+                const relatedModelType = field.isList ? `List<${field.type}>` : field.type + '?';
                 if (relationFromFields != null && relationFromFields?.length > 0) {
                     const relatedFieldName = relationFromFields[0];
                     GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedModelType, relatedFieldName));
