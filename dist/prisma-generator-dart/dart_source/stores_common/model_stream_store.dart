@@ -56,4 +56,28 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
     return getMany$(endpoint: endpoint)
         .doOnData((models) => upsertMany(models));
   }
+
+  Stream<V> getIncluding$<V>(Stream<V> items$, List<StoreIncludes> storeGetters) {
+    List<Stream<dynamic>> listOfZipStreams = [];
+    return items$.switchMap((item) {
+      for (var modelField in storeGetters) {
+        listOfZipStreams.add(modelField.method(item));
+      }
+      return Rx.zipList(listOfZipStreams).switchMap((value) {
+        return Stream.value(item);
+      });
+    });
+  }
+
+  Stream<List<V>> getManyIncluding$<V>(Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
+      List<Stream<dynamic>> listOfZipStreams = [];
+      return items$.switchMap((items) {
+        for (var modelField in storeGetters) {
+          listOfZipStreams.addAll(items.map((item) => modelField.method(item)));
+        }
+        return Rx.zipList(listOfZipStreams).switchMap((value) {
+          return Stream.value(items);
+        });
+      });
+    }
 }

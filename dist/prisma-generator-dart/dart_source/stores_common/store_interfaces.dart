@@ -17,3 +17,8 @@ abstract interface class HttpService {
     Object? body = const {},
   });
 }
+
+abstract interface class StoreIncludes {
+  abstract bool useCache;
+  abstract Function method;
+}

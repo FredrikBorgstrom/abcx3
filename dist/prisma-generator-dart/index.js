@@ -608,6 +608,9 @@ class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
 
 }
 
+#{ClassInclude}
+
+
 enum #{Model}Endpoints implements Endpoint {
 
     #{Endpoints};
@@ -626,41 +629,87 @@ enum #{Model}Endpoints implements Endpoint {
     final regex = RegExp(r':([a-zA-Z]+)');
     return path.replaceFirst(regex, param.toString());
   }
-
 }
 `;
-var dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{model}) => #{model}.#{fieldName};`;
-var dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true}) => getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, useCache: useCache);`;
-var dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
-getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);`;
-var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true}) =>
-getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);`;
-var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(#{Model} #{model}, {bool useCache = true}) {
-    if (#{model}.#{fieldName} != null && useCache) {
-        return Stream.value(#{model}.#{fieldName}!);
+var dartStoreClassIncludeStub = `
+class #{Model}Include implements StoreIncludes {
+
+    @override
+    bool useCache;
+  
+    @override
+    late Function method;
+  
+      #{IncludeConstructors}
+  }`;
+var dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({this.useCache = true, #{FieldType}Include? include}) {
+    method = (#{moDel}) => #{Model}Store.instance.get#{FieldName}$(#{moDel}, useCache: useCache, include: include);
+}`;
+var dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.useCache = true});`;
+var dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
+var dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true, List<#{Model}Include>? include}) {
+    final allItems$ = getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, useCache: useCache);
+    if (include == null || include.isEmpty) {
+        return allItems$;
       } else {
-        return #{FieldType}Store.instance.getById$(#{model}.#{relationFromField}!)
+        return getManyIncluding$(allItems$, include);
+      }
+    }
+`;
+var dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
+    final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);
+    if (include == null || include.isEmpty) {
+        return item$;
+    } else {
+        return getIncluding$<T?>(item$, include);
+    }
+}
+`;
+var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
+    final items$ = getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);
+    if (include == null || include.isEmpty) {
+        return items$;
+    } else {
+        return getManyIncluding$<T>(items$, include);
+    }
+}
+`;
+var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, List<#{FieldType}Include>? include}) {
+    if (#{moDel}.#{fieldName} != null && useCache) {
+        return Stream.value(#{moDel}.#{fieldName}!);
+      } else {
+        final item$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
             .doOnData((#{fieldName}) {
-                #{model}.#{fieldName} = #{fieldName};
+                #{moDel}.#{fieldName} = #{fieldName};
         });
+        if (include == null || include.isEmpty) {
+            return item$;
+        } else {
+            return getIncluding$<T>(item$, include);
+        }
       }
 }`;
-var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(#{Model} #{model}, {bool useCache = true}) {
-    if (#{model}.#{fieldName} != null && useCache) {
-        return Stream.value(#{model}.#{fieldName}!);
+var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}?> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, List<#{FieldType}Include>? include}) {
+    if (#{moDel}.#{fieldName} != null && useCache) {
+        return Stream.value(#{moDel}.#{fieldName}!);
       } else {
-        return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{model}.$uid!)
+        final items$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!)
             .doOnData((#{fieldName}) {
-                #{model}.#{fieldName} = #{fieldName};
+                #{moDel}.#{fieldName} = #{fieldName};
         });
+        if (include == null || include.isEmpty) {
+            return items$;
+        } else {
+            return getIncluding$<T>(items$, include);
+        }
       }
 }`;
 var dartStoreEndpointName = `getBy#{FieldName}`;
 var dartStoreEndpointManyName = `getManyBy#{FieldName}`;
 var dartStoreEndpointAllName = `getAll`;
-var dartStoreEndpoint = `#{EndPointName}('/#{model}/by#{FieldName}/:#{fieldName}', HttpMethod.get, #{Model})`;
-var dartStoreEndpointMany = `#{EndPointManyName}('/#{model}/by#{FieldName}/:#{fieldName}', HttpMethod.get, List<#{Model}>)`;
-var dartStoreEndpointAll = `#{EndPointAllName}('/#{model}', HttpMethod.get, List<#{Model}>)`;
+var dartStoreEndpoint = `#{EndPointName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.get, #{Model})`;
+var dartStoreEndpointMany = `#{EndPointManyName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.get, List<#{Model}>)`;
+var dartStoreEndpointAll = `#{EndPointAllName}('/#{moDel}', HttpMethod.get, List<#{Model}>)`;
 
 // libs/prisma-generator-dart/src/generators/dart_store.generator.ts
 var DartStoreGenerator = class {
@@ -683,9 +732,11 @@ var DartStoreGenerator = class {
     let endpoints = [];
     let GetRelatedModels$ = [];
     let GetRelatedModelsWithId$ = [];
+    let includesConstructor = [];
     endpoints.push(this.generateEndpointAll());
     for (const field of this.model.fields) {
       if (field.kind === "object") {
+        includesConstructor.push(this.generateIncludesConstructor(field));
         const relationFromFields = field.relationFromFields;
         const relatedModelType = field.isList ? `List<${field.type}>` : field.type;
         if (relationFromFields != null && relationFromFields?.length > 0) {
@@ -713,7 +764,17 @@ var DartStoreGenerator = class {
     content = content.replace(/#{GetRelatedModelsWithId\$}/g, GetRelatedModelsWithId$.join("\n\n	"));
     content = content.replace(/#{GetRelatedModels\$}/g, GetRelatedModels$.join("\n\n	"));
     content = content.replace(/#{Endpoints}/g, endpoints.join(",\n	"));
+    if (includesConstructor.length === 0) {
+      includesConstructor.push(this.replaceAllVariables(dartStoreIncludesEmptyConstructor));
+    }
+    let classIncludeContent = this.replaceAllVariables(dartStoreClassIncludeStub);
+    classIncludeContent = classIncludeContent.replace(/#{IncludeConstructors}/g, includesConstructor.join("\n\n	"));
+    content = content.replace(/#{ClassInclude}/g, classIncludeContent);
     return content;
+  }
+  generateIncludesConstructor(field) {
+    let content = dartStoreIncludesConstructor;
+    return this.replaceAllVariables(content, field);
   }
   generateGetValMethod(field) {
     let content = dartStoreGetVal;
@@ -766,11 +827,12 @@ var DartStoreGenerator = class {
   replaceAllVariables(content, field) {
     if (field) {
       content = content.replace(/#{FieldType}/g, this.dartGenerator.getDartType(field));
+      content = content.replace(/#{IncludeType}/g, `List<${field.type}Include>?`);
       content = content.replace(/#{fieldName}/g, field.name);
       content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
     }
     content = content.replace(/#{Nullable}/g, "?");
-    content = content.replace(/#{model}/g, StringFns.decapitalize(this.model.name));
+    content = content.replace(/#{moDel}/g, StringFns.decapitalize(this.model.name));
     content = content.replace(/#{Model}/g, this.model.name);
     return content;
   }

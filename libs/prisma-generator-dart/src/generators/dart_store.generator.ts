@@ -1,7 +1,7 @@
 import { DMMF, GeneratorOptions } from "@prisma/generator-helper";
 import { PrismaHelper, StringFns } from "@shared";
 import { DartGeneratorSettings } from "../dart_settings.interface";
-import { dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal$, dartStoreGetRelatedModels$, dartStoreGetRelatedModelsWithId$, dartStoreGetVal, dartStoreStub } from "../stubs/store.stub";
+import { dartStoreClassIncludeStub, dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal$, dartStoreGetRelatedModels$, dartStoreGetRelatedModelsWithId$, dartStoreGetVal, dartStoreIncludesConstructor, dartStoreIncludesEmptyConstructor, dartStoreStub } from "../stubs/store.stub";
 import { get } from "http";
 import { DartGenerator } from "./dart.generator";
 
@@ -29,11 +29,14 @@ export class DartStoreGenerator {
         let endpoints: string[] = [];
         let GetRelatedModels$: string[] = [];
         let GetRelatedModelsWithId$: string[] = [];
+        //let uniqueIncludesConstructor: string[] = [];
+        let includesConstructor: string[] = [];
 
         endpoints.push(this.generateEndpointAll());
 
         for (const field of this.model.fields) {
             if (field.kind === 'object') {
+                includesConstructor.push(this.generateIncludesConstructor(field));
                 const relationFromFields = field.relationFromFields;
                 const relatedModelType = field.isList ? `List<${field.type}>` : field.type;
                 if (relationFromFields != null && relationFromFields?.length > 0) {
@@ -62,8 +65,20 @@ export class DartStoreGenerator {
         content = content.replace(/#{GetRelatedModelsWithId\$}/g, GetRelatedModelsWithId$.join('\n\n\t'));
         content = content.replace(/#{GetRelatedModels\$}/g, GetRelatedModels$.join('\n\n\t'));
         content = content.replace(/#{Endpoints}/g, endpoints.join(',\n\t'));
-
+        if (includesConstructor.length === 0) {
+            includesConstructor.push(this.replaceAllVariables(dartStoreIncludesEmptyConstructor));
+        }
+        let classIncludeContent = this.replaceAllVariables(dartStoreClassIncludeStub);
+        classIncludeContent = classIncludeContent.replace(/#{IncludeConstructors}/g, includesConstructor.join('\n\n\t'));
+        content = content.replace(/#{ClassInclude}/g, classIncludeContent);
+        /* } else {
+            content = content.replace(/#{ClassInclude}/g, '');
+        } */
         return content;
+    }
+    generateIncludesConstructor(field: DMMF.Field): string {
+        let content = dartStoreIncludesConstructor;
+        return this.replaceAllVariables(content, field);
     }
 
 
@@ -89,7 +104,6 @@ export class DartStoreGenerator {
         content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
         return this.replaceAllVariables(content, field);
     }
-
 
 
     generateGetRelatedModelsWithId$(field: DMMF.Field, relatedModelType: string, relationFromField: string) {
@@ -132,11 +146,13 @@ export class DartStoreGenerator {
     replaceAllVariables(content: string, field?: DMMF.Field) {
         if (field) {
             content = content.replace(/#{FieldType}/g, this.dartGenerator.getDartType(field));
+            content = content.replace(/#{IncludeType}/g, `List<${field.type}Include>?`);
             content = content.replace(/#{fieldName}/g, field.name);
             content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
         }
         content = content.replace(/#{Nullable}/g, '?');
-        content = content.replace(/#{model}/g, StringFns.decapitalize(this.model.name));
+        // content = content.replace(/#{model}/g, StringFns.decapitalize(this.model.name));
+        content = content.replace(/#{moDel}/g, StringFns.decapitalize(this.model.name));
         content = content.replace(/#{Model}/g, this.model.name);
         return content;
     }
