@@ -674,7 +674,7 @@ var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{Field
     }
 }
 `;
-var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -685,11 +685,11 @@ var dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}> get#{FieldNa
         if (include == null || include.isEmpty) {
             return item$;
         } else {
-            return getIncluding$<#{RelatedModelType}>(item$, include);
+            return #{getIncluding$}<#{GetIncludingType}>(item$, include);
         }
       }
 }`;
-var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -700,7 +700,7 @@ var dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}> get#{FieldName}$(#
         if (include == null || include.isEmpty) {
             return items$;
         } else {
-            return getIncluding$<#{RelatedModelType}>(items$, include);
+            return #{getIncluding$}<#{GetIncludingType}>(items$, include);
         }
       }
 }`;
@@ -738,13 +738,12 @@ var DartStoreGenerator = class {
       if (field.kind === "object") {
         includesConstructor.push(this.generateIncludesConstructor(field));
         const relationFromFields = field.relationFromFields;
-        const relatedModelType = field.isList ? `List<${field.type}>` : field.type + "?";
         if (relationFromFields != null && relationFromFields?.length > 0) {
           const relatedFieldName = relationFromFields[0];
-          GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedModelType, relatedFieldName));
+          GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName));
         } else {
           const relatedModelStore = `${field.type}Store`;
-          GetRelatedModels$.push(this.generateGetRelatedModels$(field, relatedModelType, relatedModelStore));
+          GetRelatedModels$.push(this.generateGetRelatedModels$(field, relatedModelStore));
         }
       } else {
         getValMethods.push(this.generateGetValMethod(field));
@@ -795,18 +794,31 @@ var DartStoreGenerator = class {
     content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
     return this.replaceAllVariables(content, field);
   }
-  generateGetRelatedModelsWithId$(field, relatedModelType, relationFromField) {
+  generateGetRelatedModelsWithId$(field, relationFromField) {
     let content = dartStoreGetRelatedModelsWithId$;
-    content = content.replace(/#{RelatedModelType}/g, relatedModelType);
     content = content.replace(/#{relationFromField}/g, relationFromField);
+    content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+    content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
+    if (field.isList) {
+      content = content.replace(/#{getIncluding\$}/g, "getManyIncluding$");
+    } else {
+      content = content.replace(/#{getIncluding\$}/g, "getIncluding$");
+    }
     return this.replaceAllVariables(content, field);
   }
-  generateGetRelatedModels$(field, relatedModelType, relatedModelStore) {
+  generateGetRelatedModels$(field, relatedModelStore) {
     let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? "");
     let content = dartStoreGetRelatedModels$;
-    content = content.replace(/#{RelatedModelType}/g, relatedModelType);
     content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
     content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
+    content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+    if (field.isList) {
+      content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
+      content = content.replace(/#{getIncluding\$}/g, "getManyIncluding$");
+    } else {
+      content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
+      content = content.replace(/#{getIncluding\$}/g, "getIncluding$");
+    }
     return this.replaceAllVariables(content, field);
   }
   generateEndpoint(field) {

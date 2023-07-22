@@ -115,7 +115,7 @@ export const dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}
 }
 `;
 
-export const dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -126,11 +126,11 @@ export const dartStoreGetRelatedModelsWithId$ = `Stream<#{RelatedModelType}> get
         if (include == null || include.isEmpty) {
             return item$;
         } else {
-            return getIncluding$<#{RelatedModelType}>(item$, include);
+            return #{getIncluding$}<#{GetIncludingType}>(item$, include);
         }
       }
 }`;
-export const dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -141,7 +141,7 @@ export const dartStoreGetRelatedModels$ = `Stream<#{RelatedModelType}> get#{Fiel
         if (include == null || include.isEmpty) {
             return items$;
         } else {
-            return getIncluding$<#{RelatedModelType}>(items$, include);
+            return #{getIncluding$}<#{GetIncludingType}>(items$, include);
         }
       }
 }`;

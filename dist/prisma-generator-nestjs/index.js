@@ -408,7 +408,6 @@ import {
 } from '@nestjs/common';
 import { Prisma, #{Model} #{RelatedFieldTypesImport} } from '@prisma/client';
 import {
-    PaginationInterface,
     PrismaService,
 } from '#{PrismaServiceImportPath}';
 #{NeverthrowImport}
