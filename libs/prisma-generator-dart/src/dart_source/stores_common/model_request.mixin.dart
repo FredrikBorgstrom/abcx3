@@ -23,7 +23,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
       return cachedRequest;
     } else {
       final subject$$ = PublishSubject<U>();
-      final stream$$ = subject$$.stream.take(1);
+      final stream$$ = subject$$.take(1); // .shareValue();
       _setCachedRequest<U>(serializedRequest, stream$$);
       final result = authHttp.request(endpoint, param: param, body: body);
       result.then((val) {
