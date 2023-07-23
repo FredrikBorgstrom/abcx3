@@ -3,8 +3,6 @@ part of abcx3_stores;
 typedef GetPropertyValue<T, U> = U? Function(T model);
 // U is the type of the field value
 
-// typedef ModelStore<M, U> = _ModelStore<U, PrismaModel<U>>;
-
 class ModelStore<U, T extends UID<U>> extends ModelCreator<T>
     with KeyStoreMixin<U, T>, ModelRequestMixin<T> {
   ModelStore(JsonFactory<T> fromJson) : super(fromJson);
