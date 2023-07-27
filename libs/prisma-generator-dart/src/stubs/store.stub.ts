@@ -115,7 +115,7 @@ export const dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}
 }
 `;
 
-export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+/* export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -129,8 +129,41 @@ export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get
             return #{getIncluding$}<#{GetIncludingType}>(item$, include);
         }
       }
+}`; */
+export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    Stream<#{StreamReturnType}> #{fieldName}$;
+    if (#{moDel}.#{fieldName} != null && useCache) {
+        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
+    } else {
+        #{fieldName}$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
+            .doOnData((#{fieldName}) {
+                #{moDel}.#{fieldName} = #{fieldName};
+        });
+    }
+    if (include == null || include.isEmpty) {
+        return #{fieldName}$;
+    } else {
+        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
+    }
 }`;
+
 export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    Stream<#{StreamReturnType}> #{fieldName}$;
+    if (#{moDel}.#{fieldName} != null && useCache) {
+        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
+    } else {
+        #{fieldName}$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!)
+            .doOnData((#{fieldName}) {
+                #{moDel}.#{fieldName} = #{fieldName};
+        });
+    }
+    if (include == null || include.isEmpty) {
+        return #{fieldName}$;
+    } else {
+        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
+    }
+}`;
+/* export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);
       } else {
@@ -144,7 +177,7 @@ export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{Fiel
             return #{getIncluding$}<#{GetIncludingType}>(items$, include);
         }
       }
-}`;
+}`; */
 
 
 export const dartStoreEndpointName = `getBy#{FieldName}`;

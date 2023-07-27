@@ -107,30 +107,24 @@ export class DartStoreGenerator {
 
 
     generateGetRelatedModelsWithId$(field: DMMF.Field, relationFromField: string) {
-        // const relatedModelType = field.isList ? `List<${field.type}>` : field.type + '?';
         let content = dartStoreGetRelatedModelsWithId$;
-        
         content = content.replace(/#{relationFromField}/g, relationFromField);
         content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
         content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
         if (field.isList) {
-           // content = content.replace(/#{RelatedModelType}/g, `List<${field.type}>`);
             content = content.replace(/#{getIncluding\$}/g, 'getManyIncluding$');
         } else {
-            // content = content.replace(/#{RelatedModelType}/g, `${field.type}?`);
             content = content.replace(/#{getIncluding\$}/g, 'getIncluding$');
         }
-        //content = content.replace(/#{getIncluding\$}/g, field.isList ? 'getManyIncluding$' : 'getIncluding$');
         return this.replaceAllVariables(content, field);
     }
 
     generateGetRelatedModels$(field: DMMF.Field, relatedModelStore: string) {
         let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '');
         let content = dartStoreGetRelatedModels$;
-        // content = content.replace(/#{RelatedModelType}/g, relatedModelType);
         content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-        content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
         content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+        content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
         if (field.isList) {
             content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
             content = content.replace(/#{getIncluding\$}/g, 'getManyIncluding$');
@@ -138,8 +132,6 @@ export class DartStoreGenerator {
             content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
             content = content.replace(/#{getIncluding\$}/g, 'getIncluding$');
         }
-        // content = content.replace(/#{getIncluding\$}/g, field.isList ? 'getManyIncluding$' : 'getIncluding$');
-        // content = content.replace(/#{ReturnsList}/g, relatedModelType.includes('List<') ? 'Many' : '');
 
         return this.replaceAllVariables(content, field);
     }

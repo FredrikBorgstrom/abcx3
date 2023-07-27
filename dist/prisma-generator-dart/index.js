@@ -675,34 +675,36 @@ var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{Field
 }
 `;
 var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    Stream<#{StreamReturnType}> #{fieldName}$;
     if (#{moDel}.#{fieldName} != null && useCache) {
-        return Stream.value(#{moDel}.#{fieldName}!);
-      } else {
-        final item$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
+        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
+    } else {
+        #{fieldName}$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
             .doOnData((#{fieldName}) {
                 #{moDel}.#{fieldName} = #{fieldName};
         });
-        if (include == null || include.isEmpty) {
-            return item$;
-        } else {
-            return #{getIncluding$}<#{GetIncludingType}>(item$, include);
-        }
-      }
+    }
+    if (include == null || include.isEmpty) {
+        return #{fieldName}$;
+    } else {
+        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
+    }
 }`;
 var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    Stream<#{StreamReturnType}> #{fieldName}$;
     if (#{moDel}.#{fieldName} != null && useCache) {
-        return Stream.value(#{moDel}.#{fieldName}!);
-      } else {
-        final items$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!)
+        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
+    } else {
+        #{fieldName}$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!)
             .doOnData((#{fieldName}) {
                 #{moDel}.#{fieldName} = #{fieldName};
         });
-        if (include == null || include.isEmpty) {
-            return items$;
-        } else {
-            return #{getIncluding$}<#{GetIncludingType}>(items$, include);
-        }
-      }
+    }
+    if (include == null || include.isEmpty) {
+        return #{fieldName}$;
+    } else {
+        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
+    }
 }`;
 var dartStoreEndpointName = `getBy#{FieldName}`;
 var dartStoreEndpointManyName = `getManyBy#{FieldName}`;
@@ -810,8 +812,8 @@ var DartStoreGenerator = class {
     let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? "");
     let content = dartStoreGetRelatedModels$;
     content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-    content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
     content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+    content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
     if (field.isList) {
       content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
       content = content.replace(/#{getIncluding\$}/g, "getManyIncluding$");
