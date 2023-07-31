@@ -16,14 +16,19 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
   /*getById$(U id, {bool useCache = true}) =>
       getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache);*/
 
-  Stream<T?> getByFieldValue$<W>({required GetPropertyValue<T, W> getPropVal, required dynamic value, required Endpoint endpoint, bool useCache = true}) {
+  Stream<T?> getByFieldValue$<W>(
+      {required GetPropertyValue<T, W> getPropVal,
+      required dynamic value,
+      required Endpoint endpoint,
+      bool useCache = true}) {
     if (useCache) {
       final model = getByPropertyValue(getPropVal, value);
       if (model != null) {
         return Stream.value(model).asBroadcastStream();
       }
     }
-    return getOne$(endpoint: endpoint, param: value).doOnData((model) => upsert(model));
+    return getOne$(endpoint: endpoint, param: value)
+        .doOnData((model) => upsert(model));
   }
 
   getManyByFieldValue$<K>({
@@ -38,7 +43,8 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
         return Stream.value(models).asBroadcastStream();
       }
     }
-    return getMany$(endpoint: endpoint, param: value).doOnData((models) => upsertMany(models));
+    return getMany$(endpoint: endpoint, param: value)
+        .doOnData((models) => upsertMany(models));
   }
 
   getAllItems$({required Endpoint endpoint, bool useCache = true}) {
@@ -53,30 +59,32 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
     }
   }
 
-  Stream<V?> getIncluding$<V>(Stream<V?> item$, List<StoreIncludes> storeGetters) {
+  Stream<V?> getIncluding$<V>(
+      Stream<V?> item$, List<StoreIncludes> storeGetters) {
     List<Stream<dynamic>> listOfZipStreams = [];
     return item$.switchMap((item) {
       if (item == null) {
-        return Stream.value(item).asBroadcastStream();
+        return Stream.value(item); // .asBroadcastStream();
       } else {
         for (var modelField in storeGetters) {
           listOfZipStreams.add(modelField.method(item));
         }
         return Rx.zipList(listOfZipStreams).switchMap((value) {
-          return Stream.value(item).asBroadcastStream();
+          return Stream.value(item); // .asBroadcastStream();
         }); // .asBroadcastStream();
       }
     });
   }
 
-  Stream<List<V>> getManyIncluding$<V>(Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
+  Stream<List<V>> getManyIncluding$<V>(
+      Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
     List<Stream<dynamic>> listOfZipStreams = [];
     return items$.switchMap((items) {
       for (var modelField in storeGetters) {
         listOfZipStreams.addAll(items.map((item) => modelField.method(item)));
       }
       return Rx.zipList(listOfZipStreams).switchMap((value) {
-        return Stream.value(items).asBroadcastStream();
+        return Stream.value(items); // .asBroadcastStream();
       }); //.asBroadcastStream();
     });
   }
