@@ -115,22 +115,22 @@ export const dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{Fie
 }
 `;
 
-/* export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
-    if (#{moDel}.#{fieldName} != null && useCache) {
-        return Stream.value(#{moDel}.#{fieldName}!);
-      } else {
-        final item$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
+export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    return #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache, include: include)
+        .doOnData((#{fieldName}) {
+            #{moDel}.#{fieldName} = #{fieldName};
+    });
+}`;
+
+export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!, useCache: useCache, include: include)
             .doOnData((#{fieldName}) {
                 #{moDel}.#{fieldName} = #{fieldName};
-        });
-        if (include == null || include.isEmpty) {
-            return item$;
-        } else {
-            return #{getIncluding$}<#{GetIncludingType}>(item$, include);
-        }
-      }
-}`; */
-export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    });
+
+}`;
+
+/* export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     Stream<#{StreamReturnType}> #{fieldName}$;
     if (#{moDel}.#{fieldName} != null && useCache) {
         #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
@@ -162,7 +162,24 @@ export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{Fiel
     } else {
         return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
     }
-}`;
+}`; */
+
+/* export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
+    if (#{moDel}.#{fieldName} != null && useCache) {
+        return Stream.value(#{moDel}.#{fieldName}!);
+      } else {
+        final item$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
+            .doOnData((#{fieldName}) {
+                #{moDel}.#{fieldName} = #{fieldName};
+        });
+        if (include == null || include.isEmpty) {
+            return item$;
+        } else {
+            return #{getIncluding$}<#{GetIncludingType}>(item$, include);
+        }
+      }
+}`; */
+
 /* export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     if (#{moDel}.#{fieldName} != null && useCache) {
         return Stream.value(#{moDel}.#{fieldName}!);

@@ -675,36 +675,17 @@ var dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{FieldName}$(
 }
 `;
 var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
-    Stream<#{StreamReturnType}> #{fieldName}$;
-    if (#{moDel}.#{fieldName} != null && useCache) {
-        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
-    } else {
-        #{fieldName}$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache)
-            .doOnData((#{fieldName}) {
-                #{moDel}.#{fieldName} = #{fieldName};
-        });
-    }
-    if (include == null || include.isEmpty) {
-        return #{fieldName}$;
-    } else {
-        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
-    }
+    return #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache, include: include)
+        .doOnData((#{fieldName}) {
+            #{moDel}.#{fieldName} = #{fieldName};
+    });
 }`;
 var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
-    Stream<#{StreamReturnType}> #{fieldName}$;
-    if (#{moDel}.#{fieldName} != null && useCache) {
-        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
-    } else {
-        #{fieldName}$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!, useCache: useCache)
+    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!, useCache: useCache, include: include)
             .doOnData((#{fieldName}) {
                 #{moDel}.#{fieldName} = #{fieldName};
-        });
-    }
-    if (include == null || include.isEmpty) {
-        return #{fieldName}$;
-    } else {
-        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
-    }
+    });
+
 }`;
 var dartStoreEndpointName = `getBy#{FieldName}`;
 var dartStoreEndpointManyName = `getManyBy#{FieldName}`;
