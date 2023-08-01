@@ -135,7 +135,7 @@ export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get
     if (#{moDel}.#{fieldName} != null && useCache) {
         #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
     } else {
-        #{fieldName}$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
+        #{fieldName}$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache)
             .doOnData((#{fieldName}) {
                 #{moDel}.#{fieldName} = #{fieldName};
         });
@@ -152,7 +152,7 @@ export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{Fiel
     if (#{moDel}.#{fieldName} != null && useCache) {
         #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
     } else {
-        #{fieldName}$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!)
+        #{fieldName}$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!, useCache: useCache)
             .doOnData((#{fieldName}) {
                 #{moDel}.#{fieldName} = #{fieldName};
         });
