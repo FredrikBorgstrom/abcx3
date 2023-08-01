@@ -13,22 +13,15 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> 
   @override
   set items(List<T> items) => _items$$.add(items);
 
-  /*getById$(U id, {bool useCache = true}) =>
-      getByFieldValue$(getPropVal: getId, fieldValue: id, useCache: useCache);*/
 
-  Stream<T?> getByFieldValue$<W>(
-      {required GetPropertyValue<T, W> getPropVal,
-        required dynamic value,
-        required Endpoint endpoint,
-        bool useCache = true}) {
+  Stream<T?> getByFieldValue$<W>({required GetPropertyValue<T, W> getPropVal, required dynamic value, required Endpoint endpoint, bool useCache = true}) {
     if (useCache) {
       final model = getByPropertyValue(getPropVal, value);
       if (model != null) {
         return Stream.value(model).asBroadcastStream();
       }
     }
-    return getOne$(endpoint: endpoint, param: value)
-        .doOnData((model) => upsert(model));
+    return getOne$(endpoint: endpoint, param: value).doOnData((model) => upsert(model));
   }
 
   getManyByFieldValue$<U>({
@@ -43,8 +36,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> 
         return Stream.value(models).asBroadcastStream();
       }
     }
-    return getMany$(endpoint: endpoint, param: value)
-        .doOnData((models) => upsertMany(models));
+    return getMany$(endpoint: endpoint, param: value).doOnData((models) => upsertMany(models));
   }
 
   getAllItems$({required Endpoint endpoint, bool useCache = true}) {
@@ -59,8 +51,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> 
     }
   }
 
-  Stream<V?> getIncluding$<V>(
-      Stream<V?> item$, List<StoreIncludes> storeGetters) {
+  Stream<V?> getIncluding$<V>(Stream<V?> item$, List<StoreIncludes> storeGetters) {
     List<Stream<dynamic>> listOfZipStreams = [];
     return item$.switchMap((item) {
       if (item == null) {
@@ -76,16 +67,19 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> 
     });
   }
 
-  Stream<List<V>> getManyIncluding$<V>(
-      Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
-    List<Stream<dynamic>> listOfZipStreams = [];
+  Stream<List<V>> getManyIncluding$<V>(Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
     return items$.switchMap((items) {
-      for (var modelField in storeGetters) {
-        listOfZipStreams.addAll(items.map((item) => modelField.method(item)));
+      if (items.isEmpty) {
+        return Stream.value(items);
+      } else {
+        List<Stream<dynamic>> listOfZipStreams = [];
+        for (var modelField in storeGetters) {
+          listOfZipStreams.addAll(items.map((item) => modelField.method(item)));
+        }
+        return Rx.zipList(listOfZipStreams).switchMap((value) {
+          return Stream.value(items); // .asBroadcastStream();
+        }); //.asBroadcastStream();
       }
-      return Rx.zipList(listOfZipStreams).switchMap((value) {
-        return Stream.value(items); // .asBroadcastStream();
-      }); //.asBroadcastStream();
     });
   }
 }

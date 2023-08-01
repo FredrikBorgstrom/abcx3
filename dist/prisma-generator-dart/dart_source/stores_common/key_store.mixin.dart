@@ -3,7 +3,8 @@ part of abcx3_stores;
 
 // typedef GetPropertyValue<T, U> = U? Function(T model);
 
-mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterface<T, K> {
+mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
+    implements KeyStorageInterface<T, K> {
   List<T> _itemsStore = [];
 
   /// override the following getter and setter in your class to change storage engine and
@@ -74,7 +75,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterfa
       final existingItem = items[index];
       T updatedItem = existingItem.copyWithInstance(item);
       items[index] = updatedItem;
-     /* items = [...items]
+      /* items = [...items]
         ..removeAt(index)
         ..insert(index, item);*/
       return updatedItem;
