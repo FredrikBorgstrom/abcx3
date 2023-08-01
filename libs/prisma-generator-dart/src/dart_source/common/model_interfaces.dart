@@ -18,10 +18,13 @@ abstract interface class UID<K> {
   K? get $uid;
 }
 
-abstract interface class CopyWithAndUID<T, U> implements UID<U>, CopyWith<T> {}
+abstract interface class CopyWithAndUID<T, U> implements CopyWith<T>, UID<U> {}
 
-abstract interface class PrismaModel<T, U>
-    implements JsonSerializable, CopyWithAndUID<T, U> {}
+abstract interface class PrismaModel<K, T>
+    implements JsonSerializable, CopyWith<T>, UID<K> {}
+
+/*abstract interface class PrismaModel<T extends Object, U>
+    implements JsonSerializable, CopyWithAndUID<T, U> {}*/
 
 // NOT USED:
 

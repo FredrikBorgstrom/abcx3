@@ -4,7 +4,7 @@ export const dartBaseClassStub = `
 import '../abcx3_common.library.dart';
 #{AdditionalImports}
 
-class #{ClassName} #{ParentClass} implements JsonSerializable, CopyWith<#{ClassName}> #{ImplementsUID} #{ImplementsId} {
+class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
     
     #{ClassName}({#{ConstructorArgs}});

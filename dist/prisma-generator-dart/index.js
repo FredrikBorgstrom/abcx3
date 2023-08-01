@@ -59,7 +59,7 @@ var dartBaseClassStub = `
 import '../abcx3_common.library.dart';
 #{AdditionalImports}
 
-class #{ClassName} #{ParentClass} implements JsonSerializable, CopyWith<#{ClassName}> #{ImplementsUID} #{ImplementsId} {
+class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
     
     #{ClassName}({#{ConstructorArgs}});
@@ -345,7 +345,7 @@ var DartGenerator = class {
       if (field.isId) {
         uidGetter = this.generateUIDGetter(field);
         content = content.replace(/#{UID}/g, uidGetter);
-        content = content.replace(/#{ImplementsUID}/g, `, UID<${this.getDartType(field)}>`);
+        content = content.replace(/#{ImplementsPrismaModel}/g, `PrismaModel<${this.getDartType(field)}, ${className}>`);
         content = content.replace(/#{ImplementsId}/g, field.name == "id" ? `, Id<${this.getDartType(field)}>` : "");
       }
       properties.push(this.generatePropertyContent(field));
@@ -574,7 +574,7 @@ var dartStoreStub = `
 part of abcx3_stores;
 
 
-class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
+class #{Model}Store extends ModelStreamStore<int, #{Model}> {
 
   static #{Model}Store? _instance;
 
@@ -583,7 +583,7 @@ class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
     return _instance!;
   }
 
-  #{Model}Store() : super(#{Model}.fromJson as JsonFactory<T>);
+  #{Model}Store() : super(#{Model}.fromJson);
 
   /// GET PROPERTIES FROM MODEL
 
@@ -647,7 +647,7 @@ var dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({this.useCache 
 }`;
 var dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.useCache = true});`;
 var dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
-var dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true, List<#{Model}Include>? include}) {
+var dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, List<#{Model}Include>? include}) {
     final allItems$ = getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, useCache: useCache);
     if (include == null || include.isEmpty) {
         return allItems$;
@@ -656,21 +656,21 @@ var dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true, List<#{Mo
       }
     }
 `;
-var dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
+var dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
     final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);
     if (include == null || include.isEmpty) {
         return item$;
     } else {
-        return getIncluding$<T?>(item$, include);
+        return getIncluding$<#{Model}?>(item$, include);
     }
 }
 `;
-var dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
+var dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
     final items$ = getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);
     if (include == null || include.isEmpty) {
         return items$;
     } else {
-        return getManyIncluding$<T>(items$, include);
+        return getManyIncluding$<#{Model}>(items$, include);
     }
 }
 `;

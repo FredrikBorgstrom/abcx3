@@ -61,5 +61,3 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     _cachedStreams.remove(serializedRequest);
   }
 }
-
-

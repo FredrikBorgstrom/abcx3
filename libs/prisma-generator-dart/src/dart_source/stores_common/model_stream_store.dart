@@ -1,6 +1,6 @@
 part of abcx3_stores;
 
-class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
+class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> {
   ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);
 
   final BehaviorSubject<List<T>> _items$$ = BehaviorSubject.seeded([]);
@@ -18,9 +18,9 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
 
   Stream<T?> getByFieldValue$<W>(
       {required GetPropertyValue<T, W> getPropVal,
-      required dynamic value,
-      required Endpoint endpoint,
-      bool useCache = true}) {
+        required dynamic value,
+        required Endpoint endpoint,
+        bool useCache = true}) {
     if (useCache) {
       final model = getByPropertyValue(getPropVal, value);
       if (model != null) {
@@ -31,14 +31,14 @@ class ModelStreamStore<U, T extends UID<U>> extends ModelStore<U, T> {
         .doOnData((model) => upsert(model));
   }
 
-  getManyByFieldValue$<K>({
-    required GetPropertyValue<T, K> getPropVal,
+  getManyByFieldValue$<U>({
+    required GetPropertyValue<T, U> getPropVal,
     required dynamic value,
     required Endpoint endpoint,
     bool useCache = true,
   }) {
     if (useCache) {
-      final models = getManyByPropertyValue<K>(getPropVal, value);
+      final models = getManyByPropertyValue<U>(getPropVal, value);
       if (models.isNotEmpty) {
         return Stream.value(models).asBroadcastStream();
       }

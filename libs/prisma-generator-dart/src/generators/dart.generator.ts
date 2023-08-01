@@ -93,7 +93,7 @@ export class DartGenerator {
             if (field.isId) {
                 uidGetter = this.generateUIDGetter(field);
                 content = content.replace(/#{UID}/g, uidGetter);
-                content = content.replace(/#{ImplementsUID}/g, `, UID<${this.getDartType(field)}>`);
+                content = content.replace(/#{ImplementsPrismaModel}/g, `PrismaModel<${this.getDartType(field)}, ${className}>`);
                 content = content.replace(/#{ImplementsId}/g, (field.name == 'id') ? `, Id<${this.getDartType(field)}>`  : '');
             }
 

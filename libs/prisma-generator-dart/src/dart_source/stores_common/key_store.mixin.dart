@@ -3,7 +3,7 @@ part of abcx3_stores;
 
 // typedef GetPropertyValue<T, U> = U? Function(T model);
 
-mixin KeyStoreMixin<K, T extends UID<K>> implements KeyStorageInterface<T, K> {
+mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterface<T, K> {
   List<T> _itemsStore = [];
 
   /// override the following getter and setter in your class to change storage engine and
@@ -30,7 +30,7 @@ mixin KeyStoreMixin<K, T extends UID<K>> implements KeyStorageInterface<T, K> {
   List<T> getManyByKeys(List<K> ids) =>
       ids.map((id) => getByKey(id)).whereType<T>().toList();
 
-  T? getByPropertyValue<W>(GetPropertyValue<T, W> getPropVal, value) {
+  T? getByPropertyValue<U>(GetPropertyValue<T, U> getPropVal, value) {
     return items.find((m) => getPropVal(m) == value);
   }
 
@@ -71,13 +71,24 @@ mixin KeyStoreMixin<K, T extends UID<K>> implements KeyStorageInterface<T, K> {
   T? update(T item) {
     int index = items.indexWhere((element) => getKey(element) == getKey(item));
     if (index != -1) {
+      final existingItem = items[index];
+      T updatedItem = existingItem.copyWithInstance(item);
+      items[index] = updatedItem;
+     /* items = [...items]
+        ..removeAt(index)
+        ..insert(index, item);*/
+      return updatedItem;
+    } else {
+      return null;
+    }
+    /*if (index != -1) {
       items = [...items]
         ..removeAt(index)
         ..insert(index, item);
       return item;
     } else {
       return null;
-    }
+    }*/
   }
 
   @override

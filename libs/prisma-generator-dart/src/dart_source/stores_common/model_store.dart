@@ -1,13 +1,13 @@
 part of abcx3_stores;
 
-typedef GetPropertyValue<T, U> = U? Function(T model);
+typedef GetPropertyValue<I, O> = O? Function(I model);
 // U is the type of the field value
 
-class ModelStore<U, T extends UID<U>> extends ModelCreator<T>
-    with KeyStoreMixin<U, T>, ModelRequestMixin<T> {
+class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
+    with KeyStoreMixin<K, T>, ModelRequestMixin<T> {
   ModelStore(JsonFactory<T> fromJson) : super(fromJson);
 
-  U? getId(T model) => model.$uid;
+  K? getId(T model) => model.$uid;
 
-  T? getById(U id) => getByPropertyValue(getId, id);
+  T? getById(K id) => getByPropertyValue(getId, id);
 }

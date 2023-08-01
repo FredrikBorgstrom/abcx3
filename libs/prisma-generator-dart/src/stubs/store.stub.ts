@@ -5,7 +5,7 @@ export const dartStoreStub = `
 part of abcx3_stores;
 
 
-class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
+class #{Model}Store extends ModelStreamStore<int, #{Model}> {
 
   static #{Model}Store? _instance;
 
@@ -14,7 +14,7 @@ class #{Model}Store<T extends #{Model}> extends ModelStreamStore<int, T> {
     return _instance!;
   }
 
-  #{Model}Store() : super(#{Model}.fromJson as JsonFactory<T>);
+  #{Model}Store() : super(#{Model}.fromJson);
 
   /// GET PROPERTIES FROM MODEL
 
@@ -84,7 +84,7 @@ export const dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.us
 export const dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
 
 
-export const dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true, List<#{Model}Include>? include}) {
+export const dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, List<#{Model}Include>? include}) {
     final allItems$ = getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, useCache: useCache);
     if (include == null || include.isEmpty) {
         return allItems$;
@@ -95,22 +95,22 @@ export const dartStoreGetAll$ = `Stream<List<T>> getAll$({bool useCache = true, 
 `;
 
 
-export const dartStoreGetByPropertyVal$ = `Stream<T?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
+export const dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
     final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);
     if (include == null || include.isEmpty) {
         return item$;
     } else {
-        return getIncluding$<T?>(item$, include);
+        return getIncluding$<#{Model}?>(item$, include);
     }
 }
 `;
 
-export const dartStoreGetManyByPropertyVal$ = `Stream<List<T>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
+export const dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
     final items$ = getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);
     if (include == null || include.isEmpty) {
         return items$;
     } else {
-        return getManyIncluding$<T>(items$, include);
+        return getManyIncluding$<#{Model}>(items$, include);
     }
 }
 `;
