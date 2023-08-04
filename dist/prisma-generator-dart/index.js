@@ -586,9 +586,9 @@ class #{Model}Store extends ModelStreamStore<int, #{Model}> {
   #{Model}Store() : super(#{Model}.fromJson) {
     if (_instance != null) {
         throw Exception(
-            '#{Model}Store is a singleton class and an instance of it that already exists. '
-                'If you are extending #{Model}Store then make sure to initialize the extending class before accessing #{Model}Store.instance.'
-                'Since other stores can be dependent on data from #{Model}Store,'
+            '#{Model}Store is a singleton class and an instance of it already exists. '
+                'If you are extending #{Model}Store then make sure to initialize the extending class before accessing #{Model}Store.instance. '
+                'Since other stores can be dependent on data from #{Model}Store, '
                 'you also need to make sure that no API calls are made through those dependent stores before any class that extends #{Model}Store has been initialized.');
       }
       _instance = this;
