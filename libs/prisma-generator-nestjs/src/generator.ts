@@ -28,7 +28,7 @@ const defaultOptions: NestGeneratorSettings = {
     WrapWithNeverthrow: true,
     PrismaServiceImportPath: 'prisma/prisma.service',
     PrismaModuleName: 'PrismaModule',
-    PrismaModuleImportPath: 'prisma/prisma.module',
+    PrismaModuleImportPath: 'src/prisma/prisma.module',
 
     EnumPath: 'enums'
 };

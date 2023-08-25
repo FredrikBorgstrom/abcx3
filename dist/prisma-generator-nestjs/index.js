@@ -674,7 +674,7 @@ var defaultOptions = {
   WrapWithNeverthrow: true,
   PrismaServiceImportPath: "prisma/prisma.service",
   PrismaModuleName: "PrismaModule",
-  PrismaModuleImportPath: "prisma/prisma.module",
+  PrismaModuleImportPath: "src/prisma/prisma.module",
   EnumPath: "enums"
 };
 (0, import_generator_helper.generatorHandler)({
