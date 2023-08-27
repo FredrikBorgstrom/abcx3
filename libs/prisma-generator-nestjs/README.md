@@ -1,2 +1,1 @@
-This was originally a fork from Johannes Schobel's prisma/crud-generator, but I eventually changed so many parts of it that I created a new project for it.
-NX was replaced by pnpm's workspace and I use ESbuild for building the project.
+Prisma-generator-nestjs generates nestjs modules, controllers and services that can be used by themselves, but they are required if you're using the stores created by the dart generator.
