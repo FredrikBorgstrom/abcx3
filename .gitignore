@@ -4,6 +4,7 @@
 /__dist_old
 /tmp
 /out-tsc
+/@hostup-@abcx3.code-workspace
 
 # dependencies
 node_modules
