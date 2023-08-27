@@ -29,24 +29,23 @@ export function convertBooleanStrings(obj: Dictionary<string | string[]>) {
 }
 
 export function convertEnvStrings(obj: Dictionary<string | string[]>) {
-    const result: Record<string, string | boolean> = {};
+    const result: Record<string, string | string[]> = {};
     for (const key in obj) {
         if (obj[key] != undefined) result[key] = convertEnvString(obj[key] as string);
     }
     return result;
 }
 
-function convertEnvString(value: string): string {
-    const matchArray = value.match(/^\${.+}$/);
+export function convertEnvString(value: string): string {
+    const matchArray = value.match(/\${(.+)}/);
     if (matchArray && matchArray.length === 2) {
         const envVarName = matchArray[1];
         const envValue = process.env[envVarName];
-        if (envValue) {
+        if (envValue !== undefined) {
             return envValue;
         }
     }
     return value;
-
 }
 
 

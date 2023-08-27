@@ -5,7 +5,7 @@ import { GENERATOR_NAME } from './constants';
 import { DartGenerator } from './generators/dart.generator';
 import { generateDartEnum } from './generators/enum.generators';
 import { DartGeneratorSettings } from './dart_settings.interface';
-import { StringFns, outputToConsole, writeFileSafely, convertBooleanStrings, convertEnvStrings } from '@shared';
+import { StringFns, outputToConsole, writeFileSafely, convertBooleanStrings, convertEnvStrings, convertEnvString } from '@shared';
 import { dartInterfacesAndModelFunctionsStub } from './stubs/dart.stub';
 import * as fs from 'fs';
 import { DartStoreGenerator } from './generators/dart_store.generator';
@@ -41,15 +41,15 @@ generatorHandler({
             schemaPath: options.schemaPath,
         };
 
+        const optionsWithEnvSettings = convertEnvStrings(options.generator.config);
+        const optionsWithBooleanSettings = convertBooleanStrings(optionsWithEnvSettings);
         const settings: DartGeneratorSettings = {
             ...defaultOptions,
-            ...convertEnvStrings(options.generator.config),
-            ...convertBooleanStrings(options.generator.config),
+            ...optionsWithBooleanSettings,
             ...configOverwrites,
         };
 
-        console.log('hello from dart gen');
-        if (settings.active) {
+        if (settings.active === true) {
             const mainGenerator = new MainGenerator(options, settings);
             await mainGenerator.generateFiles();
         } else {

@@ -46,11 +46,11 @@ generatorHandler({
         const configOverwrites = {
             schemaPath: options.schemaPath,
         };
-
+        const optionsWithEnvSettings = convertEnvStrings(options.generator.config);
+        const optionsWithBooleanSettings = convertBooleanStrings(optionsWithEnvSettings);
         const settings: NestGeneratorSettings = {
             ...defaultOptions,
-            ...convertEnvStrings(options.generator.config),
-            ...convertBooleanStrings(options.generator.config),
+            ...optionsWithBooleanSettings,
             ...configOverwrites,
         };
 

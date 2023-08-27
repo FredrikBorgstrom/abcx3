@@ -490,11 +490,11 @@ function convertEnvStrings(obj) {
   return result;
 }
 function convertEnvString(value) {
-  const matchArray = value.match(/^\${.+}$/);
+  const matchArray = value.match(/\${(.+)}/);
   if (matchArray && matchArray.length === 2) {
     const envVarName = matchArray[1];
     const envValue = process.env[envVarName];
-    if (envValue) {
+    if (envValue !== void 0) {
       return envValue;
     }
   }
@@ -1009,10 +1009,11 @@ var defaultOptions = {
     const configOverwrites = {
       schemaPath: options.schemaPath
     };
+    const optionsWithEnvSettings = convertEnvStrings(options.generator.config);
+    const optionsWithBooleanSettings = convertBooleanStrings(optionsWithEnvSettings);
     const settings = {
       ...defaultOptions,
-      ...convertEnvStrings(options.generator.config),
-      ...convertBooleanStrings(options.generator.config),
+      ...optionsWithBooleanSettings,
       ...configOverwrites
     };
     const mainGenerator = new MainGenerator(options, settings);
