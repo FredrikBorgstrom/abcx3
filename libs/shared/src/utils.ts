@@ -7,7 +7,7 @@ export function forEachEnum(enumObj: Record<string & number, string>, fn: (str: 
     }
 }
 
-export function mapEnum<T>(enumObj: Record<string & number, string>, fn: (str: string) => T) : T[]{
+export function mapEnum<T>(enumObj: Record<string & number, string>, fn: (str: string) => T): T[] {
     const enumArr = Object.values(enumObj) as Array<string & number>;
     const result = [];
     for (let i = 0; i < enumArr.length / 2; i++) {
@@ -27,6 +27,28 @@ export function convertBooleanStrings(obj: Dictionary<string | string[]>) {
     }
     return result;
 }
+
+export function convertEnvStrings(obj: Dictionary<string | string[]>) {
+    const result: Record<string, string | boolean> = {};
+    for (const key in obj) {
+        if (obj[key] != undefined) result[key] = convertEnvString(obj[key] as string);
+    }
+    return result;
+}
+
+function convertEnvString(value: string): string {
+    const matchArray = value.match(/^\${.+}$/);
+    if (matchArray && matchArray.length === 2) {
+        const envVarName = matchArray[1];
+        const envValue = process.env[envVarName];
+        if (envValue) {
+            return envValue;
+        }
+    }
+    return value;
+
+}
+
 
 function convertBooleanString(value: string) {
     switch (value.toLowerCase()) {

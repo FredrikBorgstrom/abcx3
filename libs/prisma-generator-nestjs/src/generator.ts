@@ -8,7 +8,7 @@ import { ModuleGenerator } from './generators/module.generator';
 import { NestGeneratorSettings } from './nest_settings.interface';
 import { NameGenerator } from './nameGenerator';
 import { format } from 'prettier';
-import { convertBooleanStrings, outputToConsole, writeFileSafely } from '@shared';
+import { convertBooleanStrings, convertEnvStrings, outputToConsole, writeFileSafely } from '@shared';
 
 const defaultOptions: NestGeneratorSettings = {
     strict: false,
@@ -50,6 +50,7 @@ generatorHandler({
         const settings: NestGeneratorSettings = {
             ...defaultOptions,
             ...convertBooleanStrings(options.generator.config),
+            ...convertEnvStrings(options.generator.config),
             ...configOverwrites,
         };
 
