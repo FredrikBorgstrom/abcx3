@@ -1011,8 +1011,8 @@ var defaultOptions = {
     };
     const settings = {
       ...defaultOptions,
-      ...convertBooleanStrings(options.generator.config),
       ...convertEnvStrings(options.generator.config),
+      ...convertBooleanStrings(options.generator.config),
       ...configOverwrites
     };
     const mainGenerator = new MainGenerator(options, settings);

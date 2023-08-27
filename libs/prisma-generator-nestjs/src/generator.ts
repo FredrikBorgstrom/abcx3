@@ -49,8 +49,8 @@ generatorHandler({
 
         const settings: NestGeneratorSettings = {
             ...defaultOptions,
-            ...convertBooleanStrings(options.generator.config),
             ...convertEnvStrings(options.generator.config),
+            ...convertBooleanStrings(options.generator.config),
             ...configOverwrites,
         };
 
