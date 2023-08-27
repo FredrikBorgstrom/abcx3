@@ -21,8 +21,5 @@
   },
   "dependencies": {
     "prettier": "^3.0.2"
-  },
-  "devDependencies": {
-    "@types/prettier": "^3.0.0"
   }
 }
