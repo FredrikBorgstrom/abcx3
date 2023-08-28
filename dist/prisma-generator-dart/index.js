@@ -318,6 +318,54 @@ var require_main = __commonJS({
   }
 });
 
+// node_modules/.pnpm/dotenv-expand@10.0.0/node_modules/dotenv-expand/lib/main.js
+var require_main2 = __commonJS({
+  "node_modules/.pnpm/dotenv-expand@10.0.0/node_modules/dotenv-expand/lib/main.js"(exports, module2) {
+    "use strict";
+    function _searchLast(str, rgx) {
+      const matches = Array.from(str.matchAll(rgx));
+      return matches.length > 0 ? matches.slice(-1)[0].index : -1;
+    }
+    function _interpolate(envValue, environment, config2) {
+      const lastUnescapedDollarSignIndex = _searchLast(envValue, /(?!(?<=\\))\$/g);
+      if (lastUnescapedDollarSignIndex === -1)
+        return envValue;
+      const rightMostGroup = envValue.slice(lastUnescapedDollarSignIndex);
+      const matchGroup = /((?!(?<=\\))\${?([\w]+)(?::-([^}\\]*))?}?)/;
+      const match = rightMostGroup.match(matchGroup);
+      if (match != null) {
+        const [, group, variableName, defaultValue] = match;
+        return _interpolate(
+          envValue.replace(
+            group,
+            environment[variableName] || defaultValue || config2.parsed[variableName] || ""
+          ),
+          environment,
+          config2
+        );
+      }
+      return envValue;
+    }
+    function _resolveEscapeSequences(value) {
+      return value.replace(/\\\$/g, "$");
+    }
+    function expand2(config2) {
+      const environment = config2.ignoreProcessEnv ? {} : process.env;
+      for (const configKey in config2.parsed) {
+        const value = Object.prototype.hasOwnProperty.call(environment, configKey) ? environment[configKey] : config2.parsed[configKey];
+        config2.parsed[configKey] = _resolveEscapeSequences(
+          _interpolate(value, environment, config2)
+        );
+      }
+      for (const processKey in config2.parsed) {
+        environment[processKey] = config2.parsed[processKey];
+      }
+      return config2;
+    }
+    module2.exports.expand = expand2;
+  }
+});
+
 // libs/prisma-generator-dart/package.json
 var require_package2 = __commonJS({
   "libs/prisma-generator-dart/package.json"(exports, module2) {
@@ -422,14 +470,18 @@ var dartPropertyStub = `#{Type}#{Nullable} #{PropName};`;
 // libs/shared/src/writeFileSafely.ts
 var fs = __toESM(require("fs"));
 var path = __toESM(require("path"));
-async function writeFileSafely(filePath, content) {
-  fs.mkdirSync(path.dirname(filePath), {
-    recursive: true
-  });
-  fs.writeFileSync(filePath, content);
+async function writeFileSafelyAsync(filePath, content) {
+  try {
+    await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+    return await fs.promises.writeFile(filePath, content);
+  } catch (err) {
+    console.log(`Error writing file ${filePath}: ${err}`);
+  }
 }
-async function outputToConsole(filePath, content) {
+async function outputToConsoleAsync(filePath, content) {
+  console.log(`Dryrun prevented writing the following content to file ${filePath}:`);
   console.log(content);
+  return Promise.resolve();
 }
 
 // libs/shared/src/stringFns.ts
@@ -605,7 +657,11 @@ function convertBooleanString(value) {
 
 // libs/shared/src/index.ts
 var import_dotenv = __toESM(require_main());
-(0, import_dotenv.config)();
+var import_dotenv_expand = __toESM(require_main2());
+function initEnv() {
+  const env = (0, import_dotenv.config)();
+  (0, import_dotenv_expand.expand)(env);
+}
 
 // libs/prisma-generator-dart/src/generators/dart.generator.ts
 var dartTypeMap = {
@@ -1204,6 +1260,7 @@ var defaultOptions = {
 (0, import_generator_helper.generatorHandler)({
   onManifest() {
     console.log(`${GENERATOR_NAME}:Registered`);
+    initEnv();
     return {
       version,
       defaultOutput: "../generated",
@@ -1233,7 +1290,7 @@ var MainGenerator = class {
   constructor(options, settings) {
     this.options = options;
     this.settings = settings;
-    this.writeFile = settings.dryRun ? outputToConsole : writeFileSafely;
+    this.writeFile = settings.dryRun ? outputToConsoleAsync : writeFileSafelyAsync;
     this.outputPath = this.options.generator.output?.value;
   }
   //private dartFiles: string[] = [];

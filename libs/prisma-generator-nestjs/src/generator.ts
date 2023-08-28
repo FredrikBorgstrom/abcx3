@@ -8,7 +8,7 @@ import { ModuleGenerator } from './generators/module.generator';
 import { NestGeneratorSettings } from './nest_settings.interface';
 import { NameGenerator } from './nameGenerator';
 import { format } from 'prettier';
-import { convertBooleanStrings, convertEnvStrings, outputToConsole, writeFileSafely } from '@shared';
+import { convertBooleanStrings, convertEnvStrings, outputToConsole, outputToConsoleAsync, writeFileSafely, writeFileSafelyAsync } from '@shared';
 
 const defaultOptions: NestGeneratorSettings = {
     strict: false,
@@ -61,23 +61,23 @@ generatorHandler({
 
 class MainGenerator {
 
-    private writeFile: (path: string, content: string) => void;
+    private writeFile: (path: string, content: string) => Promise<void>;
     private nameGenerator: NameGenerator;
 
     constructor(private options: GeneratorOptions, private settings: NestGeneratorSettings) {
         this.writeFile = settings?.dryRun ?
-            async (path, content) => await outputToConsole(path, this.formatContent(path, content)) :
-            async (path, content) => await writeFileSafely(path, this.formatContent(path, content));
+            async (path, content) => await outputToConsoleAsync(path, await this.formatContent(path, content)) :
+            async (path, content) => await writeFileSafelyAsync(path, await this.formatContent(path, content));
         this.nameGenerator = NameGenerator.singleton;
         this.nameGenerator.prefix = settings.prefix ?? '';
         this.nameGenerator.basePath = options.generator.output?.value || 'gen';
     }
 
-    formatContent(filePath: string, content: string): string {
+    formatContent(filePath: string, content: string): Promise<string> {
         if (filePath.match(/.ts$/)) {
             return format(content, { useTabs: true, tabWidth: 4, parser: 'typescript' });
         } else {
-            return content;
+            return Promise.resolve(content);
         }
     }
 

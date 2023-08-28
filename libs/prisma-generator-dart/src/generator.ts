@@ -5,12 +5,11 @@ import { GENERATOR_NAME } from './constants';
 import { DartGenerator } from './generators/dart.generator';
 import { generateDartEnum } from './generators/enum.generators';
 import { DartGeneratorSettings } from './dart_settings.interface';
-import { StringFns, outputToConsole, writeFileSafely, convertBooleanStrings, convertEnvStrings, convertEnvString } from '@shared';
+import { StringFns, outputToConsole, writeFileSafely, convertBooleanStrings, convertEnvStrings, convertEnvString, initEnv, outputToConsoleAsync, writeFileSafelyAsync } from '@shared';
 import { dartInterfacesAndModelFunctionsStub } from './stubs/dart.stub';
 import * as fs from 'fs';
 import { DartStoreGenerator } from './generators/dart_store.generator';
 import { dartStoreLibrary } from './stubs/stores_library.stub';
-
 
 const { version } = require('../package.json');
 
@@ -30,6 +29,7 @@ const defaultOptions: DartGeneratorSettings = {
 generatorHandler({
     onManifest() {
         console.log(`${GENERATOR_NAME}:Registered`);
+        initEnv();
         return {
             version,
             defaultOutput: '../generated',
@@ -64,11 +64,11 @@ class MainGenerator {
     private modelFiles: Record<string, string> = {};
     private dartStoreFiles: Record<string, string> = {};
 
-    writeFile: (path: string, content: string) => void;
+    writeFile: (path: string, content: string) => Promise<void>;
     outputPath: string;
 
     constructor(private options: GeneratorOptions, private settings: DartGeneratorSettings) {
-        this.writeFile = settings.dryRun ? outputToConsole : writeFileSafely;
+        this.writeFile = settings.dryRun ? outputToConsoleAsync : writeFileSafelyAsync;
         this.outputPath = this.options.generator.output?.value as string;
     }
 
