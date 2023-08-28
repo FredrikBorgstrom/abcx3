@@ -41,5 +41,10 @@ Thumbs.db
 
 # Environment Files
 .env
-
 generated
+
+# pnpm
+pnpm-debug.log*
+pnpm-debug.log*
+pnpm-error.log*
+pnpm-lock.yaml
