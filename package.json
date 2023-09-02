@@ -1,45 +1,46 @@
 {
-  "name": "abcx3",
-  "version": "1.4.0",
-  "license": "MIT",
-  "scripts": {
-    "start": "serve",
-    "clean2": "yarn workspaces foreach run clean",
-    "build": "node buildScripts/build.js",
-    "start:dev": "node buildScripts/build-and-watch.js",
-    "test": "test",
-    "clean": "rimraf dist"
-  },
-  "private": false,
-  "dependencies": {
-    "@prisma/generator-helper": "^5.2.0"
-  },
-  "devDependencies": {
-    "@types/glob": "^8.1.0",
-    "@types/node": "^20.5.7",
-    "@typescript-eslint/eslint-plugin": "^6.5.0",
-    "@typescript-eslint/parser": "^6.5.0",
-    "esbuild": "^0.19.2",
-    "esbuild-plugin-node-externals": "^1.0.1",
-    "eslint": "^8.48.0",
-    "eslint-config-prettier": "^9.0.0",
-    "prisma": "^5.2.0",
-    "rimraf": "^5.0.1",
-    "ts-node": "^10.9.1",
-    "tslib": "^2.6.2",
-    "typescript": "~5.2.2"
-  },
-  "engines": {
-    "node": "18.0.0 - 21.0.0",
-    "npm": "^9.6.5",
-    "pnpm": "^8.3.1"
-  },
-  "author": {
-    "name": "Fredrik Borgström",
-    "email": "fredrik@mp1.se",
-    "url": "https://github.com/FredrikBorgstrom"
-  },
-  "workspaces": [
-    "libs/*"
-  ]
+    "name": "abcx3",
+    "version": "1.4.0",
+    "license": "MIT",
+    "scripts": {
+        "preinstall": "npx only-allow pnpm",
+        "upgrade:all": "pnpm up --latest -r",
+        "clean2": "yarn workspaces foreach run clean",
+        "build": "node buildScripts/build.js",
+        "start:dev": "node buildScripts/build-and-watch.js",
+        "test": "test",
+        "clean": "rimraf dist"
+    },
+    "private": false,
+    "dependencies": {
+        "@prisma/generator-helper": "^5.2.0"
+    },
+    "devDependencies": {
+        "@types/glob": "^8.1.0",
+        "@types/node": "^20.5.8",
+        "@typescript-eslint/eslint-plugin": "^6.5.0",
+        "@typescript-eslint/parser": "^6.5.0",
+        "esbuild": "^0.19.2",
+        "esbuild-plugin-node-externals": "^1.0.1",
+        "eslint": "^8.48.0",
+        "eslint-config-prettier": "^9.0.0",
+        "prisma": "^5.2.0",
+        "rimraf": "^5.0.1",
+        "ts-node": "^10.9.1",
+        "tslib": "^2.6.2",
+        "typescript": "~5.2.2"
+    },
+    "engines": {
+        "node": "18.0.0 - 21.0.0",
+        "npm": "^9.6.5",
+        "pnpm": "^8.3.1"
+    },
+    "author": {
+        "name": "Fredrik Borgström",
+        "email": "fredrik@mp1.se",
+        "url": "https://github.com/FredrikBorgstrom"
+    },
+    "workspaces": [
+        "libs/*"
+    ]
 }

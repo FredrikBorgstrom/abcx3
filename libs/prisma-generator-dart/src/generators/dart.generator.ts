@@ -21,7 +21,8 @@ import {
     dartCopyWithArg,
     dartCopyWithConstructorArg,
     dartCopyWithInstanceConstructorArg,
-    dartUIDStub
+    dartUIDStub,
+    dartEqualByIdStub
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -84,6 +85,7 @@ export class DartGenerator {
         let copyWithInstanceConstructorArgs: string[] = [];
         let listFields: DMMF.Field[] = [];
         let uidGetter = '';
+        let equalById = '';
 
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
@@ -92,7 +94,7 @@ export class DartGenerator {
             }
             if (field.isId) {
                 uidGetter = this.generateUIDGetter(field);
-                content = content.replace(/#{UID}/g, uidGetter);
+                equalById = this.generateEqualById(field);
                 content = content.replace(/#{ImplementsPrismaModel}/g, `PrismaModel<${this.getDartType(field)}, ${className}>`);
                 content = content.replace(/#{ImplementsId}/g, (field.name == 'id') ? `, Id<${this.getDartType(field)}>`  : '');
             }
@@ -153,6 +155,7 @@ export class DartGenerator {
         // }
 
         content = content.replace(/#{UIDGetter}/g, uidGetter);
+        content = content.replace(/#{EqualById}/g, equalById);
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
         content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
 
@@ -172,10 +175,17 @@ export class DartGenerator {
 
     generateUIDGetter(field: DMMF.Field): string {
         let content = dartUIDStub;
+        content = content.replace(/#{OverrideAnnotation}/g, '@override');
         content = content.replace(/#{Type}/g, this.getDartType(field));
         content = content.replace(/#{PropName}/g, field.name);
-        content = content.replace(/#{OverrideAnnotation}/g, '@override');
         content = this.replaceNullable(content, field);
+        return content;
+    }
+
+    generateEqualById(field: DMMF.Field): string {
+        let content = dartEqualByIdStub;
+        content = content.replace(/#{OverrideAnnotation}/g, '@override');
+        content = content.replace(/#{Type}/g, this.getDartType(field));
         return content;
     }
 

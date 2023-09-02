@@ -16,12 +16,12 @@ abstract interface class CopyWith<T> {
 
 abstract interface class UID<K> {
   K? get $uid;
+  bool equalById(UID<K> other);
 }
 
 abstract interface class CopyWithAndUID<T, U> implements CopyWith<T>, UID<U> {}
 
-abstract interface class PrismaModel<K, T>
-    implements JsonSerializable, CopyWith<T>, UID<K> {}
+abstract interface class PrismaModel<K, T> implements JsonSerializable, CopyWith<T>, UID<K> {}
 
 /*abstract interface class PrismaModel<T extends Object, U>
     implements JsonSerializable, CopyWithAndUID<T, U> {}*/

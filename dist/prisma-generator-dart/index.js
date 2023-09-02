@@ -406,6 +406,7 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
     #{ClassName}({#{ConstructorArgs}});
 
     #{UIDGetter}
+    #{EqualById}
 
     #{OverrideAnnotation}
     factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
@@ -447,6 +448,9 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
 var dartUIDStub = `
 #{OverrideAnnotation}
 #{Type}#{Nullable} get $uid => #{PropName};`;
+var dartEqualByIdStub = `
+#{OverrideAnnotation}
+bool equalById(UID<#{Type}> other) => $uid == other.$uid;`;
 var dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 var dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 var dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
@@ -709,6 +713,7 @@ var DartGenerator = class {
     let copyWithInstanceConstructorArgs = [];
     let listFields = [];
     let uidGetter = "";
+    let equalById = "";
     for (const field of this.model.fields) {
       const commentDirectives = this.prismaHelper.parseDocumentation(field);
       if (commentDirectives.some((directive) => directive.name === "@abcx3_omit")) {
@@ -716,7 +721,7 @@ var DartGenerator = class {
       }
       if (field.isId) {
         uidGetter = this.generateUIDGetter(field);
-        content = content.replace(/#{UID}/g, uidGetter);
+        equalById = this.generateEqualById(field);
         content = content.replace(/#{ImplementsPrismaModel}/g, `PrismaModel<${this.getDartType(field)}, ${className}>`);
         content = content.replace(/#{ImplementsId}/g, field.name == "id" ? `, Id<${this.getDartType(field)}>` : "");
       }
@@ -764,6 +769,7 @@ var DartGenerator = class {
     const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(",\n		");
     content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = content.replace(/#{UIDGetter}/g, uidGetter);
+    content = content.replace(/#{EqualById}/g, equalById);
     content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
     content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
     content = content.replace(/#{Properties}/g, propertiesContent);
@@ -777,10 +783,16 @@ var DartGenerator = class {
   }
   generateUIDGetter(field) {
     let content = dartUIDStub;
+    content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = content.replace(/#{Type}/g, this.getDartType(field));
     content = content.replace(/#{PropName}/g, field.name);
-    content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = this.replaceNullable(content, field);
+    return content;
+  }
+  generateEqualById(field) {
+    let content = dartEqualByIdStub;
+    content = content.replace(/#{OverrideAnnotation}/g, "@override");
+    content = content.replace(/#{Type}/g, this.getDartType(field));
     return content;
   }
   generateCopyWithArg(field) {

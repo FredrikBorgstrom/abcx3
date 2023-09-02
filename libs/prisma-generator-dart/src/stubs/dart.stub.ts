@@ -10,6 +10,7 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
     #{ClassName}({#{ConstructorArgs}});
 
     #{UIDGetter}
+    #{EqualById}
 
     #{OverrideAnnotation}
     factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
@@ -52,6 +53,10 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
 export const dartUIDStub = `
 #{OverrideAnnotation}
 #{Type}#{Nullable} get $uid => #{PropName};`;
+
+export const dartEqualByIdStub = `
+#{OverrideAnnotation}
+bool equalById(UID<#{Type}> other) => $uid == other.$uid;`
 
 export const dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
