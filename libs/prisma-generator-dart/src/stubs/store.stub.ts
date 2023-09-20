@@ -18,9 +18,8 @@ class #{Model}Store extends ModelStreamStore<int, #{Model}> {
     if (_instance != null) {
         throw Exception(
             '#{Model}Store is a singleton class and an instance of it already exists. '
-                'If you are extending #{Model}Store then make sure to initialize the extending class before accessing #{Model}Store.instance. '
-                'Since other stores can be dependent on data from #{Model}Store, '
-                'you also need to make sure that no API calls are made through those dependent stores before any class that extends #{Model}Store has been initialized.');
+                'This can happen if you are extending #{Model}Store, so it is recommended to NOT extend the store classes. '
+                'Instead you should use #{Model}Store.instance to access the store instance. ');
       }
       _instance = this;
   }
@@ -29,7 +28,23 @@ class #{Model}Store extends ModelStreamStore<int, #{Model}> {
 
   #{GetValMethods}
 
-  /// GET THIS MODEL
+  /// GET THIS MODEL(S) BY PROPERTY VALUE
+
+  #{GetByPropertyVal}
+
+  #{GetManyByPropertyVal}
+
+  /// GET RELATED MODELS WITH ID STORED IN THIS MODEL
+
+  #{GetRelatedModelsWithId}
+
+  /// GET RELATED MODELS 
+
+  #{GetRelatedModels}
+
+  //////// STREAM METHODS //////////
+
+  /// GET THIS MODEL as STREAM
 
   #{GetAll$}
 
@@ -37,14 +52,13 @@ class #{Model}Store extends ModelStreamStore<int, #{Model}> {
 
   #{GetManyByPropertyVal$}
 
-  /// GET RELATED MODELS WITH ID STORED IN THIS MODEL
+  /// GET RELATED MODELS WITH ID STORED IN THIS MODEL as STREAM
 
   #{GetRelatedModelsWithId$}
 
-  /// GET RELATED MODELS 
+  /// GET RELATED MODELS as STREAM
 
   #{GetRelatedModels$}
-
 
 }
 
@@ -104,6 +118,14 @@ export const dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache =
 `;
 
 
+export const dartStoreGetByPropertyVal = `#{Model}? getBy#{FieldName}(#{FieldType} #{fieldName}) => getByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
+
+export const dartStoreGetManyByPropertyVal = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}) => getManyByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
+
+export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);`;
+
+export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);`;
+
 export const dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? include}) {
     final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);
     if (include == null || include.isEmpty) {
@@ -123,6 +145,8 @@ export const dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{Fie
     }
 }
 `;
+
+
 
 export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
     return #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache, include: include)

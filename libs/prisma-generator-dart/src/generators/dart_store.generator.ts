@@ -1,7 +1,7 @@
 import { DMMF, GeneratorOptions } from "@prisma/generator-helper";
 import { PrismaHelper, StringFns } from "@shared";
 import { DartGeneratorSettings } from "../dart_settings.interface";
-import { dartStoreClassIncludeStub, dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal$, dartStoreGetRelatedModels$, dartStoreGetRelatedModelsWithId$, dartStoreGetVal, dartStoreIncludesConstructor, dartStoreIncludesEmptyConstructor, dartStoreStub } from "../stubs/store.stub";
+import { dartStoreClassIncludeStub, dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal, dartStoreGetManyByPropertyVal$, dartStoreGetRelatedModels, dartStoreGetRelatedModels$, dartStoreGetRelatedModelsWithId, dartStoreGetRelatedModelsWithId$, dartStoreGetVal, dartStoreIncludesConstructor, dartStoreIncludesEmptyConstructor, dartStoreStub } from "../stubs/store.stub";
 import { get } from "http";
 import { DartGenerator } from "./dart.generator";
 
@@ -24,6 +24,10 @@ export class DartStoreGenerator {
         content = content.replace(/#{Model}/g, this.model.name);
 
         let getValMethods: string[] = [];
+        let getUniqueByPropertyVal: string[] = [];
+        let getByPropertyVal: string[] = [];
+        let GetRelatedModels: string[] = [];
+        let GetRelatedModelsWithId: string[] = [];
         let getUniqueByPropertyVal$: string[] = [];
         let getByPropertyVal$: string[] = [];
         let endpoints: string[] = [];
@@ -42,17 +46,23 @@ export class DartStoreGenerator {
                 if (relationFromFields != null && relationFromFields?.length > 0) {
                     const relatedFieldName = relationFromFields[0];
                     GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName));
+                    GetRelatedModelsWithId.push(this.generateGetRelatedModelsWithId(field, relatedFieldName));
                 } else {
                     const relatedModelStore = `${field.type}Store`;
                     GetRelatedModels$.push(this.generateGetRelatedModels$(field, relatedModelStore));
+                    GetRelatedModels.push(this.generateGetRelatedModels(field, relatedModelStore));
                 }
             } else {
                 getValMethods.push(this.generateGetValMethod(field));
                 if (field.isUnique || field.isId) {
                     getUniqueByPropertyVal$.push(this.generateGetByPropertyVal$(field));
+                    if (!field.isId) {
+                        getUniqueByPropertyVal.push(this.generateGetByPropertyVal(field));
+                    }
                     endpoints.push(this.generateEndpoint(field));
                 } else {
                     getByPropertyVal$.push(this.generateGetManyByPropertyVal$(field));
+                    getByPropertyVal.push(this.generateGetManyByPropertyVal(field));
                     endpoints.push(this.generateEndpointMany(field));
                 }
             }
@@ -60,6 +70,10 @@ export class DartStoreGenerator {
 
         content = content.replace(/#{GetAll\$}/g, this.generateGetAll$());
         content = content.replace(/#{GetValMethods}/g, getValMethods.join('\n\n\t'));
+        content = content.replace(/#{GetByPropertyVal}/g, getUniqueByPropertyVal.join('\n\n\t'));
+        content = content.replace(/#{GetManyByPropertyVal}/g, getByPropertyVal.join('\n\n\t'));
+        content = content.replace(/#{GetRelatedModelsWithId}/g, GetRelatedModelsWithId.join('\n\n\t'));
+        content = content.replace(/#{GetRelatedModels}/g, GetRelatedModels.join('\n\n\t'));
         content = content.replace(/#{GetByPropertyVal\$}/g, getUniqueByPropertyVal$.join('\n\n\t'));
         content = content.replace(/#{GetManyByPropertyVal\$}/g, getByPropertyVal$.join('\n\n\t'));
         content = content.replace(/#{GetRelatedModelsWithId\$}/g, GetRelatedModelsWithId$.join('\n\n\t'));
@@ -81,7 +95,6 @@ export class DartStoreGenerator {
         return this.replaceAllVariables(content, field);
     }
 
-
     generateGetValMethod(field: DMMF.Field) {
         let content = dartStoreGetVal;
         return this.replaceAllVariables(content, field);
@@ -91,6 +104,38 @@ export class DartStoreGenerator {
         let content = dartStoreGetAll$;
         content = content.replace(/#{EndPointAllName}/g, dartStoreEndpointAllName);
         return this.replaceAllVariables(content);
+    }
+
+    generateGetByPropertyVal(field: DMMF.Field) {
+        let content = dartStoreGetByPropertyVal;
+        return this.replaceAllVariables(content, field);
+    }
+
+    generateGetManyByPropertyVal(field: DMMF.Field) {
+        let content = dartStoreGetManyByPropertyVal;
+        return this.replaceAllVariables(content, field);
+    }
+
+    generateGetRelatedModelsWithId(field: DMMF.Field, relationFromField: string) {
+        let content = dartStoreGetRelatedModelsWithId;
+        content = content.replace(/#{relationFromField}/g, relationFromField);
+        content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+        content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
+        return this.replaceAllVariables(content, field);
+    }
+
+    generateGetRelatedModels(field: DMMF.Field, relatedModelStore: string) {
+        let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '');
+        let content = dartStoreGetRelatedModels;
+        content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
+        content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+        content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
+        if (field.isList) {
+            content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
+        } else {
+            content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
+        }
+        return this.replaceAllVariables(content, field);
     }
 
     generateGetByPropertyVal$(field: DMMF.Field) {
