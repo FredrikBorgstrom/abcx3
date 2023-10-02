@@ -73,8 +73,8 @@ export const dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != nul
 
 // export const dartFromJsonEnumArg = `#{PropName}: #{Type}.values.byName(json['#{PropName}'])`;
 // export const dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.values.byName(json[item])).toList())`;
-export const dartFromJsonEnumArg = `#{PropName}: #{Type}.fromJson(json['#{PropName}'])`;
-export const dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.fromJson(item)).toList())`;
+export const dartFromJsonEnumArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}']) : null`;
+export const dartFromJsonEnumListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}']).map((item) => #{Type}.fromJson(item)).toList()) : null`;
 
 export const dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 

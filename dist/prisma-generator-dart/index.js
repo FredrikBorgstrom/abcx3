@@ -658,8 +658,8 @@ var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fro
 var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.parse(e.toString())).toList() : null`;
 var dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
 var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
-var dartFromJsonEnumArg = `#{PropName}: #{Type}.fromJson(json['#{PropName}'])`;
-var dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.fromJson(item)).toList())`;
+var dartFromJsonEnumArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}']) : null`;
+var dartFromJsonEnumListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}']).map((item) => #{Type}.fromJson(item)).toList()) : null`;
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 var toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
 var toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
