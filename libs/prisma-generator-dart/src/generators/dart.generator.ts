@@ -8,7 +8,7 @@ import {
     dartFromJsonArg,
     dartFromJsonModelListArg,
     toJsonPropertyStub,
-    toJsonListPropertyStub,
+    toJsonObjectListStub,
     dartFromJsonEnumListArg,
     dartFromJsonEnumArg,
     dartFromJsonDateTimeArg,
@@ -22,7 +22,8 @@ import {
     dartCopyWithConstructorArg,
     dartCopyWithInstanceConstructorArg,
     dartUIDStub,
-    dartEqualByIdStub
+    dartEqualByIdStub,
+    toJsonObjectStub
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -308,7 +309,13 @@ export class DartGenerator {
     }
 
     generateToJsonKeyVal(field: DMMF.Field) {
-        let content = (field.isList && field.kind === 'object') ? toJsonListPropertyStub : toJsonPropertyStub;
+        let content: string;
+        if (field.kind === 'object' || field.kind === 'enum') {
+            content = field.isList ? toJsonObjectListStub : toJsonObjectStub;
+        } else {
+            content = toJsonPropertyStub;
+        }
+
         content = this.replacePropName(content, field);
         content = this.replaceNullable(content, field);
         return content;

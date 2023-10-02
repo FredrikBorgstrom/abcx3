@@ -1,14 +1,13 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
+import { convertBooleanStrings, convertEnvStrings, initEnv, outputToConsoleAsync, StringFns, writeFileSafelyAsync } from '@shared';
 import { exec } from 'child_process';
+import * as fs from 'fs';
 import path from 'path';
 import { GENERATOR_NAME } from './constants';
-import { DartGenerator } from './generators/dart.generator';
-import { generateDartEnum } from './generators/enum.generators';
 import { DartGeneratorSettings } from './dart_settings.interface';
-import { StringFns, outputToConsole, writeFileSafely, convertBooleanStrings, convertEnvStrings, convertEnvString, initEnv, outputToConsoleAsync, writeFileSafelyAsync } from '@shared';
-import { dartInterfacesAndModelFunctionsStub } from './stubs/dart.stub';
-import * as fs from 'fs';
+import { DartGenerator } from './generators/dart.generator';
 import { DartStoreGenerator } from './generators/dart_store.generator';
+import { generateDartEnum } from './generators/enum.generators';
 import { dartStoreLibrary } from './stubs/stores_library.stub';
 
 const { version } = require('../package.json');
