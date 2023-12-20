@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/package.json"(exports, module2) {
+  "node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
       version: "16.3.1",
@@ -97,7 +97,7 @@ var require_package = __commonJS({
 
 // node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/lib/main.js"(exports, module2) {
+  "node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs3 = require("fs");
     var path3 = require("path");
     var os = require("os");
@@ -320,7 +320,7 @@ var require_main = __commonJS({
 
 // node_modules/.pnpm/dotenv-expand@10.0.0/node_modules/dotenv-expand/lib/main.js
 var require_main2 = __commonJS({
-  "node_modules/.pnpm/dotenv-expand@10.0.0/node_modules/dotenv-expand/lib/main.js"(exports, module2) {
+  "node_modules/.pnpm/dotenv-expand@10.0.0/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
     "use strict";
     function _searchLast(str, rgx) {
       const matches = Array.from(str.matchAll(rgx));
@@ -368,7 +368,7 @@ var require_main2 = __commonJS({
 
 // libs/prisma-generator-dart/package.json
 var require_package2 = __commonJS({
-  "libs/prisma-generator-dart/package.json"(exports, module2) {
+  "libs/prisma-generator-dart/package.json"(exports2, module2) {
     module2.exports = {
       name: "@abcx3/prisma-generator-dart",
       description: "Generate Dart class files with to- and fromJson methods from a Prisma schema",
