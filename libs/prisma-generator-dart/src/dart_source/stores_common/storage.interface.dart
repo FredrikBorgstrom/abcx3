@@ -1,4 +1,4 @@
-part of abcx3_stores;
+part of '../abcx3_stores_library.dart';
 
 abstract interface class StorageInterface<T> {
   void initStorage();

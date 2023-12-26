@@ -1,4 +1,4 @@
-part of abcx3_stores;
+part of '../abcx3_stores_library.dart';
 
 class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> {
   ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);

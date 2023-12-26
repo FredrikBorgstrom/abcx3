@@ -1,4 +1,4 @@
-part of abcx3_stores;
+part of '../abcx3_stores_library.dart';
 
 mixin ModelRequestMixin<T> on ModelCreator<T> {
   final Map<String, Stream<dynamic>> _cachedStreams = {};

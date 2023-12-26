@@ -1,4 +1,4 @@
-part of abcx3_common;
+part of '../abcx3_common.library.dart';
 
 typedef JsonFactory<T> = T Function(Map<String, dynamic> json);
 

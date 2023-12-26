@@ -1,4 +1,4 @@
-part of abcx3_common;
+part of '../abcx3_common.library.dart';
 
 List<T> createModels<T>(json, JsonFactory<T> jsonFactory) {
   List<T> instances = [];

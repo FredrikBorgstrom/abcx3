@@ -1,5 +1,5 @@
 // import 'package:abcx3/gen_models/common/abcx3_prisma.library.dart';
-part of abcx3_stores;
+part of '../abcx3_stores_library.dart';
 
 // typedef GetPropertyValue<T, U> = U? Function(T model);
 

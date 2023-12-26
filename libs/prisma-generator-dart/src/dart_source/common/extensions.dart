@@ -1,4 +1,4 @@
-part of abcx3_common;
+part of '../abcx3_common.library.dart';
 
 extension IterableX<T> on Iterable<T> {
   T? find(bool Function(T) test) {

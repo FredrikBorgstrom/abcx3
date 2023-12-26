@@ -1,4 +1,4 @@
-part of abcx3_stores;
+part of '../abcx3_stores_library.dart';
 
 typedef GetPropertyValue<I, O> = O? Function(I model);
 // U is the type of the field value

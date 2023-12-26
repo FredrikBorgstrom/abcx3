@@ -1,4 +1,4 @@
-part of abcx3_stores;
+part of '../abcx3_stores_library.dart';
 
 enum HttpMethod { get, post, put, patch, delete, options, head, connect, trace }
 
