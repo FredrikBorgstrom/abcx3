@@ -31,3 +31,13 @@ export function outputToConsole(filePath: string, content: string): void {
     console.log(`Dryrun prevented writing the following content to file ${filePath}:`);
     console.log(content);
 }
+
+export async function copyCommonSourceFiles(sourcePath: string, destPath: string) {
+    const fullSourcePath = path.join(__dirname, sourcePath);
+    console.log(`Copying directory and content of ${fullSourcePath} to ${destPath}`);
+    copyDirectoryAndContent(fullSourcePath, destPath);
+}
+
+function copyDirectoryAndContent(source: string, target: string) {
+    fs.cpSync(source, target, { recursive: true, force: true });
+}

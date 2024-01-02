@@ -8,7 +8,7 @@ import { ModuleGenerator } from './generators/module.generator';
 import { NestGeneratorSettings } from './nest_settings.interface';
 import { NameGenerator } from './nameGenerator';
 import { format } from 'prettier';
-import { convertBooleanStrings, convertEnvStrings, outputToConsole, outputToConsoleAsync, writeFileSafely, writeFileSafelyAsync } from '@shared';
+import { convertBooleanStrings, convertEnvStrings, copyCommonSourceFiles, outputToConsole, outputToConsoleAsync, writeFileSafely, writeFileSafelyAsync } from '@shared';
 
 const defaultOptions: NestGeneratorSettings = {
     strict: false,
@@ -83,6 +83,7 @@ class MainGenerator {
 
 
     async generateFiles() {
+        await copyCommonSourceFiles('ts_source', this.nameGenerator.basePath);
         await this.generateFilesForAllModels();
         if (this.settings?.secondaryOutputPath) {
             this.nameGenerator.prefix = '';

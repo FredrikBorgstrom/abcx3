@@ -375,7 +375,7 @@ var version = "1.0.0";
 // libs/prisma-generator-nestjs/src/constants.ts
 var GENERATOR_NAME = "prisma-generator-nestjs";
 
-// libs/shared/src/writeFileSafely.ts
+// libs/shared/src/file_utils.ts
 var fs = __toESM(require("fs"));
 var path = __toESM(require("path"));
 async function writeFileSafelyAsync(filePath, content) {
@@ -390,6 +390,14 @@ async function outputToConsoleAsync(filePath, content) {
   console.log(`Dryrun prevented writing the following content to file ${filePath}:`);
   console.log(content);
   return Promise.resolve();
+}
+async function copyCommonSourceFiles(sourcePath, destPath) {
+  const fullSourcePath = path.join(__dirname, sourcePath);
+  console.log(`Copying directory and content of ${fullSourcePath} to ${destPath}`);
+  copyDirectoryAndContent(fullSourcePath, destPath);
+}
+function copyDirectoryAndContent(source, target) {
+  fs.cpSync(source, target, { recursive: true, force: true });
 }
 
 // libs/shared/src/stringFns.ts
@@ -1091,6 +1099,7 @@ var MainGenerator = class {
     }
   }
   async generateFiles() {
+    await copyCommonSourceFiles("ts_source", this.nameGenerator.basePath);
     await this.generateFilesForAllModels();
     if (this.settings?.secondaryOutputPath) {
       this.nameGenerator.prefix = "";

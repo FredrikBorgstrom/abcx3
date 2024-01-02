@@ -48,7 +48,6 @@ export function convertEnvString(value: string): string {
     return value;
 }
 
-
 function convertBooleanString(value: string) {
     switch (value.toLowerCase()) {
         case 'true':

@@ -1,4 +1,4 @@
-export * from './writeFileSafely';
+export * from './file_utils';
 export * from './stringFns';
 export * from './prisma.helper';
 export * from './utils';

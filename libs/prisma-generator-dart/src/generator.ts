@@ -1,5 +1,5 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
-import { convertBooleanStrings, convertEnvStrings, initEnv, outputToConsoleAsync, StringFns, writeFileSafelyAsync } from '@shared';
+import { convertBooleanStrings, convertEnvStrings, copyCommonSourceFiles, initEnv, outputToConsoleAsync, StringFns, writeFileSafelyAsync } from '@shared';
 import { exec } from 'child_process';
 import * as fs from 'fs';
 import path from 'path';
@@ -73,7 +73,7 @@ class MainGenerator {
 
     async generateFiles(options = this.options, settings = this.settings) {
 
-        this.copyCommonSourceFiles();
+        copyCommonSourceFiles('dart_source', this.outputPath);
 
         for (const model of options.dmmf.datamodel.models) {
             console.log(`Processing Model ${model.name}`);
@@ -119,12 +119,12 @@ class MainGenerator {
          await this.writeFile(filePath, code);
      } */
 
-    async copyCommonSourceFiles() {
+    /* async copyCommonSourceFiles(dirName: string, destPath: string) {
         console.log('Copying dart source files');
         console.log('__dirname', __dirname);
-        const sourcePath = path.join(__dirname, 'dart_source');
-        this.copyDirectoryAndContent(sourcePath, this.outputPath);
-
+        const sourcePath = path.join(__dirname, dirName);
+        this.copyDirectoryAndContent(sourcePath, destPath;
+    } */
 
         /* const common_src = path.join(sourcePath, 'common');
         const common_dest =  path.join(this.outputPath, 'common');
@@ -133,7 +133,7 @@ class MainGenerator {
         const stores_common_src = path.join(sourcePath, 'stores_common');
         const stores_common_dest =  path.join(this.outputPath, 'stores_common');
         await this.copyDirectoryAndContent(stores_common_src, stores_common_dest); */
-    }
+    
 
     /* async copyDirectoryAndContent(source: string, target: string) {
         
@@ -145,9 +145,9 @@ class MainGenerator {
             console.log(`${source} was copied to ${target}`);
         });
     } */
-    copyDirectoryAndContent(source: string, target: string) {
+    /* copyDirectoryAndContent(source: string, target: string) {
         fs.cpSync(source, target, { recursive: true, force: true });
-    }
+    } */
 
 
     async generateDartEnumFile(tEnum: DMMF.DatamodelEnum) {
