@@ -1,6 +1,7 @@
 part of '../abcx3_stores_library.dart';
 
-class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> {
+class ModelStreamStore<K, T extends PrismaModel<K, T>>
+    extends ModelStore<K, T> {
   ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);
 
   final BehaviorSubject<List<T>> _items$$ = BehaviorSubject.seeded([]);
@@ -13,30 +14,36 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> 
   @override
   set items(List<T> items) => _items$$.add(items);
 
-
-  Stream<T?> getByFieldValue$<W>({required GetPropertyValue<T, W> getPropVal, required dynamic value, required Endpoint endpoint, bool useCache = true}) {
+  Stream<T?> getByFieldValue$<W>(
+      {required GetPropertyValue<T, W> getPropVal,
+      required dynamic value,
+      required Endpoint endpoint,
+      bool useCache = true,
+      Map<String, dynamic>? body}) {
     if (useCache) {
       final model = getByPropertyValue(getPropVal, value);
       if (model != null) {
         return Stream.value(model).asBroadcastStream();
       }
     }
-    return getOne$(endpoint: endpoint, param: value).doOnData((model) => upsert(model));
+    return getOne$(endpoint: endpoint, param: value, body: body)
+        .doOnData((model) => upsert(model));
   }
 
-  getManyByFieldValue$<U>({
-    required GetPropertyValue<T, U> getPropVal,
-    required dynamic value,
-    required Endpoint endpoint,
-    bool useCache = true,
-  }) {
+  getManyByFieldValue$<U>(
+      {required GetPropertyValue<T, U> getPropVal,
+      required dynamic value,
+      required Endpoint endpoint,
+      bool useCache = true,
+      Map<String, dynamic>? body}) {
     if (useCache) {
       final models = getManyByPropertyValue<U>(getPropVal, value);
       if (models.isNotEmpty) {
         return Stream.value(models).asBroadcastStream();
       }
     }
-    return getMany$(endpoint: endpoint, param: value).doOnData((models) => upsertMany(models));
+    return getMany$(endpoint: endpoint, param: value, body: body)
+        .doOnData((models) => upsertMany(models));
   }
 
   getAllItems$({required Endpoint endpoint, bool useCache = true}) {
@@ -51,7 +58,8 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> 
     }
   }
 
-  Stream<V?> getIncluding$<V>(Stream<V?> item$, List<StoreIncludes> storeGetters) {
+  Stream<V?> getIncluding$<V>(
+      Stream<V?> item$, List<StoreIncludes> storeGetters) {
     List<Stream<dynamic>> listOfZipStreams = [];
     return item$.switchMap((item) {
       if (item == null) {
@@ -67,7 +75,8 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>> extends ModelStore<K, T> 
     });
   }
 
-  Stream<List<V>> getManyIncluding$<V>(Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
+  Stream<List<V>> getManyIncluding$<V>(
+      Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
     return items$.switchMap((items) {
       if (items.isEmpty) {
         return Stream.value(items);
