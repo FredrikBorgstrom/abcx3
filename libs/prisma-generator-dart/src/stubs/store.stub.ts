@@ -137,7 +137,11 @@ export const dartStoreGetRelatedModelsWithId_old = `#{StreamReturnType} get#{Fie
 
 export const dartStoreGetRelatedModels_old = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);`;
 
-export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);`;
+export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
+    final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);
+    #{moDel}.#{fieldName} = #{fieldName};
+    if (#{moDel}.#{fieldName} == null) {
+}`;
 
 export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);`;
 
