@@ -21,4 +21,5 @@ abstract interface class HttpService {
 abstract interface class StoreIncludes {
   abstract bool useCache;
   abstract Function method;
+  abstract bool useAsync;
 }

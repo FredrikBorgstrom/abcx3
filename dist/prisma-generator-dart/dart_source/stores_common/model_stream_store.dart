@@ -23,6 +23,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
     if (useCache) {
       final model = getByPropertyValue(getPropVal, value);
       if (model != null) {
+        // todo: maybe also return stream.value(model) if model is null?
         return Stream.value(model).asBroadcastStream();
       }
     }

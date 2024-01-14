@@ -119,21 +119,25 @@ export class DartStoreGenerator {
     generateGetRelatedModelsWithId(field: DMMF.Field, relationFromField: string) {
         let content = dartStoreGetRelatedModelsWithId;
         content = content.replace(/#{relationFromField}/g, relationFromField);
-        content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+        // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
         content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
         return this.replaceAllVariables(content, field);
     }
 
     generateGetRelatedModels(field: DMMF.Field, relatedModelStore: string) {
-        let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '');
+        const relationToFieldName = PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '';
+        const relationToFieldNameCapitalized = StringFns.capitalize(relationToFieldName);
         let content = dartStoreGetRelatedModels;
         content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-        content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
-        content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
+        // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+        content = content.replace(/#{relationToFieldName}/g, relationToFieldName);
+        content = content.replace(/#{RelationToFieldName}/g, relationToFieldNameCapitalized);
         if (field.isList) {
             content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
+            content = content.replace(/#{setRefModelFunction}/g, 'setIncludedReferencesForList');
         } else {
             content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
+            content = content.replace(/#{setRefModelFunction}/g, 'setIncludedReferences');
         }
         return this.replaceAllVariables(content, field);
     }
@@ -154,13 +158,14 @@ export class DartStoreGenerator {
     generateGetRelatedModelsWithId$(field: DMMF.Field, relationFromField: string) {
         let content = dartStoreGetRelatedModelsWithId$;
         content = content.replace(/#{relationFromField}/g, relationFromField);
-        content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
         content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
-        if (field.isList) {
+        // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+        
+        /* if (field.isList) {
             content = content.replace(/#{getIncluding\$}/g, 'getManyIncluding$');
         } else {
             content = content.replace(/#{getIncluding\$}/g, 'getIncluding$');
-        }
+        } */
         return this.replaceAllVariables(content, field);
     }
 
@@ -168,14 +173,14 @@ export class DartStoreGenerator {
         let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '');
         let content = dartStoreGetRelatedModels$;
         content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-        content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
+        // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
         content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
         if (field.isList) {
             content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
-            content = content.replace(/#{getIncluding\$}/g, 'getManyIncluding$');
+            // content = content.replace(/#{getIncluding\$}/g, 'getManyIncluding$');
         } else {
             content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
-            content = content.replace(/#{getIncluding\$}/g, 'getIncluding$');
+            // content = content.replace(/#{getIncluding\$}/g, 'getIncluding$');
         }
 
         return this.replaceAllVariables(content, field);

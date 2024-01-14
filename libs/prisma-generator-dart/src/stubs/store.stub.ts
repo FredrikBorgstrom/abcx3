@@ -113,7 +113,7 @@ export const dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({this.
       }
 }`;
 
-export const dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.useCache = true});`;
+export const dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.useCache = true, this.useAsync = true});`;
 
 export const dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
 
@@ -137,13 +137,28 @@ export const dartStoreGetRelatedModelsWithId_old = `#{StreamReturnType} get#{Fie
 
 export const dartStoreGetRelatedModels_old = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);`;
 
+
+
+/// GET RELATED MODELS WITH ID STORED IN THIS MODEL:
+
 export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
     final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);
     #{moDel}.#{fieldName} = #{fieldName};
-    if (#{moDel}.#{fieldName} == null) {
+    setIncludedReferences(#{fieldName}, includes: includes);
+    return #{fieldName};
 }`;
 
-export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);`;
+
+/// GET RELATED MODELS:
+
+export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
+    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);
+    #{moDel}.#{fieldName} = #{fieldName};
+    #{setRefModelFunction}(#{fieldName}, includes: includes);
+    return #{fieldName};
+}`;
+
+
 
 export const dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
     final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);

@@ -10,4 +10,19 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
   K? getId(T model) => model.$uid;
 
   T? getById(K id) => getByPropertyValue(getId, id);
+
+  setIncludedReferences<U>(U? item, {List<StoreIncludes>? includes}) {
+    if (item != null && includes != null) {
+      for (var include in includes) {
+        include.method(item);
+      }
+    }
+  }
+
+  setIncludedReferencesForList<U>(List<U>? items,
+      {List<StoreIncludes>? includes}) {
+    for (var item in items ?? []) {
+      setIncludedReferences(item, includes: includes);
+    }
+  }
 }
