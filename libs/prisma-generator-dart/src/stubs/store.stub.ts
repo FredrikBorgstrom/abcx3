@@ -129,9 +129,11 @@ export const dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache =
 `;
 
 
-export const dartStoreGetByPropertyVal = `#{Model}? getBy#{FieldName}(#{FieldType} #{fieldName}) => getByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
+export const dartStoreGetByPropertyVal = `#{Model}? getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
 
-export const dartStoreGetManyByPropertyVal = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}) => getManyByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
+export const dartStoreGetManyByPropertyVal_old = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}) => getManyByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
+
+export const dartStoreGetManyByPropertyVal = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
 
 export const dartStoreGetRelatedModelsWithId_old = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);`;
 
@@ -142,9 +144,9 @@ export const dartStoreGetRelatedModels_old = `#{StreamReturnType} get#{FieldName
 /// GET RELATED MODELS WITH ID STORED IN THIS MODEL:
 
 export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
-    final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);
+    final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
-    setIncludedReferences(#{fieldName}, includes: includes);
+    // setIncludedReferences(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
 
@@ -152,9 +154,9 @@ export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldNa
 /// GET RELATED MODELS:
 
 export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
-    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);
+    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
-    #{setRefModelFunction}(#{fieldName}, includes: includes);
+    // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
 

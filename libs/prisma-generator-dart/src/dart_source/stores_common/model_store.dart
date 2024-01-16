@@ -9,7 +9,24 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
 
   K? getId(T model) => model.$uid;
 
-  T? getById(K id) => getByPropertyValue(getId, id);
+  // T? getById(K id) => getByPropertyValue(getId, id);
+
+  T? getById(K id, {List<StoreIncludes>? includes}) =>
+      getIncluding(getId, id, includes: includes);
+
+  getIncluding<W>(GetPropertyValue<T, W> getPropVal, W value,
+      {List<StoreIncludes>? includes}) {
+    final model = getByPropertyValue(getPropVal, value);
+    setIncludedReferences(model, includes: includes);
+    return model;
+  }
+
+  getManyIncluding<W>(GetPropertyValue<T, W> getPropVal, W value,
+      {List<StoreIncludes>? includes}) {
+    final models = getManyByPropertyValue(getPropVal, value);
+    setIncludedReferencesForList(models, includes: includes);
+    return models;
+  }
 
   setIncludedReferences<U>(U? item, {List<StoreIncludes>? includes}) {
     if (item != null && includes != null) {

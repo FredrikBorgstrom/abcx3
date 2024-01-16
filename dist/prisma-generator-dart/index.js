@@ -1086,18 +1086,18 @@ var dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, Li
       }
     }
 `;
-var dartStoreGetByPropertyVal = `#{Model}? getBy#{FieldName}(#{FieldType} #{fieldName}) => getByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
-var dartStoreGetManyByPropertyVal = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}) => getManyByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
+var dartStoreGetByPropertyVal = `#{Model}? getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
+var dartStoreGetManyByPropertyVal = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
 var dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
-    final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);
+    final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
-    setIncludedReferences(#{fieldName}, includes: includes);
+    // setIncludedReferences(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
 var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
-    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);
+    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
-    #{setRefModelFunction}(#{fieldName}, includes: includes);
+    // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
 var dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
