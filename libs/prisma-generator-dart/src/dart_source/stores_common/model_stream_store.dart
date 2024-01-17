@@ -31,7 +31,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
         .doOnData((model) => upsert(model));
   }
 
-  getManyByFieldValue$<U>(
+  Stream<List<T>> getManyByFieldValue$<U>(
       {required GetPropertyValue<T, U> getPropVal,
       required dynamic value,
       required Endpoint endpoint,
@@ -39,15 +39,16 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       Map<String, dynamic>? body}) {
     if (useCache) {
       final models = getManyByPropertyValue<U>(getPropVal, value);
-      if (models.isNotEmpty) {
-        return Stream.value(models).asBroadcastStream();
-      }
+      //if (models.isNotEmpty) {
+      return Stream.value(models).asBroadcastStream();
+      //}
     }
     return getMany$(endpoint: endpoint, param: value, body: body)
         .doOnData((models) => upsertMany(models));
   }
 
-  getAllItems$({required Endpoint endpoint, bool useCache = true}) {
+  Stream<List<T>> getAllItems$(
+      {required Endpoint endpoint, bool useCache = true}) {
     if (useCache && getAllHasRun) {
       final models = getAll();
       return Stream.value(models).asBroadcastStream();
