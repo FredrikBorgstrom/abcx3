@@ -75,21 +75,10 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
       final existingItem = items[index];
       T updatedItem = existingItem.copyWithInstance(item);
       items[index] = updatedItem;
-      /* items = [...items]
-        ..removeAt(index)
-        ..insert(index, item);*/
       return updatedItem;
     } else {
       return null;
     }
-    /*if (index != -1) {
-      items = [...items]
-        ..removeAt(index)
-        ..insert(index, item);
-      return item;
-    } else {
-      return null;
-    }*/
   }
 
   @override
