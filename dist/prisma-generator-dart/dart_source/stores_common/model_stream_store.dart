@@ -28,7 +28,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       }
     }
     return getOne$(endpoint: endpoint, param: value, body: body)
-        .doOnData((model) => upsert(model));
+        .map((model) => upsert(model));
   }
 
   Stream<List<T>> getManyByFieldValue$<U>(
@@ -44,7 +44,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       }
     }
     return getMany$(endpoint: endpoint, param: value, body: body)
-        .doOnData((models) => upsertMany(models));
+        .map((models) => upsertMany(models));
   }
 
   Stream<List<T>> getAllItems$(
@@ -53,9 +53,10 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       final models = getAll();
       return Stream.value(models).asBroadcastStream();
     } else {
-      return getMany$(endpoint: endpoint).doOnData((models) {
-        upsertMany(models);
+      return getMany$(endpoint: endpoint).map((models) {
+        final upsertedModels = upsertMany(models);
         getAllHasRun = true;
+        return upsertedModels;
       });
     }
   }
