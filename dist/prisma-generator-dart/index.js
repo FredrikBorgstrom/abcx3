@@ -1028,6 +1028,12 @@ class #{Model}Store extends ModelStreamStore<int, #{Model}> {
 
   #{GetRelatedModels$}
 
+  // ADD REF MODELS TO REF STORES
+
+  #{UpdateRefStores}
+
+  #{UpdateRefStoresForList}
+
 }
 
 #{ClassInclude}
@@ -1100,6 +1106,24 @@ var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
+var dartStoreUpdateRefStores = `void updateRefStores(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+    if (recursiveDepth > 0) {
+        recursiveDepth--;
+        #{UpdateRefStoreForFields}
+    }
+    upsert(#{moDel});
+}`;
+var dartStoreUpdateRefStoresForList = `void updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+    for (var #{moDel} in #{moDel}s) {
+        updateRefStores(#{moDel}, recursiveDepth: recursiveDepth);
+    }
+}`;
+var dartStoreUpdateRefStoreForField = `if (#{moDel}.#{fieldName} != null) {
+        #{FieldType}Store.instance.updateRefStores(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+    }`;
+var dartStoreUpdateRefStoreForListField = `if (#{moDel}.#{fieldName} != null) {
+        #{FieldType}Store.instance.updateRefStoresForList(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+    }`;
 var dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
     final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);
     if (includes == null || includes.isEmpty) {
@@ -1163,10 +1187,12 @@ var DartStoreGenerator = class {
     let endpoints = [];
     let GetRelatedModels$ = [];
     let GetRelatedModelsWithId$ = [];
+    let modelFields = [];
     let includesConstructor = [];
     endpoints.push(this.generateEndpointAll());
     for (const field of this.model.fields) {
       if (field.kind === "object") {
+        modelFields.push(field);
         includesConstructor.push(this.generateIncludesConstructor(field));
         const relationFromFields = field.relationFromFields;
         if (relationFromFields != null && relationFromFields?.length > 0) {
@@ -1203,6 +1229,8 @@ var DartStoreGenerator = class {
     content = content.replace(/#{GetManyByPropertyVal\$}/g, getByPropertyVal$.join("\n\n	"));
     content = content.replace(/#{GetRelatedModelsWithId\$}/g, GetRelatedModelsWithId$.join("\n\n	"));
     content = content.replace(/#{GetRelatedModels\$}/g, GetRelatedModels$.join("\n\n	"));
+    content = content.replace(/#{UpdateRefStores}/g, this.generateUpdateRefStores(modelFields));
+    content = content.replace(/#{UpdateRefStoresForList}/g, this.generateUpdateRefStoresForList());
     content = content.replace(/#{Endpoints}/g, endpoints.join(",\n	"));
     if (includesConstructor.length === 0) {
       includesConstructor.push(this.replaceAllVariables(dartStoreIncludesEmptyConstructor));
@@ -1254,6 +1282,27 @@ var DartStoreGenerator = class {
       content = content.replace(/#{setRefModelFunction}/g, "setIncludedReferences");
     }
     return this.replaceAllVariables(content, field);
+  }
+  generateUpdateRefStores(fields) {
+    let content = dartStoreUpdateRefStores;
+    content = this.replaceAllVariables(content);
+    let updateRefStores = "";
+    for (const field of fields) {
+      updateRefStores += this.generateUpdateRefStoreForField(field);
+    }
+    content = content.replace(/#{UpdateRefStoreForFields}/g, updateRefStores);
+    content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
+    return content;
+  }
+  generateUpdateRefStoreForField(field) {
+    let content = field.isList ? dartStoreUpdateRefStoreForListField : dartStoreUpdateRefStoreForField;
+    content = content.replace(/#{FieldType}/g, field.type);
+    return this.replaceAllVariables(content, field);
+  }
+  generateUpdateRefStoresForList() {
+    let content = dartStoreUpdateRefStoresForList;
+    content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
+    return this.replaceAllVariables(content);
   }
   generateGetByPropertyVal$(field) {
     let content = dartStoreGetByPropertyVal$;
@@ -1360,7 +1409,8 @@ var defaultOptions = {
   schemaPath: "",
   EnumPath: "enums",
   FormatWithDart: true,
-  MakeAllPropsOptional: true
+  MakeAllPropsOptional: true,
+  UpdateStoresDefaultRecursiveDepth: 4
   // ModelsImplementBaseClass: true,
   // CommonSourceDirectory: 'common',
   // ModelsBaseClassFileName: 'prisma_model.dart',

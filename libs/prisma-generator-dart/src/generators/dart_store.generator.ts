@@ -1,7 +1,7 @@
 import { DMMF, GeneratorOptions } from "@prisma/generator-helper";
 import { PrismaHelper, StringFns } from "@shared";
 import { DartGeneratorSettings } from "../dart_settings.interface";
-import { dartStoreClassIncludeStub, dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal, dartStoreGetManyByPropertyVal$, dartStoreGetRelatedModels, dartStoreGetRelatedModels$, dartStoreGetRelatedModelsWithId, dartStoreGetRelatedModelsWithId$, dartStoreGetVal, dartStoreIncludesConstructor, dartStoreIncludesEmptyConstructor, dartStoreStub } from "../stubs/store.stub";
+import { dartStoreClassIncludeStub, dartStoreEndpoint, dartStoreEndpointAll, dartStoreEndpointAllName, dartStoreEndpointMany, dartStoreEndpointManyName, dartStoreEndpointName, dartStoreGetAll$, dartStoreGetByPropertyVal, dartStoreGetByPropertyVal$, dartStoreGetManyByPropertyVal, dartStoreGetManyByPropertyVal$, dartStoreGetRelatedModels, dartStoreGetRelatedModels$, dartStoreGetRelatedModelsWithId, dartStoreGetRelatedModelsWithId$, dartStoreGetVal, dartStoreIncludesConstructor, dartStoreIncludesEmptyConstructor, dartStoreStub, dartStoreUpdateRefStoreForField, dartStoreUpdateRefStoreForListField, dartStoreUpdateRefStores, dartStoreUpdateRefStoresForList } from "../stubs/store.stub";
 import { get } from "http";
 import { DartGenerator } from "./dart.generator";
 
@@ -33,13 +33,14 @@ export class DartStoreGenerator {
         let endpoints: string[] = [];
         let GetRelatedModels$: string[] = [];
         let GetRelatedModelsWithId$: string[] = [];
-        //let uniqueIncludesConstructor: string[] = [];
+        let modelFields: DMMF.Field[] = [];
         let includesConstructor: string[] = [];
 
         endpoints.push(this.generateEndpointAll());
 
         for (const field of this.model.fields) {
             if (field.kind === 'object') {
+                modelFields.push(field);
                 includesConstructor.push(this.generateIncludesConstructor(field));
                 const relationFromFields = field.relationFromFields;
                 
@@ -78,6 +79,8 @@ export class DartStoreGenerator {
         content = content.replace(/#{GetManyByPropertyVal\$}/g, getByPropertyVal$.join('\n\n\t'));
         content = content.replace(/#{GetRelatedModelsWithId\$}/g, GetRelatedModelsWithId$.join('\n\n\t'));
         content = content.replace(/#{GetRelatedModels\$}/g, GetRelatedModels$.join('\n\n\t'));
+        content = content.replace(/#{UpdateRefStores}/g, this.generateUpdateRefStores(modelFields));
+        content = content.replace(/#{UpdateRefStoresForList}/g, this.generateUpdateRefStoresForList());
         content = content.replace(/#{Endpoints}/g, endpoints.join(',\n\t'));
         if (includesConstructor.length === 0) {
             includesConstructor.push(this.replaceAllVariables(dartStoreIncludesEmptyConstructor));
@@ -140,6 +143,30 @@ export class DartStoreGenerator {
             content = content.replace(/#{setRefModelFunction}/g, 'setIncludedReferences');
         }
         return this.replaceAllVariables(content, field);
+    }
+
+    generateUpdateRefStores(fields: DMMF.Field[]) {
+        let content = dartStoreUpdateRefStores;
+        content = this.replaceAllVariables(content);
+        let updateRefStores = '';
+        for (const field of fields) {
+            updateRefStores += this.generateUpdateRefStoreForField(field);
+        }
+        content = content.replace(/#{UpdateRefStoreForFields}/g, updateRefStores);
+        content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
+        return content;
+    }
+
+    generateUpdateRefStoreForField(field: DMMF.Field) {
+        let content = field.isList ? dartStoreUpdateRefStoreForListField : dartStoreUpdateRefStoreForField;
+        content = content.replace(/#{FieldType}/g, field.type);
+        return this.replaceAllVariables(content, field);
+    }
+
+    generateUpdateRefStoresForList() {
+        let content = dartStoreUpdateRefStoresForList;
+        content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
+        return this.replaceAllVariables(content);
     }
 
     generateGetByPropertyVal$(field: DMMF.Field) {

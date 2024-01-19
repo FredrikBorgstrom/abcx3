@@ -60,6 +60,12 @@ class #{Model}Store extends ModelStreamStore<int, #{Model}> {
 
   #{GetRelatedModels$}
 
+  // ADD REF MODELS TO REF STORES
+
+  #{UpdateRefStores}
+
+  #{UpdateRefStoresForList}
+
 }
 
 #{ClassInclude}
@@ -160,7 +166,27 @@ export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{
     return #{fieldName};
 }`;
 
+export const dartStoreUpdateRefStores = `void updateRefStores(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+    if (recursiveDepth > 0) {
+        recursiveDepth--;
+        #{UpdateRefStoreForFields}
+    }
+    upsert(#{moDel});
+}`;
 
+export const dartStoreUpdateRefStoresForList = `void updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+    for (var #{moDel} in #{moDel}s) {
+        updateRefStores(#{moDel}, recursiveDepth: recursiveDepth);
+    }
+}`;
+
+export const dartStoreUpdateRefStoreForField = `if (#{moDel}.#{fieldName} != null) {
+        #{FieldType}Store.instance.updateRefStores(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+    }`;
+
+    export const dartStoreUpdateRefStoreForListField = `if (#{moDel}.#{fieldName} != null) {
+        #{FieldType}Store.instance.updateRefStoresForList(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+    }`;
 
 export const dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
     final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);

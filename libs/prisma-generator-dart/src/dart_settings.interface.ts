@@ -5,6 +5,7 @@ export interface DartGeneratorSettings extends GeneratorSettings {
     DartValidatorPackage?: string;
     FormatWithDart: boolean;
     MakeAllPropsOptional: boolean;
+    UpdateStoresDefaultRecursiveDepth: number;
     // ModelsImplementBaseClass?: boolean;
     // CommonSourceDirectory: string;
     // ModelsBaseClassFileName: string;

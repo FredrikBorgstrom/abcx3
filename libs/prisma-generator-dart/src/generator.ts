@@ -20,6 +20,7 @@ const defaultOptions: DartGeneratorSettings = {
     EnumPath: 'enums',
     FormatWithDart: true,
     MakeAllPropsOptional: true,
+    UpdateStoresDefaultRecursiveDepth: 4,
     // ModelsImplementBaseClass: true,
     // CommonSourceDirectory: 'common',
     // ModelsBaseClassFileName: 'prisma_model.dart',
