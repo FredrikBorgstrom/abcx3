@@ -68,12 +68,14 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     }
   }
 
+  // NOTE! Update creates a new instance of the model, and replaces the old one!
+
   @override
   T? update(T item) {
     int index = items.indexWhere((element) => getKey(element) == getKey(item));
     if (index != -1) {
       final existingItem = items[index];
-      T updatedItem = existingItem.copyWithInstance(item);
+      T updatedItem = existingItem.copyWithInstanceValues(item);
       items[index] = updatedItem;
       return updatedItem;
     } else {

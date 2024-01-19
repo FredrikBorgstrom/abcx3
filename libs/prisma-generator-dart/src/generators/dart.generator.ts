@@ -23,7 +23,8 @@ import {
     dartCopyWithInstanceConstructorArg,
     dartUIDStub,
     dartEqualByIdStub,
-    toJsonObjectStub
+    toJsonObjectStub,
+    updateWithInstanceSetters
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -84,6 +85,7 @@ export class DartGenerator {
         let copyWithArgs: string[] = [];
         let copyWithConstructorArgs: string[] = [];
         let copyWithInstanceConstructorArgs: string[] = [];
+        const updateWithInstanceSetters: string[] = [];
         let listFields: DMMF.Field[] = [];
         let uidGetter = '';
         let equalById = '';
@@ -109,6 +111,7 @@ export class DartGenerator {
             copyWithArgs.push(this.generateCopyWithArg(field));
             copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
             copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
+            updateWithInstanceSetters.push(this.generateUpdateWithInstanceSetter(field, instanceName));
 
             if (field.isList) {
                 listFields.push(field);
@@ -146,7 +149,7 @@ export class DartGenerator {
         const copyWithArgsContent = copyWithArgs.join(',\n\t\t') + ',';
         const copyWithConstructorArgsContent = copyWithConstructorArgs.join(',\n\t\t');
         const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(',\n\t\t');
-
+        const updateWithInstanceSettersContent = updateWithInstanceSetters.join(';\n\t\t') + ';';
         //if (this.settings.ModelsImplementBaseClass) {
         // content = content.replace(/#{ImplementsUniqueId}/g, implementsStr + ' ');
         content = content.replace(/#{OverrideAnnotation}/g, '@override');
@@ -170,6 +173,7 @@ export class DartGenerator {
         content = content.replace(/#{CopyWithConstructorArgs}/g, copyWithConstructorArgsContent);
 
         content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);
+        content = content.replace(/#{UpdateWithInstanceSetters}/g, updateWithInstanceSettersContent);
 
         return content;
     }
@@ -206,6 +210,13 @@ export class DartGenerator {
 
     generateCopyWithInstanceConstructorArg(field: DMMF.Field, instanceName: string): string {
         let content = dartCopyWithInstanceConstructorArg;
+        content = content.replace(/#{PropName}/g, field.name);
+        content = content.replace(/#{InstanceName}/g, instanceName);
+        return content;
+    }
+
+    generateUpdateWithInstanceSetter(field: DMMF.Field, instanceName: string): string {
+        let content = updateWithInstanceSetters;
         content = content.replace(/#{PropName}/g, field.name);
         content = content.replace(/#{InstanceName}/g, instanceName);
         return content;

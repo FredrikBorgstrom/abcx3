@@ -28,10 +28,16 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
     }
 
     #{OverrideAnnotation}
-    #{ClassName} copyWithInstance(#{ClassName} #{InstanceName}) {
+    #{ClassName} copyWithInstanceValues(#{ClassName} #{InstanceName}) {
         return #{ClassName}(
             #{CopyWithInstanceConstructorArgs}
         );
+    }
+
+    #{OverrideAnnotation}
+    #{ClassName} updateWithInstanceValues(#{ClassName} #{InstanceName}) {
+        #{UpdateWithInstanceSetters}
+        return this;
     }
 
     #{OverrideAnnotation}
@@ -62,6 +68,7 @@ export const dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 
 export const dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
+export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Map<String, dynamic>) : null`;

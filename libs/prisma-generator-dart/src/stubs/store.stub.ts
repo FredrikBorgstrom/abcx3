@@ -166,18 +166,20 @@ export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{
     return #{fieldName};
 }`;
 
-export const dartStoreUpdateRefStores = `void updateRefStores(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+export const dartStoreUpdateRefStores = `#{Model} updateRefStores(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
     if (recursiveDepth > 0) {
         recursiveDepth--;
         #{UpdateRefStoreForFields}
     }
-    upsert(#{moDel});
+    return upsert(#{moDel});
 }`;
 
-export const dartStoreUpdateRefStoresForList = `void updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+export const dartStoreUpdateRefStoresForList = `List<#{Model}> updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+    final updated#{Model}s = <#{Model}>[];
     for (var #{moDel} in #{moDel}s) {
-        updateRefStores(#{moDel}, recursiveDepth: recursiveDepth);
+        updated#{Model}s.add(updateRefStores(#{moDel}, recursiveDepth: recursiveDepth));
     }
+    return updated#{Model}s;
 }`;
 
 export const dartStoreUpdateRefStoreForField = `if (#{moDel}.#{fieldName} != null) {

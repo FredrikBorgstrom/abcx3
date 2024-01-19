@@ -630,10 +630,16 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
     }
 
     #{OverrideAnnotation}
-    #{ClassName} copyWithInstance(#{ClassName} #{InstanceName}) {
+    #{ClassName} copyWithInstanceValues(#{ClassName} #{InstanceName}) {
         return #{ClassName}(
             #{CopyWithInstanceConstructorArgs}
         );
+    }
+
+    #{OverrideAnnotation}
+    #{ClassName} updateWithInstanceValues(#{ClassName} #{InstanceName}) {
+        #{UpdateWithInstanceSetters}
+        return this;
     }
 
     #{OverrideAnnotation}
@@ -660,6 +666,7 @@ bool equalById(UID<#{Type}> other) => $uid == other.$uid;`;
 var dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 var dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 var dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
+var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Map<String, dynamic>) : null`;
 var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.parse(e.toString())).toList() : null`;
@@ -733,6 +740,7 @@ var DartGenerator = class {
     let copyWithArgs = [];
     let copyWithConstructorArgs = [];
     let copyWithInstanceConstructorArgs = [];
+    const updateWithInstanceSetters2 = [];
     let listFields = [];
     let uidGetter = "";
     let equalById = "";
@@ -756,6 +764,7 @@ var DartGenerator = class {
       copyWithArgs.push(this.generateCopyWithArg(field));
       copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
       copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
+      updateWithInstanceSetters2.push(this.generateUpdateWithInstanceSetter(field, instanceName));
       if (field.isList) {
         listFields.push(field);
       }
@@ -789,6 +798,7 @@ var DartGenerator = class {
     const copyWithArgsContent = copyWithArgs.join(",\n		") + ",";
     const copyWithConstructorArgsContent = copyWithConstructorArgs.join(",\n		");
     const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(",\n		");
+    const updateWithInstanceSettersContent = updateWithInstanceSetters2.join(";\n		") + ";";
     content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = content.replace(/#{UIDGetter}/g, uidGetter);
     content = content.replace(/#{EqualById}/g, equalById);
@@ -801,6 +811,7 @@ var DartGenerator = class {
     content = content.replace(/#{CopyWithArgs}/g, copyWithArgsContent);
     content = content.replace(/#{CopyWithConstructorArgs}/g, copyWithConstructorArgsContent);
     content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);
+    content = content.replace(/#{UpdateWithInstanceSetters}/g, updateWithInstanceSettersContent);
     return content;
   }
   generateUIDGetter(field) {
@@ -831,6 +842,12 @@ var DartGenerator = class {
   }
   generateCopyWithInstanceConstructorArg(field, instanceName) {
     let content = dartCopyWithInstanceConstructorArg;
+    content = content.replace(/#{PropName}/g, field.name);
+    content = content.replace(/#{InstanceName}/g, instanceName);
+    return content;
+  }
+  generateUpdateWithInstanceSetter(field, instanceName) {
+    let content = updateWithInstanceSetters;
     content = content.replace(/#{PropName}/g, field.name);
     content = content.replace(/#{InstanceName}/g, instanceName);
     return content;
@@ -1106,17 +1123,19 @@ var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
-var dartStoreUpdateRefStores = `void updateRefStores(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+var dartStoreUpdateRefStores = `#{Model} updateRefStores(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
     if (recursiveDepth > 0) {
         recursiveDepth--;
         #{UpdateRefStoreForFields}
     }
-    upsert(#{moDel});
+    return upsert(#{moDel});
 }`;
-var dartStoreUpdateRefStoresForList = `void updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+var dartStoreUpdateRefStoresForList = `List<#{Model}> updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+    final updated#{Model}s = <#{Model}>[];
     for (var #{moDel} in #{moDel}s) {
-        updateRefStores(#{moDel}, recursiveDepth: recursiveDepth);
+        updated#{Model}s.add(updateRefStores(#{moDel}, recursiveDepth: recursiveDepth));
     }
+    return updated#{Model}s;
 }`;
 var dartStoreUpdateRefStoreForField = `if (#{moDel}.#{fieldName} != null) {
         #{FieldType}Store.instance.updateRefStores(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
