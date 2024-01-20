@@ -1,19 +1,33 @@
 part of '../abcx3_stores_library.dart';
 
+/// A class that extends ModelStore and provides additional functionality for
+/// working with streams of models.
+///
 class ModelStreamStore<K, T extends PrismaModel<K, T>>
     extends ModelStore<K, T> {
   ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);
 
+  /// A private BehaviorSubject that holds a list of all the models.
+  ///  When the list is updated, the public stream (defined below) outputs a new event consisting of all the models at their current state.
   final BehaviorSubject<List<T>> _items$$ = BehaviorSubject.seeded([]);
+
+  /// The public stream containing all the models at their current state. Whenever one or multiple models are updated,
+  /// the stream will output a new event consisting of all the models at their current state.
   late final Stream<List<T>> items$ = _items$$.stream;
+
+  /// A flag indicating whether the getAll method has been run.
   bool getAllHasRun = false;
 
+  /// Getter for the list of models.
   @override
   List<T> get items => _items$$.value;
 
+  /// Setter for the list of models.
   @override
   set items(List<T> items) => _items$$.add(items);
 
+  /// Returns a stream of a single model that matches the given field value,
+  /// or a stream of null if none is found.
   Stream<T?> getByFieldValue$<W>(
       {required GetPropertyValue<T, W> getPropVal,
       required dynamic value,
@@ -31,6 +45,8 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
         .map((model) => upsert(model));
   }
 
+  /// Returns a stream of all the models that match the given field value,
+  /// or an empty list if none is found.
   Stream<List<T>> getManyByFieldValue$<U>(
       {required GetPropertyValue<T, U> getPropVal,
       required dynamic value,
@@ -47,6 +63,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
         .map((models) => upsertMany(models));
   }
 
+  /// Returns a stream of all the models.
   Stream<List<T>> getAllItems$(
       {required Endpoint endpoint, bool useCache = true}) {
     if (useCache && getAllHasRun) {
@@ -61,6 +78,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
     }
   }
 
+  /// Returns a stream of a model including the given relational fields.
   Stream<V?> getIncluding$<V>(
       Stream<V?> item$, List<StoreIncludes> storeGetters) {
     List<Stream<dynamic>> listOfZipStreams = [];
@@ -78,6 +96,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
     });
   }
 
+  /// Returns a stream of a list of models including the given relational fields.
   Stream<List<V>> getManyIncluding$<V>(
       Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
     return items$.switchMap((items) {

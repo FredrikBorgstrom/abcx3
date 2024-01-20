@@ -609,17 +609,22 @@ import '../abcx3_common.library.dart';
 class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
     
+    /// Creates a new instance of the GameMove class.
+  /// All parameters are optional and default to null.
     #{ClassName}({#{ConstructorArgs}});
 
     #{UIDGetter}
     #{EqualById}
 
+    /// Creates a new instance of the GameMove class from a JSON object.
     #{OverrideAnnotation}
     factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
       #{ClassName}(
         #{fromJsonArgs}
       );
 
+      /// Creates a new instance populated with the values of this instance and the given values,
+    /// where this instance's values has precedence.
       #{OverrideAnnotation}  
     #{ClassName} copyWith({
         #{CopyWithArgs}
@@ -629,6 +634,9 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
         );
     }
 
+    /// Creates a new instance populated with the values of this instance and the given instance,
+    /// where this instance's values has precedence.
+
     #{OverrideAnnotation}
     #{ClassName} copyWithInstanceValues(#{ClassName} #{InstanceName}) {
         return #{ClassName}(
@@ -636,23 +644,30 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
         );
     }
 
+    /// Updates this instance with the values of the given instance,
+  /// where this instance has precedence.
+
     #{OverrideAnnotation}
     #{ClassName} updateWithInstanceValues(#{ClassName} #{InstanceName}) {
         #{UpdateWithInstanceSetters}
         return this;
     }
-
+    /// Converts this instance to a JSON object.
     #{OverrideAnnotation}
     Map<String, dynamic> toJson() => ({
         #{toJsonKeyValues}
       });
 
+      /// Determines whether this instance and another object represent the same
+      /// game move.
     #{OverrideAnnotation}
     bool operator == (Object other) =>
             identical(this, other) || other is #{ClassName} &&
                 runtimeType == other.runtimeType &&
                 #{equalsKeyValues};
 
+    /// Updates this instance with the values of the given instance,
+    /// where this instance has precedence.
     #{OverrideAnnotation}
         int get hashCode => #{hashCodeKeyValues};
     }
