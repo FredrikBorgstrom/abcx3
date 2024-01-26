@@ -13,7 +13,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
 
     #{UIDGetter}
 
-    Map<String, GetPropertyValueFunction<Bag, dynamic>> propertyValueFunctionMap = {
+    Map<String, GetPropertyValueFunction<#{Model}, dynamic>> propertyValueFunctionMap = {
       #{GetPropertyValueFunctions}
     };
 
