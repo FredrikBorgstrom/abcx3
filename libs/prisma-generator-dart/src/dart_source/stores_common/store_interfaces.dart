@@ -18,8 +18,9 @@ abstract interface class HttpService {
   });
 }
 
-abstract interface class StoreIncludes {
+abstract interface class StoreIncludes<T extends PrismaModel> {
   abstract bool useCache;
   abstract Function method;
   abstract bool useAsync;
+  abstract ModelFilterGroup<T>? filterGroup;
 }

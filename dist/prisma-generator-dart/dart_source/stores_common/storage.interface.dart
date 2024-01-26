@@ -33,3 +33,31 @@ abstract interface class KeyStorageInterface<T, K> extends StorageInterface<T> {
 
   void deleteManyByKeys(List<K> keys);
 }
+
+/*enum FilterOperator {
+  equals,
+  not,
+  gt,
+  gte,
+  lt,
+  lte,
+  inList,
+  notInList,
+  contains,
+  startsWith,
+  endsWith,
+  notContains,
+  notStartsWith,
+  notEndsWith,
+  isNull,
+  isNotNull,
+}
+
+abstract interface class ModelFilterInterface {
+  abstract String property;
+  abstract dynamic value;
+  abstract FilterOperator operator;
+}*/
+
+
+

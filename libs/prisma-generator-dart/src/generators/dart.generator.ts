@@ -24,7 +24,8 @@ import {
     dartUIDStub,
     dartEqualByIdStub,
     toJsonObjectStub,
-    updateWithInstanceSetters
+    updateWithInstanceSetters,
+    getPropertyValueFunctionStub
 } from '../stubs/dart.stub';
 import { PrismaHelper, StringFns } from '@shared';
 
@@ -66,6 +67,7 @@ export class DartGenerator {
         const instanceName = StringFns.decapitalize(className);
         content = content.replace(/#{ClassName}/g, className);
         content = content.replace(/#{InstanceName}/g, instanceName);
+        content = content.replace(/#{Model}/g, className);
 
         // handle the parent class (extends)
 
@@ -87,6 +89,7 @@ export class DartGenerator {
         let copyWithInstanceConstructorArgs: string[] = [];
         const updateWithInstanceSetters: string[] = [];
         let listFields: DMMF.Field[] = [];
+        const getPropToValueFunction: string[] = [];
         let uidGetter = '';
         let equalById = '';
 
@@ -112,7 +115,7 @@ export class DartGenerator {
             copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
             copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
             updateWithInstanceSetters.push(this.generateUpdateWithInstanceSetter(field, instanceName));
-
+            getPropToValueFunction.push(this.generatePropertyToValFunction(field));
             if (field.isList) {
                 listFields.push(field);
             }
@@ -159,10 +162,10 @@ export class DartGenerator {
         // }
 
         content = content.replace(/#{UIDGetter}/g, uidGetter);
+        content = content.replace(/#{GetPropertyValueFunctions}/g, getPropToValueFunction.join('\n\n\t'));
         content = content.replace(/#{EqualById}/g, equalById);
         content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
         content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
-
         content = content.replace(/#{Properties}/g, propertiesContent);
         content = content.replace(/#{ConstructorArgs}/g, constructorContent);
 
@@ -176,6 +179,11 @@ export class DartGenerator {
         content = content.replace(/#{UpdateWithInstanceSetters}/g, updateWithInstanceSettersContent);
 
         return content;
+    }
+
+    generatePropertyToValFunction(field: DMMF.Field) {
+        let content = getPropertyValueFunctionStub;
+        return this.replaceAllVariables(content, field);
     }
 
     generateUIDGetter(field: DMMF.Field): string {
@@ -377,6 +385,21 @@ export class DartGenerator {
             }
         });
         return result;
+    }
+
+    replaceAllVariables(content: string, field?: DMMF.Field) {
+        if (field) {
+            content = content.replace(/#{FieldType}/g, this.getDartBaseType(field));
+            content = content.replace(/#{DartType}/g, this.getDartType(field));
+            content = content.replace(/#{IncludeType}/g, `List<${field.type}Include>?`);
+            content = content.replace(/#{fieldName}/g, field.name);
+            content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
+        }
+        content = content.replace(/#{Nullable}/g, '?');
+        // content = content.replace(/#{model}/g, StringFns.decapitalize(this.model.name));
+        content = content.replace(/#{moDel}/g, StringFns.decapitalize(this.model.name));
+        content = content.replace(/#{Model}/g, this.model.name);
+        return content;
     }
 }
 

@@ -1,6 +1,6 @@
 part of '../abcx3_stores_library.dart';
 
-typedef GetPropertyValue<I, O> = O? Function(I model);
+typedef GetPropertyValueFunction<I, O> = O? Function(I model);
 // U is the type of the field value
 
 class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
@@ -14,16 +14,18 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
   T? getById(K id, {List<StoreIncludes>? includes}) =>
       getIncluding(getId, id, includes: includes);
 
-  getIncluding<W>(GetPropertyValue<T, W> getPropVal, W value,
-      {List<StoreIncludes>? includes}) {
-    final model = getByPropertyValue(getPropVal, value);
+  getIncluding<W>(
+      GetPropertyValueFunction<T, W> getPropVal, W value,
+      {ModelFilterGroup<T>? filterGroup, List<StoreIncludes>? includes}) {
+    final model = getByPropertyValueAndFilter(getPropVal, value, filterGroup: filterGroup);
     setIncludedReferences(model, includes: includes);
     return model;
   }
 
-  getManyIncluding<W>(GetPropertyValue<T, W> getPropVal, W value,
-      {List<StoreIncludes>? includes}) {
-    final models = getManyByPropertyValue(getPropVal, value);
+  getManyIncluding<W>(
+      GetPropertyValueFunction<T, W> getPropVal, W value,
+      {ModelFilterGroup<T>? filterGroup, List<StoreIncludes>? includes}) {
+    final models = getManyByPropertyValueAndFilter(getPropVal, value, filterGroup: filterGroup);
     setIncludedReferencesForList(models, includes: includes);
     return models;
   }

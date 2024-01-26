@@ -29,45 +29,50 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
   /// Returns a stream of a single model that matches the given field value,
   /// or a stream of null if none is found.
   Stream<T?> getByFieldValue$<W>(
-      {required GetPropertyValue<T, W> getPropVal,
+      {required GetPropertyValueFunction<T, W> getPropVal,
       required dynamic value,
       required Endpoint endpoint,
       bool useCache = true,
+      ModelFilterGroup<T>? filterGroup,
       Map<String, dynamic>? body}) {
     if (useCache) {
-      final model = getByPropertyValue(getPropVal, value);
+      final model = getByPropertyValueAndFilter(getPropVal, value, filterGroup: filterGroup);
       if (model != null) {
         // if useCache is true, we return a broadcast stream ONLY if we have a cached value
         return Stream.value(model).asBroadcastStream();
       }
     }
-    return getOne$(endpoint: endpoint, param: value, body: body)
+    return getOne$(endpoint: endpoint, param: value, filterGroup: filterGroup, body: body)
         .map((model) => upsert(model));
   }
 
   /// Returns a stream of all the models that match the given field value,
   /// or an empty list if none is found.
   Stream<List<T>> getManyByFieldValue$<U>(
-      {required GetPropertyValue<T, U> getPropVal,
+      {required GetPropertyValueFunction<T, U> getPropVal,
       required dynamic value,
       required Endpoint endpoint,
       bool useCache = true,
+      ModelFilterGroup<T>? filterGroup,
       Map<String, dynamic>? body}) {
     if (useCache) {
-      final models = getManyByPropertyValue<U>(getPropVal, value);
+      final models = getManyByPropertyValueAndFilter<U>(getPropVal, value, filterGroup: filterGroup);
       if (models.isNotEmpty) {
         return Stream.value(models).asBroadcastStream();
       }
     }
-    return getMany$(endpoint: endpoint, param: value, body: body)
+    return getMany$(endpoint: endpoint, param: value, filterGroup: filterGroup, body: body)
         .map((models) => upsertMany(models));
   }
 
   /// Returns a stream of all the models.
   Stream<List<T>> getAllItems$(
-      {required Endpoint endpoint, bool useCache = true}) {
+      {required Endpoint endpoint, bool useCache = true, ModelFilterGroup<T>? filterGroup, Map<String, dynamic>? body}) {
     if (useCache && getAllHasRun) {
-      final models = getAll();
+      var models = getAll();
+      if (filterGroup != null) {
+        models = filterGroup.filterMany(models);
+      }
       return Stream.value(models).asBroadcastStream();
     } else {
       return getMany$(endpoint: endpoint).map((models) {

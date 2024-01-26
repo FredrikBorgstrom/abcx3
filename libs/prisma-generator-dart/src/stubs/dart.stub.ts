@@ -4,7 +4,7 @@ export const dartBaseClassStub = `
 import '../abcx3_common.library.dart';
 #{AdditionalImports}
 
-class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
+class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
     
     /// Creates a new instance of the GameMove class.
@@ -12,6 +12,21 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
     #{ClassName}({#{ConstructorArgs}});
 
     #{UIDGetter}
+
+    Map<String, GetPropertyValueFunction<Bag, dynamic>> propertyValueFunctionMap = {
+      #{GetPropertyValueFunctions}
+    };
+
+    /// gets a function by property name that returns the property value from the model
+    @override
+  dynamic Function(#{Model}) getPropToValueFunction(String propertyName) {
+    final propFunction = propertyValueFunctionMap[propertyName];
+    if (propFunction == null) {
+      throw Exception('Property "$propertyName" not found in #{Model}');
+    }
+    return propFunction;
+  }
+
     #{EqualById}
 
     /// Creates a new instance of the GameMove class from a JSON object.
@@ -74,6 +89,8 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
 export const dartUIDStub = `
 #{OverrideAnnotation}
 #{Type}#{Nullable} get $uid => #{PropName};`;
+
+export const getPropertyValueFunctionStub = `"#{fieldName}": (m) => m.#{fieldName},`;
 
 export const dartEqualByIdStub = `
 #{OverrideAnnotation}

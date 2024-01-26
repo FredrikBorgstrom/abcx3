@@ -4,19 +4,22 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
   final Map<String, Stream<dynamic>> _cachedStreams = {};
 
   Stream<T> getOne$(
-      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
-    return get$<T>(param: param, endpoint: endpoint, body: body);
+      {dynamic param, required Endpoint endpoint, ModelFilterGroup? filterGroup, Map<String, dynamic>? body}) {
+    return get$<T>(param: param, endpoint: endpoint, filterGroup: filterGroup, body: body);
   }
 
   Stream<List<T>> getMany$(
-      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
-    return get$<List<T>>(param: param, endpoint: endpoint, body: body);
+      {dynamic param, required Endpoint endpoint, ModelFilterGroup? filterGroup, Map<String, dynamic>? body}) {
+    return get$<List<T>>(param: param, endpoint: endpoint, filterGroup: filterGroup, body: body);
   }
 
   Stream<U> get$<U>(
-      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
+      {dynamic param, required Endpoint endpoint, ModelFilterGroup? filterGroup, Map<String, dynamic>? body}) {
+    if (filterGroup != null) {
+      body?['filterGroup'] = filterGroup.toJson();
+    }
     final serializedRequest =
-        _serializeRequest(param: param, endpoint: endpoint);
+        _serializeRequest(param: param, endpoint: endpoint, body: body);
     final cachedRequest = _getCachedRequest(serializedRequest);
 
     if (cachedRequest != null) {
@@ -42,11 +45,10 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     }
   }
 
-  String _serializeRequest({dynamic param, required Endpoint endpoint}) {
-    final requestMap = {'endpoint': endpoint.path, 'param': param.toString()};
-    final json = jsonEncode(requestMap);
-    //final serializedRequest = json.toString();
-    return json;
+  String _serializeRequest({dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
+    final serializedParam = param != null ? param.toString() : '';
+    final serializedBody = body != null ? body.toString() : '';
+    return '${endpoint.path} $serializedParam $serializedBody';
   }
 
   _setCachedRequest<U>(String serializedRequest, Stream<U> stream$$) {

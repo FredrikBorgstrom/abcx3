@@ -606,7 +606,7 @@ var dartBaseClassStub = `
 import '../abcx3_common.library.dart';
 #{AdditionalImports}
 
-class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
+class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
     
     /// Creates a new instance of the GameMove class.
@@ -614,6 +614,21 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
     #{ClassName}({#{ConstructorArgs}});
 
     #{UIDGetter}
+
+    Map<String, GetPropertyValueFunction<Bag, dynamic>> propertyValueFunctionMap = {
+      #{GetPropertyValueFunctions}
+    };
+
+    /// gets a function by property name that returns the property value from the model
+    @override
+  dynamic Function(#{Model}) getPropToValueFunction(String propertyName) {
+    final propFunction = propertyValueFunctionMap[propertyName];
+    if (propFunction == null) {
+      throw Exception('Property "$propertyName" not found in #{Model}');
+    }
+    return propFunction;
+  }
+
     #{EqualById}
 
     /// Creates a new instance of the GameMove class from a JSON object.
@@ -675,6 +690,7 @@ class #{ClassName} #{ParentClass} implements #{ImplementsPrismaModel} #{Implemen
 var dartUIDStub = `
 #{OverrideAnnotation}
 #{Type}#{Nullable} get $uid => #{PropName};`;
+var getPropertyValueFunctionStub = `"#{fieldName}": (m) => m.#{fieldName},`;
 var dartEqualByIdStub = `
 #{OverrideAnnotation}
 bool equalById(UID<#{Type}> other) => $uid == other.$uid;`;
@@ -744,6 +760,7 @@ var DartGenerator = class {
     const instanceName = StringFns.decapitalize(className);
     content = content.replace(/#{ClassName}/g, className);
     content = content.replace(/#{InstanceName}/g, instanceName);
+    content = content.replace(/#{Model}/g, className);
     const parentClassInjection = "";
     content = content.replace(/#{ParentClass}/g, parentClassInjection);
     let constructorArgs = [];
@@ -757,6 +774,7 @@ var DartGenerator = class {
     let copyWithInstanceConstructorArgs = [];
     const updateWithInstanceSetters2 = [];
     let listFields = [];
+    const getPropToValueFunction = [];
     let uidGetter = "";
     let equalById = "";
     for (const field of this.model.fields) {
@@ -780,6 +798,7 @@ var DartGenerator = class {
       copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
       copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
       updateWithInstanceSetters2.push(this.generateUpdateWithInstanceSetter(field, instanceName));
+      getPropToValueFunction.push(this.generatePropertyToValFunction(field));
       if (field.isList) {
         listFields.push(field);
       }
@@ -816,6 +835,7 @@ var DartGenerator = class {
     const updateWithInstanceSettersContent = updateWithInstanceSetters2.join(";\n		") + ";";
     content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = content.replace(/#{UIDGetter}/g, uidGetter);
+    content = content.replace(/#{GetPropertyValueFunctions}/g, getPropToValueFunction.join("\n\n	"));
     content = content.replace(/#{EqualById}/g, equalById);
     content = content.replace(/#{fromJsonArgs}/g, fromJsonContent);
     content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
@@ -828,6 +848,10 @@ var DartGenerator = class {
     content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);
     content = content.replace(/#{UpdateWithInstanceSetters}/g, updateWithInstanceSettersContent);
     return content;
+  }
+  generatePropertyToValFunction(field) {
+    let content = getPropertyValueFunctionStub;
+    return this.replaceAllVariables(content, field);
   }
   generateUIDGetter(field) {
     let content = dartUIDStub;
@@ -996,6 +1020,19 @@ var DartGenerator = class {
     });
     return result;
   }
+  replaceAllVariables(content, field) {
+    if (field) {
+      content = content.replace(/#{FieldType}/g, this.getDartBaseType(field));
+      content = content.replace(/#{DartType}/g, this.getDartType(field));
+      content = content.replace(/#{IncludeType}/g, `List<${field.type}Include>?`);
+      content = content.replace(/#{fieldName}/g, field.name);
+      content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
+    }
+    content = content.replace(/#{Nullable}/g, "?");
+    content = content.replace(/#{moDel}/g, StringFns.decapitalize(this.model.name));
+    content = content.replace(/#{Model}/g, this.model.name);
+    return content;
+  }
 };
 
 // libs/prisma-generator-dart/src/stubs/store.stub.ts
@@ -1092,31 +1129,40 @@ enum #{Model}Endpoints implements Endpoint {
 }
 `;
 var dartStoreClassIncludeStub = `
-class #{Model}Include implements StoreIncludes {
+class #{Model}Include<T extends PrismaModel> implements StoreIncludes<T> {
 
     @override
     bool useCache;
+
     @override
     bool useAsync;
+
+    @override
+    ModelFilterGroup<T>? filterGroup;
   
     @override
     late Function method;
   
       #{IncludeConstructors}
   }`;
-var dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({this.useCache = true, this.useAsync = true, #{IncludeType} includes}) {
+var dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({
+    this.useCache = true,
+    this.useAsync = true,
+    ModelFilterGroup<#{FieldType}>? filterGroup,
+    #{IncludeType} includes}) {
     if (useAsync) {
+        this.filterGroup = filterGroup as ModelFilterGroup<T>?;
         method = (#{moDel}) => #{Model}Store.instance
-            .get#{FieldName}$(#{moDel}, useCache: useCache, includes: includes);
+            .get#{FieldName}$(#{moDel}, useCache: useCache, filterGroup: filterGroup, includes: includes);
       } else {
         method = (#{moDel}) => #{Model}Store.instance
-            .get#{FieldName}(#{moDel}, includes: includes);
+            .get#{FieldName}(#{moDel}, filterGroup: filterGroup, includes: includes);
       }
 }`;
 var dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.useCache = true, this.useAsync = true});`;
-var dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
-var dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, List<#{Model}Include>? includes}) {
-    final allItems$ = getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, useCache: useCache);
+var dartStoreGetVal = `#{DartType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
+var dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, ModelFilterGroup<#{Model}>? filterGroup, List<#{Model}Include>? includes}) {
+    final allItems$ = getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, filterGroup: filterGroup, useCache: useCache);
     if (includes == null || includes.isEmpty) {
         return allItems$;
       } else {
@@ -1124,16 +1170,28 @@ var dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, Li
       }
     }
 `;
-var dartStoreGetByPropertyVal = `#{Model}? getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
-var dartStoreGetManyByPropertyVal = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
-var dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
+var dartStoreGetByPropertyVal = `
+#{Model}? getBy#{FieldName}(
+    #{FieldType} #{fieldName},
+    {ModelFilterGroup<#{Model}>? filterGroup, List<#{Model}Include>? includes}
+    ) =>
+    getIncluding(get#{Model}#{FieldName}, #{fieldName}, filterGroup: filterGroup, includes: includes);`;
+var dartStoreGetManyByPropertyVal = `
+List<#{Model}> getBy#{FieldName}(
+    #{FieldType} #{fieldName},
+    {ModelFilterGroup<#{Model}>? filterGroup, List<#{Model}Include>? includes}
+    ) =>
+    getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, filterGroup: filterGroup, includes: includes);`;
+var dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(
+    #{Model} #{moDel}, {ModelFilterGroup? filterGroup, #{IncludeType} includes}) {
     final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
     // setIncludedReferences(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
-var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
-    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, includes: includes);
+var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
+    #{Model} #{moDel}, {ModelFilterGroup<#{FieldType}>? filterGroup, #{IncludeType} includes}) {
+    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, filterGroup: filterGroup, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
@@ -1158,8 +1216,18 @@ var dartStoreUpdateRefStoreForField = `if (#{moDel}.#{fieldName} != null) {
 var dartStoreUpdateRefStoreForListField = `if (#{moDel}.#{fieldName} != null) {
         #{FieldType}Store.instance.updateRefStoresForList(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
     }`;
-var dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
-    final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);
+var dartStoreGetByPropertyVal$ = `
+    Stream<#{Model}?> getBy#{FieldName}$(
+        #{FieldType} #{fieldName},
+        {bool useCache = true,
+        ModelFilterGroup<#{Model}>? filterGroup,
+        List<#{Model}Include>? includes}) {
+    final item$ = getByFieldValue$<#{FieldType}>(
+        getPropVal: get#{Model}#{FieldName},
+        value: #{fieldName},
+        filterGroup: filterGroup,
+        endpoint: #{Model}Endpoints.#{EndPointName},
+        useCache: useCache);
     if (includes == null || includes.isEmpty) {
         return item$;
     } else {
@@ -1167,8 +1235,18 @@ var dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldTy
     }
 }
 `;
-var dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
-    final items$ = getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);
+var dartStoreGetManyByPropertyVal$ = `
+    Stream<List<#{Model}>> getBy#{FieldName}$(
+        #{FieldType} #{fieldName},
+        {bool useCache = true,
+        ModelFilterGroup<#{Model}>? filterGroup,
+        List<#{Model}Include>? includes}) {
+    final items$ = getManyByFieldValue$<#{FieldType}>(
+        getPropVal: get#{Model}#{FieldName},
+        value: #{fieldName},
+        filterGroup: filterGroup,
+        endpoint: #{Model}Endpoints.#{EndPointManyName},
+        useCache: useCache);
     if (includes == null || includes.isEmpty) {
         return items$;
     } else {
@@ -1176,16 +1254,26 @@ var dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{FieldName}$(
     }
 }
 `;
-var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} includes}) {
-    return #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache, includes: includes)
-        .doOnData((#{fieldName}) {
-            #{moDel}.#{fieldName} = #{fieldName};
+var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
+    #{Model} #{moDel}, {bool useCache = true, ModelFilterGroup<#{FieldType}>? filterGroup, #{IncludeType} includes}) {
+    return #{FieldType}Store.instance.getById$(
+        #{moDel}.#{relationFromField}!,
+        useCache: useCache,
+        filterGroup: filterGroup,
+        includes: includes)
+    .doOnData((#{fieldName}) {
+        #{moDel}.#{fieldName} = #{fieldName};
     });
 }`;
-var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} includes}) {
-    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!, useCache: useCache, includes: includes)
-            .doOnData((#{fieldName}) {
-                #{moDel}.#{fieldName} = #{fieldName};
+var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
+    #{Model} #{moDel}, {bool useCache = true, ModelFilterGroup<#{FieldType}>? filterGroup, #{IncludeType} includes}) {
+    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(
+        #{moDel}.$uid!,
+        useCache: useCache,
+        filterGroup: filterGroup,
+        includes: includes)
+    .doOnData((#{fieldName}) {
+        #{moDel}.#{fieldName} = #{fieldName};
     });
 
 }`;
@@ -1211,18 +1299,18 @@ var DartStoreGenerator = class {
     let content = dartStoreStub;
     content = content.replace(/#{AutoGeneratedWarningText}/g, this.settings.AutoGeneratedWarningText);
     content = content.replace(/#{Model}/g, this.model.name);
-    let getValMethods = [];
-    let getUniqueByPropertyVal = [];
-    let getByPropertyVal = [];
-    let GetRelatedModels = [];
-    let GetRelatedModelsWithId = [];
-    let getUniqueByPropertyVal$ = [];
-    let getByPropertyVal$ = [];
-    let endpoints = [];
-    let GetRelatedModels$ = [];
-    let GetRelatedModelsWithId$ = [];
-    let modelFields = [];
-    let includesConstructor = [];
+    const getValMethods = [];
+    const getUniqueByPropertyVal = [];
+    const getByPropertyVal = [];
+    const GetRelatedModels = [];
+    const GetRelatedModelsWithId = [];
+    const getUniqueByPropertyVal$ = [];
+    const getByPropertyVal$ = [];
+    const endpoints = [];
+    const GetRelatedModels$ = [];
+    const GetRelatedModelsWithId$ = [];
+    const modelFields = [];
+    const includesConstructor = [];
     endpoints.push(this.generateEndpointAll());
     for (const field of this.model.fields) {
       if (field.kind === "object") {
@@ -1282,6 +1370,10 @@ var DartStoreGenerator = class {
     let content = dartStoreGetVal;
     return this.replaceAllVariables(content, field);
   }
+  /* generatePropertyToValFunction(field: DMMF.Field) {
+      let content = getPropertyValueFunctionStub;
+      return this.replaceAllVariables(content, field);
+  } */
   generateGetAll$() {
     let content = dartStoreGetAll$;
     content = content.replace(/#{EndPointAllName}/g, dartStoreEndpointAllName);
@@ -1382,16 +1474,7 @@ var DartStoreGenerator = class {
     return this.replaceAllVariables(content);
   }
   replaceAllVariables(content, field) {
-    if (field) {
-      content = content.replace(/#{FieldType}/g, this.dartGenerator.getDartType(field));
-      content = content.replace(/#{IncludeType}/g, `List<${field.type}Include>?`);
-      content = content.replace(/#{fieldName}/g, field.name);
-      content = content.replace(/#{FieldName}/g, StringFns.capitalize(field.name));
-    }
-    content = content.replace(/#{Nullable}/g, "?");
-    content = content.replace(/#{moDel}/g, StringFns.decapitalize(this.model.name));
-    content = content.replace(/#{Model}/g, this.model.name);
-    return content;
+    return this.dartGenerator.replaceAllVariables(content, field);
   }
   generateEndpointName(returnsSingleRecord) {
     return returnsSingleRecord ? dartStoreEndpointName : dartStoreEndpointManyName;
@@ -1430,6 +1513,8 @@ part 'stores_common/model_store.dart';
 part 'stores_common/model_stream_store.dart';
 part 'stores_common/storage.interface.dart';
 part 'stores_common/key_store.mixin.dart';
+part 'stores_common/model_filter.dart';
+part 'stores_common/model_filter_group.dart';
 
 #{StoreParts}
 `;

@@ -93,12 +93,16 @@ enum #{Model}Endpoints implements Endpoint {
 `;
 
 export const dartStoreClassIncludeStub = `
-class #{Model}Include implements StoreIncludes {
+class #{Model}Include<T extends PrismaModel> implements StoreIncludes<T> {
 
     @override
     bool useCache;
+
     @override
     bool useAsync;
+
+    @override
+    ModelFilterGroup<T>? filterGroup;
   
     @override
     late Function method;
@@ -106,26 +110,28 @@ class #{Model}Include implements StoreIncludes {
       #{IncludeConstructors}
   }`;
 
-export const dartStoreIncludesConstructor_old = `#{Model}Include.#{fieldName}({this.useCache = true, #{IncludeType} include}) {
-    method = (#{moDel}) => #{Model}Store.instance.get#{FieldName}$(#{moDel}, useCache: useCache, include: include);
-}`;
-export const dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({this.useCache = true, this.useAsync = true, #{IncludeType} includes}) {
+export const dartStoreIncludesConstructor = `#{Model}Include.#{fieldName}({
+    this.useCache = true,
+    this.useAsync = true,
+    ModelFilterGroup<#{FieldType}>? filterGroup,
+    #{IncludeType} includes}) {
     if (useAsync) {
+        this.filterGroup = filterGroup as ModelFilterGroup<T>?;
         method = (#{moDel}) => #{Model}Store.instance
-            .get#{FieldName}$(#{moDel}, useCache: useCache, includes: includes);
+            .get#{FieldName}$(#{moDel}, useCache: useCache, filterGroup: filterGroup, includes: includes);
       } else {
         method = (#{moDel}) => #{Model}Store.instance
-            .get#{FieldName}(#{moDel}, includes: includes);
+            .get#{FieldName}(#{moDel}, filterGroup: filterGroup, includes: includes);
       }
 }`;
 
 export const dartStoreIncludesEmptyConstructor = `#{Model}Include.empty({this.useCache = true, this.useAsync = true});`;
 
-export const dartStoreGetVal = `#{FieldType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
+export const dartStoreGetVal = `#{DartType}#{Nullable} get#{Model}#{FieldName}(#{Model} #{moDel}) => #{moDel}.#{fieldName};`;
 
 
-export const dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, List<#{Model}Include>? includes}) {
-    final allItems$ = getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, useCache: useCache);
+export const dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, ModelFilterGroup<#{Model}>? filterGroup, List<#{Model}Include>? includes}) {
+    final allItems$ = getAllItems$(endpoint: #{Model}Endpoints.#{EndPointAllName}, filterGroup: filterGroup, useCache: useCache);
     if (includes == null || includes.isEmpty) {
         return allItems$;
       } else {
@@ -135,21 +141,35 @@ export const dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache =
 `;
 
 
-export const dartStoreGetByPropertyVal = `#{Model}? getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
+export const dartStoreGetByPropertyVal = `
+#{Model}? getBy#{FieldName}(
+    #{FieldType} #{fieldName},
+    {ModelFilterGroup<#{Model}>? filterGroup, List<#{Model}Include>? includes}
+    ) =>
+    getIncluding(get#{Model}#{FieldName}, #{fieldName}, filterGroup: filterGroup, includes: includes);`;
 
-export const dartStoreGetManyByPropertyVal_old = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}) => getManyByPropertyValue(get#{Model}#{FieldName}, #{fieldName});`;
 
-export const dartStoreGetManyByPropertyVal = `List<#{Model}> getBy#{FieldName}(#{FieldType} #{fieldName}, {List<#{Model}Include>? includes}) => getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, includes: includes);`;
+export const dartStoreGetManyByPropertyVal = `
+List<#{Model}> getBy#{FieldName}(
+    #{FieldType} #{fieldName},
+    {ModelFilterGroup<#{Model}>? filterGroup, List<#{Model}Include>? includes}
+    ) =>
+    getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, filterGroup: filterGroup, includes: includes);`;
 
-export const dartStoreGetRelatedModelsWithId_old = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!);`;
 
-export const dartStoreGetRelatedModels_old = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}) => #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!);`;
 
+/* export const staticGetPropValFunctionStub = `Map<String, GetPropertyValueFunction<#{Model}, dynamic>> get propertyValueFunctionMap => {
+    #{GetPropertyValueFunctions}
+  };`; */
+
+
+// export const getPropertyValueFunctionStub = `"#{fieldName}": get#{Model}#{FieldName},`;
 
 
 /// GET RELATED MODELS WITH ID STORED IN THIS MODEL:
 
-export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
+export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(
+    #{Model} #{moDel}, {ModelFilterGroup? filterGroup, #{IncludeType} includes}) {
     final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
     // setIncludedReferences(#{fieldName}, includes: includes);
@@ -159,8 +179,9 @@ export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldNa
 
 /// GET RELATED MODELS:
 
-export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(#{Model} #{moDel}, {#{IncludeType} includes}) {
-    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, includes: includes);
+export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
+    #{Model} #{moDel}, {ModelFilterGroup<#{FieldType}>? filterGroup, #{IncludeType} includes}) {
+    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, filterGroup: filterGroup, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
@@ -186,12 +207,22 @@ export const dartStoreUpdateRefStoreForField = `if (#{moDel}.#{fieldName} != nul
         #{FieldType}Store.instance.updateRefStores(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
     }`;
 
-    export const dartStoreUpdateRefStoreForListField = `if (#{moDel}.#{fieldName} != null) {
+export const dartStoreUpdateRefStoreForListField = `if (#{moDel}.#{fieldName} != null) {
         #{FieldType}Store.instance.updateRefStoresForList(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
     }`;
 
-export const dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
-    final item$ = getByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointName}, useCache: useCache);
+export const dartStoreGetByPropertyVal$ = `
+    Stream<#{Model}?> getBy#{FieldName}$(
+        #{FieldType} #{fieldName},
+        {bool useCache = true,
+        ModelFilterGroup<#{Model}>? filterGroup,
+        List<#{Model}Include>? includes}) {
+    final item$ = getByFieldValue$<#{FieldType}>(
+        getPropVal: get#{Model}#{FieldName},
+        value: #{fieldName},
+        filterGroup: filterGroup,
+        endpoint: #{Model}Endpoints.#{EndPointName},
+        useCache: useCache);
     if (includes == null || includes.isEmpty) {
         return item$;
     } else {
@@ -200,8 +231,18 @@ export const dartStoreGetByPropertyVal$ = `Stream<#{Model}?> getBy#{FieldName}$(
 }
 `;
 
-export const dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{FieldName}$(#{FieldType} #{fieldName}, {bool useCache = true, List<#{Model}Include>? includes}) {
-    final items$ = getManyByFieldValue$<#{FieldType}>(getPropVal: get#{Model}#{FieldName}, value: #{fieldName}, endpoint: #{Model}Endpoints.#{EndPointManyName}, useCache: useCache);
+export const dartStoreGetManyByPropertyVal$ = `
+    Stream<List<#{Model}>> getBy#{FieldName}$(
+        #{FieldType} #{fieldName},
+        {bool useCache = true,
+        ModelFilterGroup<#{Model}>? filterGroup,
+        List<#{Model}Include>? includes}) {
+    final items$ = getManyByFieldValue$<#{FieldType}>(
+        getPropVal: get#{Model}#{FieldName},
+        value: #{fieldName},
+        filterGroup: filterGroup,
+        endpoint: #{Model}Endpoints.#{EndPointManyName},
+        useCache: useCache);
     if (includes == null || includes.isEmpty) {
         return items$;
     } else {
@@ -212,86 +253,30 @@ export const dartStoreGetManyByPropertyVal$ = `Stream<List<#{Model}>> getBy#{Fie
 
 
 
-export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} includes}) {
-    return #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache, includes: includes)
-        .doOnData((#{fieldName}) {
-            #{moDel}.#{fieldName} = #{fieldName};
+export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
+    #{Model} #{moDel}, {bool useCache = true, ModelFilterGroup<#{FieldType}>? filterGroup, #{IncludeType} includes}) {
+    return #{FieldType}Store.instance.getById$(
+        #{moDel}.#{relationFromField}!,
+        useCache: useCache,
+        filterGroup: filterGroup,
+        includes: includes)
+    .doOnData((#{fieldName}) {
+        #{moDel}.#{fieldName} = #{fieldName};
     });
 }`;
 
-export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} includes}) {
-    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!, useCache: useCache, includes: includes)
-            .doOnData((#{fieldName}) {
-                #{moDel}.#{fieldName} = #{fieldName};
+export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
+    #{Model} #{moDel}, {bool useCache = true, ModelFilterGroup<#{FieldType}>? filterGroup, #{IncludeType} includes}) {
+    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(
+        #{moDel}.$uid!,
+        useCache: useCache,
+        filterGroup: filterGroup,
+        includes: includes)
+    .doOnData((#{fieldName}) {
+        #{moDel}.#{fieldName} = #{fieldName};
     });
 
 }`;
-
-/* export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
-    Stream<#{StreamReturnType}> #{fieldName}$;
-    if (#{moDel}.#{fieldName} != null && useCache) {
-        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
-    } else {
-        #{fieldName}$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!, useCache: useCache)
-            .doOnData((#{fieldName}) {
-                #{moDel}.#{fieldName} = #{fieldName};
-        });
-    }
-    if (include == null || include.isEmpty) {
-        return #{fieldName}$;
-    } else {
-        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
-    }
-}`;
-
-export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
-    Stream<#{StreamReturnType}> #{fieldName}$;
-    if (#{moDel}.#{fieldName} != null && useCache) {
-        #{fieldName}$ = Stream.value(#{moDel}.#{fieldName}!);
-    } else {
-        #{fieldName}$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!, useCache: useCache)
-            .doOnData((#{fieldName}) {
-                #{moDel}.#{fieldName} = #{fieldName};
-        });
-    }
-    if (include == null || include.isEmpty) {
-        return #{fieldName}$;
-    } else {
-        return #{getIncluding$}<#{GetIncludingType}>(#{fieldName}$, include);
-    }
-}`; */
-
-/* export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
-    if (#{moDel}.#{fieldName} != null && useCache) {
-        return Stream.value(#{moDel}.#{fieldName}!);
-      } else {
-        final item$ = #{FieldType}Store.instance.getById$(#{moDel}.#{relationFromField}!)
-            .doOnData((#{fieldName}) {
-                #{moDel}.#{fieldName} = #{fieldName};
-        });
-        if (include == null || include.isEmpty) {
-            return item$;
-        } else {
-            return #{getIncluding$}<#{GetIncludingType}>(item$, include);
-        }
-      }
-}`; */
-
-/* export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(#{Model} #{moDel}, {bool useCache = true, #{IncludeType} include}) {
-    if (#{moDel}.#{fieldName} != null && useCache) {
-        return Stream.value(#{moDel}.#{fieldName}!);
-      } else {
-        final items$ = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(#{moDel}.$uid!)
-            .doOnData((#{fieldName}) {
-                #{moDel}.#{fieldName} = #{fieldName};
-        });
-        if (include == null || include.isEmpty) {
-            return items$;
-        } else {
-            return #{getIncluding$}<#{GetIncludingType}>(items$, include);
-        }
-      }
-}`; */
 
 
 export const dartStoreEndpointName = `getBy#{FieldName}`;
@@ -307,4 +292,17 @@ export const dartStoreEndpointMany = `#{EndPointManyName}('/#{moDel}/by#{FieldNa
 export const dartStoreEndpointAll = `#{EndPointAllName}('/#{moDel}', HttpMethod.get, List<#{Model}>)`;
 
 
+/// Property name to getter function map
+/* Map<String, GetPropertyValueFunction<#{Model}, dynamic>> get propertyValueFunctionMap => {
+  #{GetPropertyValueFunctions}
+}; */
 
+
+/// gets a function by property name that returns the property value from the model
+/* Function getPropToValueFunction(String propertyName) {
+  final propFunction = propertyValueFunctionMap[propertyName];
+  if (propFunction == null) {
+    throw Exception('Property "$propertyName" not found in #{Model}');
+  }
+  return propFunction;
+} */

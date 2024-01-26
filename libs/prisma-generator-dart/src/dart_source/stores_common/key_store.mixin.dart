@@ -31,12 +31,38 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   List<T> getManyByKeys(List<K> ids) =>
       ids.map((id) => getByKey(id)).whereType<T>().toList();
 
-  T? getByPropertyValue<U>(GetPropertyValue<T, U> getPropVal, value) {
+  T? getByPropertyValue<U>(GetPropertyValueFunction<T, U> getPropVal, value) {
     return items.find((m) => getPropVal(m) == value);
   }
 
-  List<T> getManyByPropertyValue<W>(GetPropertyValue<T, W> getPropVal, value) {
+  /*T? filterOne(T item, ModelFilterGroup<T> filterGroup) {
+    return filterGroup.filterOne(item);
+  }
+
+  List<T> filterMany(List<T> items, ModelFilterGroup<T> filterGroup) {
+    return filterGroup.filterMany(items);
+  }*/
+
+  T? getByPropertyValueAndFilter<U>(GetPropertyValueFunction<T, U> getPropVal, value, {ModelFilterGroup<T>? filterGroup}) {
+    final foundItem = getByPropertyValue(getPropVal, value);
+    if (foundItem != null && filterGroup != null) {
+        return filterGroup.filterOne(foundItem);
+    } else {
+      return foundItem;
+    }
+  }
+
+  List<T> getManyByPropertyValue<W>(GetPropertyValueFunction<T, W> getPropVal, value) {
     return items.where((m) => getPropVal(m) == value).toList();
+  }
+
+  List<T> getManyByPropertyValueAndFilter<W>(GetPropertyValueFunction<T, W> getPropVal, value, {ModelFilterGroup<T>? filterGroup}) {
+    final foundItems = getManyByPropertyValue(getPropVal, value);
+    if (foundItems.isNotEmpty && filterGroup != null) {
+      return filterGroup.filterMany(items);
+    } else {
+      return foundItems;
+    }
   }
 
   @override

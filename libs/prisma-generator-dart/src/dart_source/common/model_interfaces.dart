@@ -2,6 +2,8 @@ part of '../abcx3_common.library.dart';
 
 typedef JsonFactory<T> = T Function(Map<String, dynamic> json);
 
+typedef GetPropertyValueFunction<I, O> = O? Function(I model);
+
 abstract interface class JsonSerializable {
   factory JsonSerializable.fromJson(Map<String, dynamic> json) {
     throw UnimplementedError();
@@ -15,6 +17,10 @@ abstract interface class CopyWith<T> {
   T updateWithInstanceValues(T model);
 }
 
+abstract interface class GetPropToValueFunction<T> {
+  dynamic Function(T model) getPropToValueFunction(String propName);
+}
+
 abstract interface class UID<K> {
   K? get $uid;
   bool equalById(UID<K> other);
@@ -23,7 +29,11 @@ abstract interface class UID<K> {
 abstract interface class CopyWithAndUID<T, U> implements CopyWith<T>, UID<U> {}
 
 abstract interface class PrismaModel<K, T>
-    implements JsonSerializable, CopyWith<T>, UID<K> {}
+    implements
+        JsonSerializable,
+        CopyWith<T>,
+        UID<K>,
+        GetPropToValueFunction<T> {}
 
 /*abstract interface class PrismaModel<T extends Object, U>
     implements JsonSerializable, CopyWithAndUID<T, U> {}*/
