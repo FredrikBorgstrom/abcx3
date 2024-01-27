@@ -602,6 +602,8 @@ var controllerStub = `
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, } from '@nestjs/common';
 import { #{ServiceName} } from './#{CrudServiceFileName}';
+import { ModelStorePostData} from '../store_common';
+
 #{ImportGuardClass}
 
 @Controller('#{moDel}')
@@ -631,22 +633,22 @@ export class #{ControllerClassName} {
 }`;
 var controllerGetByFieldValuesStub = `
 #{GuardDecorator}
-    @Get('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string) {
+    @Post('by#{FieldNameCapitalized}/:#{fieldName}')
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: ModelStorePostData) {
         return this.service.getByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}});
     }
 `;
 var controllerGetManyByFieldValuesStub = `
 #{GuardDecorator}
-    @Get('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string) {
+    @Post('by#{FieldNameCapitalized}/:#{fieldName}')
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: ModelStorePostData) {
         return this.service.getManyByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}});
     }
 `;
 var controllerGetAllStub = `
 #{GuardDecorator}
-@Get()
-getAll() {
+@Post()
+getAll(@Body() data: ModelStorePostData) {
   return this.service.getAll();
 }
 `;

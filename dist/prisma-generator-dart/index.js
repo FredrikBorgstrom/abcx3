@@ -1280,9 +1280,9 @@ var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
 var dartStoreEndpointName = `getBy#{FieldName}`;
 var dartStoreEndpointManyName = `getManyBy#{FieldName}`;
 var dartStoreEndpointAllName = `getAll`;
-var dartStoreEndpoint = `#{EndPointName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.get, #{Model})`;
-var dartStoreEndpointMany = `#{EndPointManyName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.get, List<#{Model}>)`;
-var dartStoreEndpointAll = `#{EndPointAllName}('/#{moDel}', HttpMethod.get, List<#{Model}>)`;
+var dartStoreEndpoint = `#{EndPointName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.post, #{Model})`;
+var dartStoreEndpointMany = `#{EndPointManyName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.post, List<#{Model}>)`;
+var dartStoreEndpointAll = `#{EndPointAllName}('/#{moDel}', HttpMethod.post, List<#{Model}>)`;
 
 // libs/prisma-generator-dart/src/generators/dart_store.generator.ts
 var DartStoreGenerator = class {

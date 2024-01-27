@@ -285,11 +285,11 @@ export const dartStoreEndpointManyName = `getManyBy#{FieldName}`;
 
 export const dartStoreEndpointAllName = `getAll`;
 
-export const dartStoreEndpoint = `#{EndPointName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.get, #{Model})`;
+export const dartStoreEndpoint = `#{EndPointName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.post, #{Model})`;
 
-export const dartStoreEndpointMany = `#{EndPointManyName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.get, List<#{Model}>)`;
+export const dartStoreEndpointMany = `#{EndPointManyName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.post, List<#{Model}>)`;
 
-export const dartStoreEndpointAll = `#{EndPointAllName}('/#{moDel}', HttpMethod.get, List<#{Model}>)`;
+export const dartStoreEndpointAll = `#{EndPointAllName}('/#{moDel}', HttpMethod.post, List<#{Model}>)`;
 
 
 /// Property name to getter function map

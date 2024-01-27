@@ -40,4 +40,36 @@ export async function getManyByFieldValues<T>(
     }
 }
 
+export interface ModelFilterGroup {
+    logicalOperator: 'and' | 'or';
+    filters: ModelFilter[];
+}
+
+export interface ModelFilter {
+    property: string;
+    operator: ModelFilterOperator;
+    value: any;
+}
+
+export type ModelFilterOperator =
+    | 'equals'
+    | 'notEquals'
+    | 'contains'
+    | 'notContains'
+    | 'startsWith'
+    | 'endsWith'
+    | 'lessThan'
+    | 'lessThanOrEqual'
+    | 'greaterThan'
+    | 'greaterThanOrEqual'
+    | 'in'
+    | 'notIn'
+    | 'between'
+    | 'notBetween';
+}
+
+export interface ModelStorePostData {
+    filterGroup?: any;
+}
+
 const printObject = (obj: any) => JSON.stringify(obj, null, 2);
