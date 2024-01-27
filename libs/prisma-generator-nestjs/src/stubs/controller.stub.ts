@@ -4,7 +4,6 @@ export const controllerStub = `
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, } from '@nestjs/common';
 import { #{ServiceName} } from './#{CrudServiceFileName}';
 import { ModelStorePostData} from '../store_common';
-
 #{ImportGuardClass}
 
 @Controller('#{moDel}')
