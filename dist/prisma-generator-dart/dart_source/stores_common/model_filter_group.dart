@@ -1,12 +1,12 @@
 part of '../abcx3_stores_library.dart';
 
-enum LogicalOperator { and, or }
+enum LogicalOperator { AND, OR, NOT }
 
 class ModelFilterGroup<T extends PrismaModel> {
-  List<ModelFilter<T>> filters;
+  List<PropertyFilter<T>> filters;
   LogicalOperator logicalOperator;
 
-  ModelFilterGroup(this.filters, {this.logicalOperator = LogicalOperator.and});
+  ModelFilterGroup(this.filters, {this.logicalOperator = LogicalOperator.AND});
 
   T? filterOne(T item) {
     if (filtersMatch(item)) {
@@ -22,9 +22,9 @@ class ModelFilterGroup<T extends PrismaModel> {
 
   bool filtersMatch(T item) {
     int requiredNumberOfMatches =
-        logicalOperator == LogicalOperator.and ? filters.length : 1;
+        logicalOperator == LogicalOperator.AND ? filters.length : 1;
     for (var filter in filters) {
-      if (filter.matches(item)) {
+      if (filter.isMatching(item)) {
         requiredNumberOfMatches--;
       }
       if (requiredNumberOfMatches == 0) {
@@ -42,9 +42,12 @@ class ModelFilterGroup<T extends PrismaModel> {
   }
 
   Map<String, dynamic> toJson() {
+    /*Map<String, dynamic> propertyFiltersMap = {};
+    for (var filter in filters) {
+      propertyFiltersMap[filter.property] = filter.toJson();
+    }*/
     return {
-      'filters': filters,
-      'logicalOperator': logicalOperator,
+      logicalOperator.name: filters.map((filter) => filter.toJson()).toList(),
     };
   }
 }

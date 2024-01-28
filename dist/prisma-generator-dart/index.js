@@ -1513,7 +1513,9 @@ part 'stores_common/model_store.dart';
 part 'stores_common/model_stream_store.dart';
 part 'stores_common/storage.interface.dart';
 part 'stores_common/key_store.mixin.dart';
-part 'stores_common/model_filter.dart';
+
+part 'stores_common/filter_operator_and_value.dart';
+part 'stores_common/property_filter.dart';
 part 'stores_common/model_filter_group.dart';
 
 #{StoreParts}

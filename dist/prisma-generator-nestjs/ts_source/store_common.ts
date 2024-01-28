@@ -1,5 +1,5 @@
 import {
-	InternalServerErrorException
+    InternalServerErrorException
 } from "@nestjs/common";
 
 export async function getByFieldValues<T>(
@@ -40,36 +40,49 @@ export async function getManyByFieldValues<T>(
     }
 }
 
-export interface ModelFilterGroup {
-    logicalOperator: 'and' | 'or';
-    filters: ModelFilter[];
+/** Filters **/
+
+enum FilterOperatorEnum {
+    equals,
+    not,
+    gt,
+    gte,
+    lt,
+    lte,
+    inList,
+    notInList,
+    contains,
+    startsWith,
+    endsWith,
+    notContains,
+    notStartsWith,
+    notEndsWith,
+    isNull,
+    isNotNull,
 }
 
-export interface ModelFilter {
-    property: string;
-    operator: ModelFilterOperator;
-    value: any;
+export type FilterOperator = keyof typeof FilterOperatorEnum;
+
+export type ModelFilterGroup<T> = {
+    [K in keyof typeof logicalOperatorEnum]: PropertyFilter<T>[];
 }
 
-export type ModelFilterOperator =
-    | 'equals'
-    | 'notEquals'
-    | 'contains'
-    | 'notContains'
-    | 'startsWith'
-    | 'endsWith'
-    | 'lessThan'
-    | 'lessThanOrEqual'
-    | 'greaterThan'
-    | 'greaterThanOrEqual'
-    | 'in'
-    | 'notIn'
-    | 'between'
-    | 'notBetween';
+export type PropertyFilter<T> ={
+    [K in keyof T]: FilterOperatorAndValue;
 }
 
-export interface ModelStorePostData {
-    filterGroup?: any;
+enum logicalOperatorEnum {
+    AND,
+    OR,
+    NOT
+}
+
+export type FilterOperatorAndValue = {
+    [K in FilterOperator]: any;
+}
+
+export interface ModelStorePostData<T> {
+    filterGroup?: ModelFilterGroup<T>;
 }
 
 const printObject = (obj: any) => JSON.stringify(obj, null, 2);
