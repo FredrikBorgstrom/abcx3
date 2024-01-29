@@ -4,19 +4,30 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
   final Map<String, Stream<dynamic>> _cachedStreams = {};
 
   Stream<T> getOne$(
-      {dynamic param, required Endpoint endpoint, ModelFilterGroup? filterGroup, Map<String, dynamic>? body}) {
-    return get$<T>(param: param, endpoint: endpoint, filterGroup: filterGroup, body: body);
+      {dynamic param,
+      required Endpoint endpoint,
+      ModelFilter? modelFilter,
+      Map<String, dynamic>? body}) {
+    return get$<T>(
+        param: param, endpoint: endpoint, modelFilter: modelFilter, body: body);
   }
 
   Stream<List<T>> getMany$(
-      {dynamic param, required Endpoint endpoint, ModelFilterGroup? filterGroup, Map<String, dynamic>? body}) {
-    return get$<List<T>>(param: param, endpoint: endpoint, filterGroup: filterGroup, body: body);
+      {dynamic param,
+      required Endpoint endpoint,
+      ModelFilter? modelFilter,
+      Map<String, dynamic>? body}) {
+    return get$<List<T>>(
+        param: param, endpoint: endpoint, modelFilter: modelFilter, body: body);
   }
 
   Stream<U> get$<U>(
-      {dynamic param, required Endpoint endpoint, ModelFilterGroup? filterGroup, Map<String, dynamic>? body}) {
-    if (filterGroup != null) {
-      body?['filterGroup'] = filterGroup.toJson();
+      {dynamic param,
+      required Endpoint endpoint,
+      ModelFilter? modelFilter,
+      Map<String, dynamic>? body}) {
+    if (modelFilter != null) {
+      body?['modelFilter'] = modelFilter.toJson();
     }
     final serializedRequest =
         _serializeRequest(param: param, endpoint: endpoint, body: body);
@@ -45,7 +56,8 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     }
   }
 
-  String _serializeRequest({dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
+  String _serializeRequest(
+      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
     final serializedParam = param != null ? param.toString() : '';
     final serializedBody = body != null ? body.toString() : '';
     return '${endpoint.path} $serializedParam $serializedBody';

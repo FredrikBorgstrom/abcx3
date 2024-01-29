@@ -3,8 +3,7 @@ part of '../abcx3_stores_library.dart';
 /// `PropertyFilter` is a class that provides functionality to filter Prisma models.
 /// It takes one property, and a list of values and operators as parameters to perform the filtering.
 
-
-class PropertyFilter<T extends PrismaModel> {
+class PropertyFilter<T extends GetPropToValueFunction> {
   String property;
   List<FilterOperatorAndValue> operatorsAndValues;
   // dynamic value;
@@ -12,10 +11,7 @@ class PropertyFilter<T extends PrismaModel> {
 
   /// Constructor for the `PropertyFilter` class.
   /// It requires a property, value and operator to be passed.
-  PropertyFilter({
-    required this.property,
-    required this.operatorsAndValues
-  });
+  PropertyFilter({required this.property, required this.operatorsAndValues});
 
   /// Method to filter a single item.
   /// It returns the item if it matches the filter condition, otherwise it returns null.
@@ -36,13 +32,12 @@ class PropertyFilter<T extends PrismaModel> {
     final propertyValueFunction = item.getPropToValueFunction(property);
     final propertyValue = propertyValueFunction(item);
     for (var operatorAndValue in operatorsAndValues) {
-        if (_matches(item, operatorAndValue.operator, operatorAndValue.value)) {
-          numberOfNotMatchingFilters--;
-        }
+      if (_matches(item, operatorAndValue.operator, operatorAndValue.value)) {
+        numberOfNotMatchingFilters--;
       }
+    }
     return numberOfNotMatchingFilters == 0;
   }
-
 
   bool _matches(dynamic valueA, FilterOperator operator, dynamic valueB) {
     switch (operator) {
@@ -85,7 +80,6 @@ class PropertyFilter<T extends PrismaModel> {
 
   /// Method to convert the `ModelFilter` instance to a JSON object.
   Map<String, dynamic> toJson() {
-
     Map<String, dynamic> operatorsAndValuesMap = {};
     for (var operatorAndValue in operatorsAndValues) {
       operatorsAndValuesMap.addAll(operatorAndValue.toJson());
@@ -99,8 +93,10 @@ class PropertyFilter<T extends PrismaModel> {
   factory PropertyFilter.fromJson(Map<String, dynamic> json) {
     return PropertyFilter(
       property: json.keys.first,
-      operatorsAndValues: json.values.first.map<FilterOperatorAndValue>((operatorAndValue) => FilterOperatorAndValue.fromJson(operatorAndValue)).toList(),
+      operatorsAndValues: json.values.first
+          .map<FilterOperatorAndValue>((operatorAndValue) =>
+              FilterOperatorAndValue.fromJson(operatorAndValue))
+          .toList(),
     );
   }
 }
-

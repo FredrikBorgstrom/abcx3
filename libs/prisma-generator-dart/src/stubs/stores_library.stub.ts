@@ -22,7 +22,8 @@ part 'stores_common/key_store.mixin.dart';
 
 part 'stores_common/filter_operator_and_value.dart';
 part 'stores_common/property_filter.dart';
-part 'stores_common/model_filter_group.dart';
+part 'stores_common/logical_filter_group.dart';
+part 'stores_common/model_filters.dart';
 
 #{StoreParts}
 `;

@@ -5,7 +5,7 @@ typedef GetPropertyValueFunction<I, O> = O? Function(I model);
 
 class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
     with KeyStoreMixin<K, T>, ModelRequestMixin<T> {
-  ModelStore(JsonFactory<T> fromJson) : super(fromJson);
+  ModelStore(super.fromJson);
 
   K? getId(T model) => model.$uid;
 
@@ -14,18 +14,18 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
   T? getById(K id, {List<StoreIncludes>? includes}) =>
       getIncluding(getId, id, includes: includes);
 
-  getIncluding<W>(
-      GetPropertyValueFunction<T, W> getPropVal, W value,
-      {ModelFilterGroup<T>? filterGroup, List<StoreIncludes>? includes}) {
-    final model = getByPropertyValueAndFilter(getPropVal, value, filterGroup: filterGroup);
+  getIncluding<W>(GetPropertyValueFunction<T, W> getPropVal, W value,
+      {ModelFilter<T>? modelFilter, List<StoreIncludes>? includes}) {
+    final model = getByPropertyValueAndFilter(getPropVal, value,
+        modelFilter: modelFilter);
     setIncludedReferences(model, includes: includes);
     return model;
   }
 
-  getManyIncluding<W>(
-      GetPropertyValueFunction<T, W> getPropVal, W value,
-      {ModelFilterGroup<T>? filterGroup, List<StoreIncludes>? includes}) {
-    final models = getManyByPropertyValueAndFilter(getPropVal, value, filterGroup: filterGroup);
+  getManyIncluding<W>(GetPropertyValueFunction<T, W> getPropVal, W value,
+      {ModelFilter<T>? modelFilter, List<StoreIncludes>? includes}) {
+    final models = getManyByPropertyValueAndFilter(getPropVal, value,
+        modelFilter: modelFilter);
     setIncludedReferencesForList(models, includes: includes);
     return models;
   }

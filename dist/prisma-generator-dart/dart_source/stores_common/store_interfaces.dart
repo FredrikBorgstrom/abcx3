@@ -22,5 +22,5 @@ abstract interface class StoreIncludes<T extends PrismaModel> {
   abstract bool useCache;
   abstract Function method;
   abstract bool useAsync;
-  abstract ModelFilterGroup<T>? filterGroup;
+  abstract ModelFilter<T>? modelFilter;
 }

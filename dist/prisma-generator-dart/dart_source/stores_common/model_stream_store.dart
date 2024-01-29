@@ -33,16 +33,21 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       required dynamic value,
       required Endpoint endpoint,
       bool useCache = true,
-      ModelFilterGroup<T>? filterGroup,
+      ModelFilter<T>? modelFilter,
       Map<String, dynamic>? body}) {
     if (useCache) {
-      final model = getByPropertyValueAndFilter(getPropVal, value, filterGroup: filterGroup);
+      final model = getByPropertyValueAndFilter(getPropVal, value,
+          modelFilter: modelFilter);
       if (model != null) {
         // if useCache is true, we return a broadcast stream ONLY if we have a cached value
         return Stream.value(model).asBroadcastStream();
       }
     }
-    return getOne$(endpoint: endpoint, param: value, filterGroup: filterGroup, body: body)
+    return getOne$(
+            endpoint: endpoint,
+            param: value,
+            modelFilter: modelFilter,
+            body: body)
         .map((model) => upsert(model));
   }
 
@@ -53,25 +58,33 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       required dynamic value,
       required Endpoint endpoint,
       bool useCache = true,
-      ModelFilterGroup<T>? filterGroup,
+      ModelFilter<T>? modelFilter,
       Map<String, dynamic>? body}) {
     if (useCache) {
-      final models = getManyByPropertyValueAndFilter<U>(getPropVal, value, filterGroup: filterGroup);
+      final models = getManyByPropertyValueAndFilter<U>(getPropVal, value,
+          modelFilter: modelFilter);
       if (models.isNotEmpty) {
         return Stream.value(models).asBroadcastStream();
       }
     }
-    return getMany$(endpoint: endpoint, param: value, filterGroup: filterGroup, body: body)
+    return getMany$(
+            endpoint: endpoint,
+            param: value,
+            modelFilter: modelFilter,
+            body: body)
         .map((models) => upsertMany(models));
   }
 
   /// Returns a stream of all the models.
   Stream<List<T>> getAllItems$(
-      {required Endpoint endpoint, bool useCache = true, ModelFilterGroup<T>? filterGroup, Map<String, dynamic>? body}) {
+      {required Endpoint endpoint,
+      bool useCache = true,
+      ModelFilter<T>? modelFilter,
+      Map<String, dynamic>? body}) {
     if (useCache && getAllHasRun) {
       var models = getAll();
-      if (filterGroup != null) {
-        models = filterGroup.filterMany(models);
+      if (modelFilter != null) {
+        models = modelFilter.filterMany(models);
       }
       return Stream.value(models).asBroadcastStream();
     } else {

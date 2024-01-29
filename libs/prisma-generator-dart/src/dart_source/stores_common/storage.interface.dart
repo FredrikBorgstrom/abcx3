@@ -58,6 +58,3 @@ abstract interface class ModelFilterInterface {
   abstract dynamic value;
   abstract FilterOperator operator;
 }*/
-
-
-
