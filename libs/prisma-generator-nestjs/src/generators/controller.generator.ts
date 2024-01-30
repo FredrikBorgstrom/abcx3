@@ -67,7 +67,7 @@ export class ControllerGenerator {
 
                 content = content.replace(/#{GuardDecorator}/g, this.settings?.GuardClass ? `@UseGuards(${this.settings.GuardClass})` : '');
                 const tsType = this.prismaHelper.convertToTypescriptType(field);
-
+                content = content.replace(/#{Model}/g, this.model.name);
                 content = content.replace(/#{convertToInt}/g, (tsType === 'number') ? '+' : '');
                 content = content.replace(/#{FieldType}/g, tsType);
                 content = content.replace(/#{fieldName}/g, field.name);

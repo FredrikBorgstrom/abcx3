@@ -16,9 +16,9 @@ import {
 export class #{ServiceClassName} {
     constructor(protected readonly prismaService: PrismaService) {}
 
-    async getAll(): Promise<#{Model}[] | Error> {
+    async getAll(modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model}[] | Error> {
         try {
-            const result = await this.prismaService.#{moDel}.findMany();
+            const result = await this.prismaService.#{moDel}.findMany({where: modelFilter});
             return result;
         } catch (e) {
             return new InternalServerErrorException(
@@ -27,10 +27,17 @@ export class #{ServiceClassName} {
         }
     }
 
-    async getByFieldValues(fieldsAndValues: Record<string, number | string>): Promise<#{Model} | Error> {
+    async getByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model} | Error> {
+        let combinedFilter: Prisma.#{Model}WhereInput;
+		if (modelFilter) {
+			// combinedFilter = {...modelFilter, ...{AND: fieldsAndValues}};
+			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
+		} else {
+			combinedFilter = {...fieldsAndValues};
+		}
         try {
             const result = await this.prismaService.#{moDel}.findFirst({
-                where: fieldsAndValues
+                where: combinedFilter
             });
             return result;
         } catch (e) {
@@ -40,10 +47,16 @@ export class #{ServiceClassName} {
         }
     }
 
-    async getManyByFieldValues(fieldsAndValues: Record<string, number | string>): Promise<#{Model}[] | Error> {
+    async getManyByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model}[] | Error> {
+        let combinedFilter: Prisma.#{Model}WhereInput;
+		if (modelFilter) {
+			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
+		} else {
+			combinedFilter = {...fieldsAndValues};
+		}
         try {
             const result = await this.prismaService.#{moDel}.findMany({
-                where: fieldsAndValues
+                where: combinedFilter
             });
             return result;
         } catch (e) {

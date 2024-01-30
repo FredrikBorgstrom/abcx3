@@ -3,8 +3,13 @@ export const controllerStub = `
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, } from '@nestjs/common';
 import { #{ServiceName} } from './#{CrudServiceFileName}';
-import { ModelStorePostData} from '../store_common';
+import { StorePostData} from '../store_common';
+import { Prisma } from "@prisma/client";
 #{ImportGuardClass}
+
+interface #{Model}PostData {
+	modelFilter?: Prisma.#{Model}WhereInput;
+}
 
 @Controller('#{moDel}')
 export class #{ControllerClassName} {
@@ -35,16 +40,16 @@ export class #{ControllerClassName} {
 export const controllerGetByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: ModelStorePostData) {
-        return this.service.getByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}});
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: #{Model}PostData) {
+        return this.service.getByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data.modelFilter);
     }
 `;
 
 export const controllerGetManyByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: ModelStorePostData) {
-        return this.service.getManyByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}});
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: #{Model}PostData) {
+        return this.service.getManyByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data.modelFilter);
     }
 `;
 
@@ -59,12 +64,12 @@ export const controllerCreateStub = `
 export const controllerGetAllStub = `
 #{GuardDecorator}
 @Post()
-getAll(@Body() data: ModelStorePostData) {
-  return this.service.getAll();
+getAll(@Body() data: #{Model}PostData) {
+  return this.service.getAll(data.modelFilter);
 }
 `;
 
-export const controllergetFilteredPageStub = `
+export const controllerGetFilteredPageStub = `
 #{GuardDecorator}
   @Post('getFilteredPage')
   getFilteredPage(@Body() data: Prisma.#{Model}FindManyArgs) {

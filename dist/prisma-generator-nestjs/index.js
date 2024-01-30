@@ -602,8 +602,13 @@ var controllerStub = `
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, } from '@nestjs/common';
 import { #{ServiceName} } from './#{CrudServiceFileName}';
-import { ModelStorePostData} from '../store_common';
+import { StorePostData} from '../store_common';
+import { Prisma } from "@prisma/client";
 #{ImportGuardClass}
+
+interface #{Model}PostData {
+	modelFilter?: Prisma.#{Model}WhereInput;
+}
 
 @Controller('#{moDel}')
 export class #{ControllerClassName} {
@@ -633,22 +638,22 @@ export class #{ControllerClassName} {
 var controllerGetByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: ModelStorePostData) {
-        return this.service.getByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}});
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: #{Model}PostData) {
+        return this.service.getByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data.modelFilter);
     }
 `;
 var controllerGetManyByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: ModelStorePostData) {
-        return this.service.getManyByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}});
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: #{Model}PostData) {
+        return this.service.getManyByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data.modelFilter);
     }
 `;
 var controllerGetAllStub = `
 #{GuardDecorator}
 @Post()
-getAll(@Body() data: ModelStorePostData) {
-  return this.service.getAll();
+getAll(@Body() data: #{Model}PostData) {
+  return this.service.getAll(data.modelFilter);
 }
 `;
 var controllerReferenceFieldStub = `
@@ -716,6 +721,7 @@ var ControllerGenerator = class {
         let content = field.isUnique || field.isId ? controllerGetByFieldValuesStub : controllerGetManyByFieldValuesStub;
         content = content.replace(/#{GuardDecorator}/g, this.settings?.GuardClass ? `@UseGuards(${this.settings.GuardClass})` : "");
         const tsType = this.prismaHelper.convertToTypescriptType(field);
+        content = content.replace(/#{Model}/g, this.model.name);
         content = content.replace(/#{convertToInt}/g, tsType === "number" ? "+" : "");
         content = content.replace(/#{FieldType}/g, tsType);
         content = content.replace(/#{fieldName}/g, field.name);
@@ -796,9 +802,9 @@ import {
 export class #{ServiceClassName} {
     constructor(protected readonly prismaService: PrismaService) {}
 
-    async getAll(): Promise<#{Model}[] | Error> {
+    async getAll(modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model}[] | Error> {
         try {
-            const result = await this.prismaService.#{moDel}.findMany();
+            const result = await this.prismaService.#{moDel}.findMany({where: modelFilter});
             return result;
         } catch (e) {
             return new InternalServerErrorException(
@@ -807,10 +813,17 @@ export class #{ServiceClassName} {
         }
     }
 
-    async getByFieldValues(fieldsAndValues: Record<string, number | string>): Promise<#{Model} | Error> {
+    async getByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model} | Error> {
+        let combinedFilter: Prisma.#{Model}WhereInput;
+		if (modelFilter) {
+			// combinedFilter = {...modelFilter, ...{AND: fieldsAndValues}};
+			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
+		} else {
+			combinedFilter = {...fieldsAndValues};
+		}
         try {
             const result = await this.prismaService.#{moDel}.findFirst({
-                where: fieldsAndValues
+                where: combinedFilter
             });
             return result;
         } catch (e) {
@@ -820,10 +833,16 @@ export class #{ServiceClassName} {
         }
     }
 
-    async getManyByFieldValues(fieldsAndValues: Record<string, number | string>): Promise<#{Model}[] | Error> {
+    async getManyByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model}[] | Error> {
+        let combinedFilter: Prisma.#{Model}WhereInput;
+		if (modelFilter) {
+			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
+		} else {
+			combinedFilter = {...fieldsAndValues};
+		}
         try {
             const result = await this.prismaService.#{moDel}.findMany({
-                where: fieldsAndValues
+                where: combinedFilter
             });
             return result;
         } catch (e) {

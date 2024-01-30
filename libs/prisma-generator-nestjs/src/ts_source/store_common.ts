@@ -63,7 +63,7 @@ enum FilterOperatorEnum {
 
 export type FilterOperator = keyof typeof FilterOperatorEnum;
 
-export type ModelFilterGroup<T> = {
+export type ModelFilter<T> = {
     [K in keyof typeof logicalOperatorEnum]: PropertyFilter<T>[];
 }
 
@@ -81,8 +81,8 @@ export type FilterOperatorAndValue = {
     [K in FilterOperator]: any;
 }
 
-export interface ModelStorePostData<T> {
-    filterGroup?: ModelFilterGroup<T>;
+export interface StorePostData<T> {
+    modelFilter?: ModelFilter<T>;
 }
 
 const printObject = (obj: any) => JSON.stringify(obj, null, 2);
