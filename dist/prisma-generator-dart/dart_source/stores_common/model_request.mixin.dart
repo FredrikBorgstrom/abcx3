@@ -27,7 +27,8 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
       ModelFilter? modelFilter,
       Map<String, dynamic>? body}) {
     if (modelFilter != null) {
-      body?['modelFilter'] = modelFilter.toJson();
+      body ??= {};
+      body['modelFilter'] = modelFilter.toJson();
     }
     final serializedRequest =
         _serializeRequest(param: param, endpoint: endpoint, body: body);

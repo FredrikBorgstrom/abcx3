@@ -88,7 +88,8 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       }
       return Stream.value(models).asBroadcastStream();
     } else {
-      return getMany$(endpoint: endpoint).map((models) {
+      return getMany$(endpoint: endpoint, modelFilter: modelFilter)
+          .map((models) {
         final upsertedModels = upsertMany(models);
         getAllHasRun = true;
         return upsertedModels;

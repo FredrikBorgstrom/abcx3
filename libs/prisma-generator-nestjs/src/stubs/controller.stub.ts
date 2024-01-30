@@ -40,16 +40,16 @@ export class #{ControllerClassName} {
 export const controllerGetByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: #{Model}PostData) {
-        return this.service.getByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data.modelFilter);
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data?: #{Model}PostData) {
+        return this.service.getByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data?.modelFilter);
     }
 `;
 
 export const controllerGetManyByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
-    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data: #{Model}PostData) {
-        return this.service.getManyByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data.modelFilter);
+    getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string, @Body() data?: #{Model}PostData) {
+        return this.service.getManyByFieldValues({#{fieldName}: #{convertToInt}#{fieldName}}, data?.modelFilter);
     }
 `;
 
@@ -64,8 +64,8 @@ export const controllerCreateStub = `
 export const controllerGetAllStub = `
 #{GuardDecorator}
 @Post()
-getAll(@Body() data: #{Model}PostData) {
-  return this.service.getAll(data.modelFilter);
+getAll(@Body() data?: #{Model}PostData) {
+  return this.service.getAll(data?.modelFilter);
 }
 `;
 
