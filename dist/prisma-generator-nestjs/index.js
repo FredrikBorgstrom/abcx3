@@ -25,12 +25,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/package.json
+// node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/package.json"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "16.3.1",
+      version: "16.4.1",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -95,9 +95,9 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/lib/main.js
+// node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@16.3.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs3 = require("fs");
     var path4 = require("path");
     var os = require("os");
@@ -128,7 +128,9 @@ var require_main = __commonJS({
       const vaultPath = _vaultPath(options);
       const result = DotenvModule.configDotenv({ path: vaultPath });
       if (!result.parsed) {
-        throw new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
+        const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
+        err.code = "MISSING_DATA";
+        throw err;
       }
       const keys = _dotenvKey(options).split(",");
       const length = keys.length;
@@ -171,31 +173,52 @@ var require_main = __commonJS({
         uri = new URL(dotenvKey);
       } catch (error) {
         if (error.code === "ERR_INVALID_URL") {
-          throw new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenv.org/vault/.env.vault?environment=development");
+          const err = new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenv.org/vault/.env.vault?environment=development");
+          err.code = "INVALID_DOTENV_KEY";
+          throw err;
         }
         throw error;
       }
       const key = uri.password;
       if (!key) {
-        throw new Error("INVALID_DOTENV_KEY: Missing key part");
+        const err = new Error("INVALID_DOTENV_KEY: Missing key part");
+        err.code = "INVALID_DOTENV_KEY";
+        throw err;
       }
       const environment = uri.searchParams.get("environment");
       if (!environment) {
-        throw new Error("INVALID_DOTENV_KEY: Missing environment part");
+        const err = new Error("INVALID_DOTENV_KEY: Missing environment part");
+        err.code = "INVALID_DOTENV_KEY";
+        throw err;
       }
       const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`;
       const ciphertext = result.parsed[environmentKey];
       if (!ciphertext) {
-        throw new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: Cannot locate environment ${environmentKey} in your .env.vault file.`);
+        const err = new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: Cannot locate environment ${environmentKey} in your .env.vault file.`);
+        err.code = "NOT_FOUND_DOTENV_ENVIRONMENT";
+        throw err;
       }
       return { ciphertext, key };
     }
     function _vaultPath(options) {
-      let dotenvPath = path4.resolve(process.cwd(), ".env");
+      let possibleVaultPath = null;
       if (options && options.path && options.path.length > 0) {
-        dotenvPath = options.path;
+        if (Array.isArray(options.path)) {
+          for (const filepath of options.path) {
+            if (fs3.existsSync(filepath)) {
+              possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
+            }
+          }
+        } else {
+          possibleVaultPath = options.path.endsWith(".vault") ? options.path : `${options.path}.vault`;
+        }
+      } else {
+        possibleVaultPath = path4.resolve(process.cwd(), ".env.vault");
       }
-      return dotenvPath.endsWith(".vault") ? dotenvPath : `${dotenvPath}.vault`;
+      if (fs3.existsSync(possibleVaultPath)) {
+        return possibleVaultPath;
+      }
+      return null;
     }
     function _resolveHome(envPath) {
       return envPath[0] === "~" ? path4.join(os.homedir(), envPath.slice(1)) : envPath;
@@ -216,10 +239,23 @@ var require_main = __commonJS({
       const debug = Boolean(options && options.debug);
       if (options) {
         if (options.path != null) {
-          dotenvPath = _resolveHome(options.path);
+          let envPath = options.path;
+          if (Array.isArray(envPath)) {
+            for (const filepath of options.path) {
+              if (fs3.existsSync(filepath)) {
+                envPath = filepath;
+                break;
+              }
+            }
+          }
+          dotenvPath = _resolveHome(envPath);
         }
         if (options.encoding != null) {
           encoding = options.encoding;
+        } else {
+          if (debug) {
+            _debug("No encoding is specified. UTF-8 is used by default");
+          }
         }
       }
       try {
@@ -238,11 +274,11 @@ var require_main = __commonJS({
       }
     }
     function config2(options) {
-      const vaultPath = _vaultPath(options);
       if (_dotenvKey(options).length === 0) {
         return DotenvModule.configDotenv(options);
       }
-      if (!fs3.existsSync(vaultPath)) {
+      const vaultPath = _vaultPath(options);
+      if (!vaultPath) {
         _warn(`You set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}. Did you forget to build it?`);
         return DotenvModule.configDotenv(options);
       }
@@ -251,9 +287,9 @@ var require_main = __commonJS({
     function decrypt(encrypted, keyStr) {
       const key = Buffer.from(keyStr.slice(-64), "hex");
       let ciphertext = Buffer.from(encrypted, "base64");
-      const nonce = ciphertext.slice(0, 12);
-      const authTag = ciphertext.slice(-16);
-      ciphertext = ciphertext.slice(12, -16);
+      const nonce = ciphertext.subarray(0, 12);
+      const authTag = ciphertext.subarray(-16);
+      ciphertext = ciphertext.subarray(12, -16);
       try {
         const aesgcm = crypto.createDecipheriv("aes-256-gcm", key, nonce);
         aesgcm.setAuthTag(authTag);
@@ -263,14 +299,14 @@ var require_main = __commonJS({
         const invalidKeyLength = error.message === "Invalid key length";
         const decryptionFailed = error.message === "Unsupported state or unable to authenticate data";
         if (isRange || invalidKeyLength) {
-          const msg = "INVALID_DOTENV_KEY: It must be 64 characters long (or more)";
-          throw new Error(msg);
+          const err = new Error("INVALID_DOTENV_KEY: It must be 64 characters long (or more)");
+          err.code = "INVALID_DOTENV_KEY";
+          throw err;
         } else if (decryptionFailed) {
-          const msg = "DECRYPTION_FAILED: Please check your DOTENV_KEY";
-          throw new Error(msg);
+          const err = new Error("DECRYPTION_FAILED: Please check your DOTENV_KEY");
+          err.code = "DECRYPTION_FAILED";
+          throw err;
         } else {
-          console.error("Error: ", error.code);
-          console.error("Error: ", error.message);
           throw error;
         }
       }
@@ -279,7 +315,9 @@ var require_main = __commonJS({
       const debug = Boolean(options && options.debug);
       const override = Boolean(options && options.override);
       if (typeof parsed !== "object") {
-        throw new Error("OBJECT_REQUIRED: Please check the processEnv argument being passed to populate");
+        const err = new Error("OBJECT_REQUIRED: Please check the processEnv argument being passed to populate");
+        err.code = "OBJECT_REQUIRED";
+        throw err;
       }
       for (const key of Object.keys(parsed)) {
         if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
@@ -814,43 +852,57 @@ export class #{ServiceClassName} {
     }
 
     async getByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model} | Error> {
-        let combinedFilter: Prisma.#{Model}WhereInput;
-		if (modelFilter) {
-			// combinedFilter = {...modelFilter, ...{AND: fieldsAndValues}};
-			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
-		} else {
-			combinedFilter = {...fieldsAndValues};
-		}
+        const combinedFilter = this.combineFilters(fieldsAndValues, modelFilter);
         try {
             const result = await this.prismaService.#{moDel}.findFirst({
                 where: combinedFilter
             });
             return result;
-        } catch (e) {
+        } catch (error) {
+            console.log(this.printObject(error));
+            console.log('message: ', error?.message);
             return new InternalServerErrorException(
-                \`Could not get one #{Model} by \${this.printObject(fieldsAndValues)}}\`
+                \`Could not get one #{Model} by \${this.printObject(fieldsAndValues)}\`
             );
         }
     }
 
     async getManyByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model}[] | Error> {
-        let combinedFilter: Prisma.#{Model}WhereInput;
-		if (modelFilter) {
-			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
-		} else {
-			combinedFilter = {...fieldsAndValues};
-		}
+        const combinedFilter = this.combineFilters(fieldsAndValues, modelFilter);
         try {
             const result = await this.prismaService.#{moDel}.findMany({
                 where: combinedFilter
             });
             return result;
-        } catch (e) {
+        } catch (error) {
+            console.log(this.printObject(error));
+            console.log('message: ', error?.message);
             return new InternalServerErrorException(
-                \`Could not get any #{Model} by \${this.printObject(fieldsAndValues)}}\`
+                \`Could not get any #{Model} by \${this.printObject(fieldsAndValues)}\`
             );
         }
     }
+
+    combineFilters(
+		fieldsAndValues: Record<string, number | string>,
+		modelFilter: Prisma.#{Model}WhereInput,
+	): Prisma.#{Model}WhereInput {
+		let combinedFilter: Prisma.#{Model}WhereInput;
+		if (modelFilter) {
+			combinedFilter = {
+				AND: [...(modelFilter?.AND as Prisma.#{Model}WhereInput[]), fieldsAndValues]
+			};
+			if (modelFilter?.OR) {
+				combinedFilter.OR = modelFilter?.OR;
+			}
+			if (modelFilter?.NOT) {
+				combinedFilter.NOT = modelFilter?.NOT;
+			}
+		} else {
+			combinedFilter = fieldsAndValues;
+		}
+		return combinedFilter;
+	}
 
     // get by id methods
 

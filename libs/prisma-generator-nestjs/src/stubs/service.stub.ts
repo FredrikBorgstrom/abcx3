@@ -28,43 +28,57 @@ export class #{ServiceClassName} {
     }
 
     async getByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model} | Error> {
-        let combinedFilter: Prisma.#{Model}WhereInput;
-		if (modelFilter) {
-			// combinedFilter = {...modelFilter, ...{AND: fieldsAndValues}};
-			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
-		} else {
-			combinedFilter = {...fieldsAndValues};
-		}
+        const combinedFilter = this.combineFilters(fieldsAndValues, modelFilter);
         try {
             const result = await this.prismaService.#{moDel}.findFirst({
                 where: combinedFilter
             });
             return result;
-        } catch (e) {
+        } catch (error) {
+            console.log(this.printObject(error));
+            console.log('message: ', error?.message);
             return new InternalServerErrorException(
-                \`Could not get one #{Model} by \${this.printObject(fieldsAndValues)}}\`
+                \`Could not get one #{Model} by \${this.printObject(fieldsAndValues)}\`
             );
         }
     }
 
     async getManyByFieldValues(fieldsAndValues: Record<string, number | string>, modelFilter?: Prisma.#{Model}WhereInput): Promise<#{Model}[] | Error> {
-        let combinedFilter: Prisma.#{Model}WhereInput;
-		if (modelFilter) {
-			combinedFilter = { AND: {...modelFilter?.AND, ...fieldsAndValues}, OR: { ...modelFilter?.OR }, NOT: { ...modelFilter?.NOT }};
-		} else {
-			combinedFilter = {...fieldsAndValues};
-		}
+        const combinedFilter = this.combineFilters(fieldsAndValues, modelFilter);
         try {
             const result = await this.prismaService.#{moDel}.findMany({
                 where: combinedFilter
             });
             return result;
-        } catch (e) {
+        } catch (error) {
+            console.log(this.printObject(error));
+            console.log('message: ', error?.message);
             return new InternalServerErrorException(
-                \`Could not get any #{Model} by \${this.printObject(fieldsAndValues)}}\`
+                \`Could not get any #{Model} by \${this.printObject(fieldsAndValues)}\`
             );
         }
     }
+
+    combineFilters(
+		fieldsAndValues: Record<string, number | string>,
+		modelFilter: Prisma.#{Model}WhereInput,
+	): Prisma.#{Model}WhereInput {
+		let combinedFilter: Prisma.#{Model}WhereInput;
+		if (modelFilter) {
+			combinedFilter = {
+				AND: [...(modelFilter?.AND as Prisma.#{Model}WhereInput[]), fieldsAndValues]
+			};
+			if (modelFilter?.OR) {
+				combinedFilter.OR = modelFilter?.OR;
+			}
+			if (modelFilter?.NOT) {
+				combinedFilter.NOT = modelFilter?.NOT;
+			}
+		} else {
+			combinedFilter = fieldsAndValues;
+		}
+		return combinedFilter;
+	}
 
     // get by id methods
 
