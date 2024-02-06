@@ -42,7 +42,7 @@ export async function getManyByFieldValues<T>(
 
 /** Filters **/
 
-enum FilterOperatorEnum {
+export enum FilterOperatorEnum {
     equals,
     not,
     gt,
@@ -85,4 +85,4 @@ export interface StorePostData<T> {
     modelFilter?: ModelFilter<T>;
 }
 
-const printObject = (obj: any) => JSON.stringify(obj, null, 2);
+export const printObject = (obj: any) => JSON.stringify(obj, null, 2);
