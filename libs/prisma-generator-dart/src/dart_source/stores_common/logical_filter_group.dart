@@ -29,7 +29,7 @@ class LogicalFilterGroup<T extends GetPropToValueFunction> {
       case LogicalOperator.OR:
         return filters.any((filter) => filter.isMatching(item));
       case LogicalOperator.NOT:
-        return !filters.every((filter) => filter.isMatching(item));
+        return filters.every((filter) => !filter.isMatching(item));
       default:
         return false;
     }
