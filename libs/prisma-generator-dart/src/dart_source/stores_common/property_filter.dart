@@ -32,7 +32,8 @@ class PropertyFilter<T extends GetPropToValueFunction> {
     final propertyValueFunction = item.getPropToValueFunction(property);
     final propertyValue = propertyValueFunction(item);
     for (var operatorAndValue in operatorsAndValues) {
-      if (_matches(item, operatorAndValue.operator, operatorAndValue.value)) {
+      if (_matches(
+          propertyValue, operatorAndValue.operator, operatorAndValue.value)) {
         numberOfNotMatchingFilters--;
       }
     }
