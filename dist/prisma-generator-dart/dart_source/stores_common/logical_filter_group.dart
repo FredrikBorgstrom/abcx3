@@ -35,14 +35,14 @@ class LogicalFilterGroup<T extends GetPropToValueFunction> {
     }
   }
 
-  factory LogicalFilterGroup.fromJson(Map<String, dynamic> json) {
+  factory LogicalFilterGroup.fromJson(Json json) {
     return LogicalFilterGroup(
       json['filters'],
       logicalOperator: json['logicalOperator'],
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Json toJson() {
     return {
       logicalOperator.name: filters.map((filter) => filter.toJson()).toList(),
     };

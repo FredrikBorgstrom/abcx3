@@ -3,7 +3,7 @@ part of '../abcx3_common.library.dart';
 List<T> createModels<T>(json, JsonFactory<T> jsonFactory) {
   List<T> instances = [];
   for (final item in json) {
-    instances.add(jsonFactory(item as Map<String, dynamic>));
+    instances.add(jsonFactory(item as Json));
   }
   return instances;
 }

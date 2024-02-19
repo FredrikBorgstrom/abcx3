@@ -1,33 +1,33 @@
 import { DMMF } from '@prisma/generator-helper';
+import { PrismaHelper, StringFns } from '@shared';
 import { DartGeneratorSettings } from '../dart_settings.interface';
 import {
     dartBaseClassStub,
     dartConstructorArgument,
     dartConstructorArgumentWithDefaultValue,
-    dartPropertyStub,
-    dartFromJsonArg,
-    dartFromJsonModelListArg,
-    toJsonPropertyStub,
-    toJsonObjectListStub,
-    dartFromJsonEnumListArg,
-    dartFromJsonEnumArg,
-    dartFromJsonDateTimeArg,
-    dartFromJsonRefArg,
-    dartFromJsonScalarIntListArg,
-    dartFromJsonScalarStringListArg,
-    dartEqualStub,
-    dartHashCodeKeyValue,
-    dartListsEqualStub,
     dartCopyWithArg,
     dartCopyWithConstructorArg,
     dartCopyWithInstanceConstructorArg,
-    dartUIDStub,
     dartEqualByIdStub,
+    dartEqualStub,
+    dartFromJsonArg,
+    dartFromJsonDateTimeArg,
+    dartFromJsonEnumArg,
+    dartFromJsonEnumListArg,
+    dartFromJsonModelListArg,
+    dartFromJsonRefArg,
+    dartFromJsonScalarIntListArg,
+    dartFromJsonScalarStringListArg,
+    dartHashCodeKeyValue,
+    dartListsEqualStub,
+    dartPropertyStub,
+    dartUIDStub,
+    getPropertyValueFunctionStub,
+    toJsonObjectListStub,
     toJsonObjectStub,
-    updateWithInstanceSetters,
-    getPropertyValueFunctionStub
+    toJsonPropertyStub,
+    updateWithInstanceSetters
 } from '../stubs/dart.stub';
-import { PrismaHelper, StringFns } from '@shared';
 
 export const dartTypeMap = {
     BigInt: 'BigInt',
@@ -37,7 +37,7 @@ export const dartTypeMap = {
     Decimal: 'double',
     Float: 'double',
     Int: 'int',
-    Json: 'Map<String, dynamic>',
+    Json: 'Json',
     String: 'String'
 }
 

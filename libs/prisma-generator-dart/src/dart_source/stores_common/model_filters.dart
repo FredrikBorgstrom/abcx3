@@ -17,14 +17,14 @@ class ModelFilter<T extends GetPropToValueFunction> {
     return filters.every((filter) => filter.filtersMatch(item));
   }
 
-  factory ModelFilter.fromJson(Map<String, dynamic> json) {
+  factory ModelFilter.fromJson(Json json) {
     return ModelFilter(
       json['filters'],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {};
+  Json toJson() {
+    Json map = {};
     for (var filter in filters) {
       map.addAll(filter.toJson());
     }

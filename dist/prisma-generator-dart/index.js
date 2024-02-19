@@ -647,7 +647,7 @@ import '../abcx3_common.library.dart';
 class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
     
-    /// Creates a new instance of the GameMove class.
+    /// Creates a new instance of this class.
   /// All parameters are optional and default to null.
     #{ClassName}({#{ConstructorArgs}});
 
@@ -669,9 +669,9 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
 
     #{EqualById}
 
-    /// Creates a new instance of the GameMove class from a JSON object.
+    /// Creates a new instance of this class from a JSON object.
     #{OverrideAnnotation}
-    factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
+    factory #{ClassName}.fromJson(Json json) =>
       #{ClassName}(
         #{fromJsonArgs}
       );
@@ -712,7 +712,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
       });
 
       /// Determines whether this instance and another object represent the same
-      /// game move.
+      /// instance.
     #{OverrideAnnotation}
     bool operator == (Object other) =>
             identical(this, other) || other is #{ClassName} &&
@@ -737,7 +737,7 @@ var dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 var dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
 var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
-var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Map<String, dynamic>) : null`;
+var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
 var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.parse(e.toString())).toList() : null`;
 var dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
 var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
@@ -774,7 +774,7 @@ var dartTypeMap = {
   Decimal: "double",
   Float: "double",
   Int: "int",
-  Json: "Map<String, dynamic>",
+  Json: "Json",
   String: "String"
 };
 var DartGenerator = class {

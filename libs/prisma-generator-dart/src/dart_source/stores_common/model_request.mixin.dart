@@ -7,7 +7,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
       {dynamic param,
       required Endpoint endpoint,
       ModelFilter? modelFilter,
-      Map<String, dynamic>? body}) {
+      Json? body}) {
     return get$<T>(
         param: param, endpoint: endpoint, modelFilter: modelFilter, body: body);
   }
@@ -16,7 +16,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
       {dynamic param,
       required Endpoint endpoint,
       ModelFilter? modelFilter,
-      Map<String, dynamic>? body}) {
+      Json? body}) {
     return get$<List<T>>(
         param: param, endpoint: endpoint, modelFilter: modelFilter, body: body);
   }
@@ -25,7 +25,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
       {dynamic param,
       required Endpoint endpoint,
       ModelFilter? modelFilter,
-      Map<String, dynamic>? body}) {
+      Json? body}) {
     if (modelFilter != null) {
       body ??= {};
       body['modelFilter'] = modelFilter.toJson();
@@ -58,7 +58,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
   }
 
   String _serializeRequest(
-      {dynamic param, required Endpoint endpoint, Map<String, dynamic>? body}) {
+      {dynamic param, required Endpoint endpoint, Json? body}) {
     final serializedParam = param != null ? param.toString() : '';
     final serializedBody = body != null ? body.toString() : '';
     return '${endpoint.path} $serializedParam $serializedBody';

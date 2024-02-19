@@ -34,7 +34,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       required Endpoint endpoint,
       bool useCache = true,
       ModelFilter<T>? modelFilter,
-      Map<String, dynamic>? body}) {
+      Json? body}) {
     if (useCache) {
       final model = getByPropertyValueAndFilter(getPropVal, value,
           modelFilter: modelFilter);
@@ -59,7 +59,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       required Endpoint endpoint,
       bool useCache = true,
       ModelFilter<T>? modelFilter,
-      Map<String, dynamic>? body}) {
+      Json? body}) {
     if (useCache) {
       final models = getManyByPropertyValueAndFilter<U>(getPropVal, value,
           modelFilter: modelFilter);
@@ -80,7 +80,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       {required Endpoint endpoint,
       bool useCache = true,
       ModelFilter<T>? modelFilter,
-      Map<String, dynamic>? body}) {
+      Json? body}) {
     if (useCache && getAllHasRun) {
       var models = getAll();
       if (modelFilter != null) {

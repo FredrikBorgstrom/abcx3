@@ -6,13 +6,13 @@ class FilterOperatorAndValue {
 
   FilterOperatorAndValue(this.operator, this.value);
 
-  Map<String, dynamic> toJson() {
+  Json toJson() {
     return {
       operator.name: value,
     };
   }
 
-  factory FilterOperatorAndValue.fromJson(Map<String, dynamic> json) {
+  factory FilterOperatorAndValue.fromJson(Json json) {
     return FilterOperatorAndValue(
       json['operator'],
       json['value'],

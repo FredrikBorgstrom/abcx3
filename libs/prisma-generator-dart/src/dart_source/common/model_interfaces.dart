@@ -53,7 +53,7 @@ abstract interface class FromJsonFactory<T> {
 }
 
 abstract interface class ToJson {
-  Map<String, dynamic> toJson();
+  Json toJson();
 }
 
 abstract interface class Id<K> {

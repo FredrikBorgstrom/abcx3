@@ -18,13 +18,13 @@ class ModelCreator<T> {
   List<T> createMany(json) {
     List<T> instances = [];
     for (final item in json) {
-      instances.add(createOne(item as Map<String, dynamic>));
+      instances.add(createOne(item as Json));
     }
     return instances;
   }
 
   T createOne(json) {
-    return jsonModelFactory(json as Map<String, dynamic>);
+    return jsonModelFactory(json as Json);
   }
 
   // @override

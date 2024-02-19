@@ -7,7 +7,7 @@ import '../abcx3_common.library.dart';
 class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
     
-    /// Creates a new instance of the GameMove class.
+    /// Creates a new instance of this class.
   /// All parameters are optional and default to null.
     #{ClassName}({#{ConstructorArgs}});
 
@@ -29,9 +29,9 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
 
     #{EqualById}
 
-    /// Creates a new instance of the GameMove class from a JSON object.
+    /// Creates a new instance of this class from a JSON object.
     #{OverrideAnnotation}
-    factory #{ClassName}.fromJson(Map<String, dynamic> json) =>
+    factory #{ClassName}.fromJson(Json json) =>
       #{ClassName}(
         #{fromJsonArgs}
       );
@@ -72,7 +72,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
       });
 
       /// Determines whether this instance and another object represent the same
-      /// game move.
+      /// instance.
     #{OverrideAnnotation}
     bool operator == (Object other) =>
             identical(this, other) || other is #{ClassName} &&
@@ -103,7 +103,7 @@ export const dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.
 export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
-export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Map<String, dynamic>) : null`;
+export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
 
 export const dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.parse(e.toString())).toList() : null`;
 export const dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
