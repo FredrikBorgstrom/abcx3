@@ -67,7 +67,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     }
     /// Converts this instance to a JSON object.
     #{OverrideAnnotation}
-    Map<String, dynamic> toJson() => ({
+    Json toJson() => ({
         #{toJsonKeyValues}
       });
 

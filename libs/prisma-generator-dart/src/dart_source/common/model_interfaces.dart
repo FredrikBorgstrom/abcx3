@@ -1,14 +1,16 @@
 part of '../abcx3_common.library.dart';
 
-typedef JsonFactory<T> = T Function(Map<String, dynamic> json);
+typedef Json = Map<String, dynamic>;
+
+typedef JsonFactory<T> = T Function(Json json);
 
 typedef GetPropertyValueFunction<I, O> = O? Function(I model);
 
 abstract interface class JsonSerializable {
-  factory JsonSerializable.fromJson(Map<String, dynamic> json) {
+  factory JsonSerializable.fromJson(Json json) {
     throw UnimplementedError();
   }
-  Map<String, dynamic> toJson();
+  Json toJson();
 }
 
 abstract interface class CopyWith<T> {
@@ -41,7 +43,7 @@ abstract interface class PrismaModel<K, T>
 // NOT USED:
 
 abstract interface class FromJson {
-  factory FromJson.fromJson(Map<String, dynamic> json) {
+  factory FromJson.fromJson(Json json) {
     throw UnimplementedError();
   }
 }
