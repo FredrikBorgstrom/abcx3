@@ -677,7 +677,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
       );
 
       /// Creates a new instance populated with the values of this instance and the given values,
-    /// where this instance's values has precedence.
+    /// where the given values has precedence.
       #{OverrideAnnotation}  
     #{ClassName} copyWith({
         #{CopyWithArgs}
@@ -688,7 +688,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     }
 
     /// Creates a new instance populated with the values of this instance and the given instance,
-    /// where this instance's values has precedence.
+    /// where the given instance's values has precedence.
 
     #{OverrideAnnotation}
     #{ClassName} copyWithInstanceValues(#{ClassName} #{InstanceName}) {
@@ -698,7 +698,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     }
 
     /// Updates this instance with the values of the given instance,
-  /// where this instance has precedence.
+  /// where the given instance has precedence.
 
     #{OverrideAnnotation}
     #{ClassName} updateWithInstanceValues(#{ClassName} #{InstanceName}) {
