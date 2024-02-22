@@ -37,23 +37,25 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     if (cachedRequest != null) {
       return cachedRequest;
     } else {
-      final subject$$ = PublishSubject<U>();
-      final stream$$ = subject$$.take(1); // .shareValue();
-      _setCachedRequest<U>(serializedRequest, stream$$);
-      final result = authHttp.request(endpoint, param: param, body: body);
-      result.then((val) {
-        if (val.isSuccess) {
-          final json = val.success ?? [];
-          final models = create(json);
-          subject$$.add(models);
-        } else {
-          subject$$.addError(val.failure!);
-        }
-        subject$$.close();
-        _deleteCachedRequest(serializedRequest);
-        return stream$$;
-      });
-      return stream$$;
+      final broadcastStream$$ = FromCallableStream<U>(() => authHttp
+              .request(endpoint, param: param, body: body)
+              .then(handleRequestResult)
+              .then((result) {
+            _deleteCachedRequest(serializedRequest);
+            return result;
+          })).asBroadcastStream();
+      _setCachedRequest<U>(serializedRequest, broadcastStream$$);
+      return broadcastStream$$;
+    }
+  }
+
+  handleRequestResult<U>(Result<U, DioException> result) {
+    if (result.isSuccess) {
+      final json = result.success ?? [];
+      final models = create(json);
+      return models;
+    } else {
+      throw result.failure!;
     }
   }
 
