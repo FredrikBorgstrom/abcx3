@@ -25,12 +25,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/package.json
+// node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/package.json"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "16.4.1",
+      version: "16.4.5",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -54,6 +54,7 @@ var require_package = __commonJS({
         "lint-readme": "standard-markdown",
         pretest: "npm run lint && npm run dts-check",
         test: "tap tests/*.js --100 -Rspec",
+        "test:coverage": "tap --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -61,7 +62,7 @@ var require_package = __commonJS({
         type: "git",
         url: "git://github.com/motdotla/dotenv.git"
       },
-      funding: "https://github.com/motdotla/dotenv?sponsor=1",
+      funding: "https://dotenvx.com",
       keywords: [
         "dotenv",
         "env",
@@ -95,9 +96,9 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/lib/main.js
+// node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@16.4.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs3 = require("fs");
     var path4 = require("path");
     var os = require("os");
@@ -173,7 +174,7 @@ var require_main = __commonJS({
         uri = new URL(dotenvKey);
       } catch (error) {
         if (error.code === "ERR_INVALID_URL") {
-          const err = new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenv.org/vault/.env.vault?environment=development");
+          const err = new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=development");
           err.code = "INVALID_DOTENV_KEY";
           throw err;
         }
@@ -234,43 +235,49 @@ var require_main = __commonJS({
       return { parsed };
     }
     function configDotenv(options) {
-      let dotenvPath = path4.resolve(process.cwd(), ".env");
+      const dotenvPath = path4.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       const debug = Boolean(options && options.debug);
-      if (options) {
-        if (options.path != null) {
-          let envPath = options.path;
-          if (Array.isArray(envPath)) {
-            for (const filepath of options.path) {
-              if (fs3.existsSync(filepath)) {
-                envPath = filepath;
-                break;
-              }
-            }
-          }
-          dotenvPath = _resolveHome(envPath);
+      if (options && options.encoding) {
+        encoding = options.encoding;
+      } else {
+        if (debug) {
+          _debug("No encoding is specified. UTF-8 is used by default");
         }
-        if (options.encoding != null) {
-          encoding = options.encoding;
+      }
+      let optionPaths = [dotenvPath];
+      if (options && options.path) {
+        if (!Array.isArray(options.path)) {
+          optionPaths = [_resolveHome(options.path)];
         } else {
-          if (debug) {
-            _debug("No encoding is specified. UTF-8 is used by default");
+          optionPaths = [];
+          for (const filepath of options.path) {
+            optionPaths.push(_resolveHome(filepath));
           }
         }
       }
-      try {
-        const parsed = DotenvModule.parse(fs3.readFileSync(dotenvPath, { encoding }));
-        let processEnv = process.env;
-        if (options && options.processEnv != null) {
-          processEnv = options.processEnv;
+      let lastError;
+      const parsedAll = {};
+      for (const path5 of optionPaths) {
+        try {
+          const parsed = DotenvModule.parse(fs3.readFileSync(path5, { encoding }));
+          DotenvModule.populate(parsedAll, parsed, options);
+        } catch (e) {
+          if (debug) {
+            _debug(`Failed to load ${path5} ${e.message}`);
+          }
+          lastError = e;
         }
-        DotenvModule.populate(processEnv, parsed, options);
-        return { parsed };
-      } catch (e) {
-        if (debug) {
-          _debug(`Failed to load ${dotenvPath} ${e.message}`);
-        }
-        return { error: e };
+      }
+      let processEnv = process.env;
+      if (options && options.processEnv != null) {
+        processEnv = options.processEnv;
+      }
+      DotenvModule.populate(processEnv, parsedAll, options);
+      if (lastError) {
+        return { parsed: parsedAll, error: lastError };
+      } else {
+        return { parsed: parsedAll };
       }
     }
     function config2(options) {
@@ -356,49 +363,67 @@ var require_main = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv-expand@10.0.0/node_modules/dotenv-expand/lib/main.js
+// node_modules/.pnpm/dotenv-expand@11.0.6/node_modules/dotenv-expand/lib/main.js
 var require_main2 = __commonJS({
-  "node_modules/.pnpm/dotenv-expand@10.0.0/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv-expand@11.0.6/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
     "use strict";
-    function _searchLast(str, rgx) {
-      const matches = Array.from(str.matchAll(rgx));
-      return matches.length > 0 ? matches.slice(-1)[0].index : -1;
-    }
-    function _interpolate(envValue, environment, config2) {
-      const lastUnescapedDollarSignIndex = _searchLast(envValue, /(?!(?<=\\))\$/g);
-      if (lastUnescapedDollarSignIndex === -1)
-        return envValue;
-      const rightMostGroup = envValue.slice(lastUnescapedDollarSignIndex);
-      const matchGroup = /((?!(?<=\\))\${?([\w]+)(?::-([^}\\]*))?}?)/;
-      const match = rightMostGroup.match(matchGroup);
-      if (match != null) {
-        const [, group, variableName, defaultValue] = match;
-        return _interpolate(
-          envValue.replace(
-            group,
-            environment[variableName] || defaultValue || config2.parsed[variableName] || ""
-          ),
-          environment,
-          config2
-        );
-      }
-      return envValue;
-    }
+    var DOTENV_SUBSTITUTION_REGEX = /(\\)?(\$)(?!\()(\{?)([\w.]+)(?::?-((?:\$\{(?:\$\{(?:\$\{[^}]*\}|[^}])*}|[^}])*}|[^}])+))?(\}?)/gi;
     function _resolveEscapeSequences(value) {
       return value.replace(/\\\$/g, "$");
     }
-    function expand2(config2) {
-      const environment = config2.ignoreProcessEnv ? {} : process.env;
-      for (const configKey in config2.parsed) {
-        const value = Object.prototype.hasOwnProperty.call(environment, configKey) ? environment[configKey] : config2.parsed[configKey];
-        config2.parsed[configKey] = _resolveEscapeSequences(
-          _interpolate(value, environment, config2)
-        );
+    function interpolate(value, processEnv, parsed) {
+      return value.replace(DOTENV_SUBSTITUTION_REGEX, (match, escaped, dollarSign, openBrace, key, defaultValue, closeBrace) => {
+        if (escaped === "\\") {
+          return match.slice(1);
+        } else {
+          if (processEnv[key]) {
+            if (processEnv[key] === parsed[key]) {
+              return processEnv[key];
+            } else {
+              return interpolate(processEnv[key], processEnv, parsed);
+            }
+          }
+          if (parsed[key]) {
+            if (parsed[key] === value) {
+              return parsed[key];
+            } else {
+              return interpolate(parsed[key], processEnv, parsed);
+            }
+          }
+          if (defaultValue) {
+            if (defaultValue.startsWith("$")) {
+              return interpolate(defaultValue, processEnv, parsed);
+            } else {
+              return defaultValue;
+            }
+          }
+          return "";
+        }
+      });
+    }
+    function expand2(options) {
+      let processEnv = process.env;
+      if (options && options.processEnv != null) {
+        processEnv = options.processEnv;
       }
-      for (const processKey in config2.parsed) {
-        environment[processKey] = config2.parsed[processKey];
+      for (const key in options.parsed) {
+        let value = options.parsed[key];
+        const inProcessEnv = Object.prototype.hasOwnProperty.call(processEnv, key);
+        if (inProcessEnv) {
+          if (processEnv[key] === options.parsed[key]) {
+            value = interpolate(value, processEnv, options.parsed);
+          } else {
+            value = processEnv[key];
+          }
+        } else {
+          value = interpolate(value, processEnv, options.parsed);
+        }
+        options.parsed[key] = _resolveEscapeSequences(value);
       }
-      return config2;
+      for (const processKey in options.parsed) {
+        processEnv[processKey] = options.parsed[processKey];
+      }
+      return options;
     }
     module2.exports.expand = expand2;
   }
