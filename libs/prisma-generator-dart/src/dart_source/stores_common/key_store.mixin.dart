@@ -1,7 +1,4 @@
-// import 'package:abcx3/gen_models/common/abcx3_prisma.library.dart';
 part of '../abcx3_stores_library.dart';
-
-// typedef GetPropertyValue<T, U> = U? Function(T model);
 
 mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     implements KeyStorageInterface<T, K> {

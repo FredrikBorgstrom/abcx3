@@ -1,7 +1,7 @@
 part of '../abcx3_stores_library.dart';
 
 mixin ModelRequestMixin<T> on ModelCreator<T> {
-  final Map<String, Stream<dynamic>> _cachedStreams = {};
+  final _cachedStreams = CachedStreams();
 
   Stream<T> getOne$(
       {dynamic param,
@@ -30,23 +30,29 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
       body ??= {};
       body['modelFilter'] = modelFilter.toJson();
     }
-    final serializedRequest =
-        _serializeRequest(param: param, endpoint: endpoint, body: body);
-    final cachedRequest = _getCachedRequest(serializedRequest);
 
-    if (cachedRequest != null) {
-      return cachedRequest;
-    } else {
-      final broadcastStream$$ = FromCallableStream<U>(() => authHttp
-              .request(endpoint, param: param, body: body)
-              .then(handleRequestResult)
-              .then((result) {
-            _deleteCachedRequest(serializedRequest);
-            return result;
-          })).asBroadcastStream();
-      _setCachedRequest<U>(serializedRequest, broadcastStream$$);
-      return broadcastStream$$;
+    final cachedStream =
+        CachedStream(param: param, endpoint: endpoint, body: body);
+    final existingCachedStream =
+        _cachedStreams.getByRequest(cachedStream.serializedRequest);
+    if (existingCachedStream != null) {
+      if (existingCachedStream.hasNotExpired()) {
+        return existingCachedStream.stream$ as Stream<U>;
+      } else {
+        _cachedStreams.remove(existingCachedStream);
+      }
     }
+
+    final broadcastStream$$ = FromCallableStream<U>(() => authHttp
+            .request(endpoint, param: param, body: body)
+            .then(handleRequestResult)
+            .then((result) {
+          _cachedStreams.remove(cachedStream);
+          return result;
+        })).asBroadcastStream();
+    cachedStream.stream$ = broadcastStream$$;
+    _cachedStreams.add(cachedStream);
+    return broadcastStream$$;
   }
 
   handleRequestResult<U>(Result<U, DioException> result) {
@@ -57,24 +63,5 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     } else {
       throw result.failure!;
     }
-  }
-
-  String _serializeRequest(
-      {dynamic param, required Endpoint endpoint, Json? body}) {
-    final serializedParam = param != null ? param.toString() : '';
-    final serializedBody = body != null ? body.toString() : '';
-    return '${endpoint.path} $serializedParam $serializedBody';
-  }
-
-  _setCachedRequest<U>(String serializedRequest, Stream<U> stream$$) {
-    _cachedStreams[serializedRequest] = stream$$;
-  }
-
-  _getCachedRequest(String serializedRequest) {
-    return _cachedStreams[serializedRequest];
-  }
-
-  _deleteCachedRequest(String serializedRequest) {
-    _cachedStreams.remove(serializedRequest);
   }
 }
