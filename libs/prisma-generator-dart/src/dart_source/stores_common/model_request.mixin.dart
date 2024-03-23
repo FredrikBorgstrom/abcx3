@@ -1,7 +1,7 @@
 part of '../abcx3_stores_library.dart';
 
 mixin ModelRequestMixin<T> on ModelCreator<T> {
-  final _cachedStreams = CachedStreams();
+  final _cachedStreams = MemCachedStreams();
 
   Stream<T> getOne$(
       {dynamic param,
@@ -32,7 +32,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     }
 
     final cachedStream =
-        CachedStream(param: param, endpoint: endpoint, body: body);
+        MemCachedStream(param: param, endpoint: endpoint, body: body);
     final existingCachedStream =
         _cachedStreams.getByRequest(cachedStream.serializedRequest);
     if (existingCachedStream != null) {
