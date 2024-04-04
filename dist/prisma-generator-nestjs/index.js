@@ -848,7 +848,7 @@ export class #{ServiceClassName} {
             const result = await this.prismaService.#{moDel}.findMany({where: modelFilter});
             return result;
         } catch (e) {
-            return new InternalServerErrorException(
+            throw new InternalServerErrorException(
                 \`Could not get all #{Model}.\`
             );
         }
@@ -864,7 +864,7 @@ export class #{ServiceClassName} {
         } catch (error) {
             console.log(this.printObject(error));
             console.log('message: ', error?.message);
-            return new InternalServerErrorException(
+            throw new InternalServerErrorException(
                 \`Could not get one #{Model} by \${this.printObject(fieldsAndValues)}\`
             );
         }
@@ -880,7 +880,7 @@ export class #{ServiceClassName} {
         } catch (error) {
             console.log(this.printObject(error));
             console.log('message: ', error?.message);
-            return new InternalServerErrorException(
+            throw new InternalServerErrorException(
                 \`Could not get any #{Model} by \${this.printObject(fieldsAndValues)}\`
             );
         }
@@ -929,7 +929,7 @@ async get#{RelationFieldNameCapitalized}(where: Prisma.#{Model}WhereUniqueInput)
         });
         return result.#{RelationFieldName};
     } catch (e) {
-        return new InternalServerErrorException(\`Could not get #{RelationFieldName} for #{Model}\`);
+        throw new InternalServerErrorException(\`Could not get #{RelationFieldName} for #{Model}\`);
     }
 }
 `;
@@ -941,7 +941,7 @@ async getById(#{idName}: #{idType}): Promise<#{Model} | Error> {
     });
     return result;
     } catch(e) {
-    return new NotFoundException(\`#{Model} Resource \${id} was not found\`);
+        throw new NotFoundException(\`#{Model} Resource \${id} was not found\`);
     }
 }
 
@@ -953,7 +953,7 @@ async updateById(#{idName}: #{idType}, data: Prisma.#{Model}UpdateInput): Promis
         });
         return result;
     } catch (e) {
-        return new InternalServerErrorException(\`Could not update #{Model} Resource \${#{idName}}\`);
+        throw new InternalServerErrorException(\`Could not update #{Model} Resource \${#{idName}}\`);
     }
 }
 
@@ -962,7 +962,7 @@ async deleteById(#{idName}: #{idType}): Promise<#{Model} | Error> {
         const result = await this.prismaService.#{moDel}.delete({ where: { #{idName} } });
         return result;
     } catch (e) {
-        return new InternalServerErrorException(\`Could not delete #{Model} Resource \${#{idName}}\`);
+        throw new InternalServerErrorException(\`Could not delete #{Model} Resource \${#{idName}}\`);
     }
 }
 `;
