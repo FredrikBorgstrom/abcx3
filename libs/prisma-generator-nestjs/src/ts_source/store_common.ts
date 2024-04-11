@@ -2,7 +2,137 @@ import {
     InternalServerErrorException
 } from "@nestjs/common";
 
-export async function getByFieldValues<T>(
+/** Filters **/
+
+export enum FilterOperatorEnum {
+    equals,
+    not,
+    gt,
+    gte,
+    lt,
+    lte,
+    inList,
+    notInList,
+    contains,
+    startsWith,
+    endsWith,
+    notContains,
+    notStartsWith,
+    notEndsWith,
+    isNull,
+    isNotNull,
+}
+
+export type FilterOperator = keyof typeof FilterOperatorEnum;
+
+export type ModelFilter<T> = {
+    [K in keyof LogicalOperators<T>]: PropertyFilter<T>[];
+}
+
+export type PropertyFilter<T> ={
+    [K in keyof T]: FilterOperatorAndValue;
+}
+
+export type FilterOperatorAndValue = {
+    [K in FilterOperator]: any;
+}
+export interface StorePostData<T> {
+    modelFilter?: ModelFilter<T>;
+}
+
+/* interface LogicalOperators {
+    AND?: {};
+    OR?: {}; 
+    NOT?: {};
+} */
+interface LogicalOperators<T> {
+    AND?: T | T[];
+    OR?: T | T[]; 
+    NOT?: T | T[];
+}
+export type WithoutLogicalOperators<T> = Omit<T, 'AND' | 'OR' | 'NOT'>;
+
+export type WithLogicalOperators<T> = T & LogicalOperators<T>; //{[K in keyof T]: T[K]};
+
+
+/**      Store helper functions     **/
+
+export async function getByFieldValues<T, I>(
+    findFirstFunction: Function,
+    fieldsAndValues: WithoutLogicalOperators<I>,
+    modelFilter?: WithLogicalOperators<I>
+): Promise<T | Error> {
+    try {
+        const combinedFilter = combineFilters(
+			fieldsAndValues,
+			modelFilter,
+		);
+        const result = await findFirstFunction({
+            where: fieldsAndValues,
+        });
+        return result;
+    } catch (e) {
+        return new InternalServerErrorException(
+            `Could not find one model where ${printObject(
+                fieldsAndValues,
+            )}}`,
+        );
+    }
+}
+
+export async function getManyByFieldValues<T, I>(
+		findManyFunction: Function,
+		fieldsAndValues: WithoutLogicalOperators<I>,
+		modelFilter?: WithLogicalOperators<I>,
+	): Promise<T[] | Error> {
+		const combinedFilter = combineFilters(
+			fieldsAndValues,
+			modelFilter,
+		);
+		try {
+			const result = await findManyFunction({
+				where: combinedFilter,
+			});
+			return result;
+		} catch (error: any) {
+			console.log(printObject(error));
+			console.log("message: ", error?.message);
+			throw new InternalServerErrorException(
+				`Could not find any models where ${printObject(fieldsAndValues)}`,
+			);
+		}
+	}
+
+
+
+export function combineFilters<T extends LogicalOperators<T>>(
+    fieldsAndValues: WithoutLogicalOperators<T>,
+    modelFilter?: T,
+): T {
+    let combinedFilter: T;
+    if (modelFilter) {
+        combinedFilter = {
+            AND: [
+                ...(modelFilter?.AND as T[]),
+                fieldsAndValues,
+            ],
+        } as T;
+        if (modelFilter?.OR) {
+            combinedFilter.OR = modelFilter?.OR;
+        }
+        if (modelFilter?.NOT) {
+            combinedFilter.NOT = modelFilter?.NOT;
+        }
+    } else {
+        combinedFilter = fieldsAndValues as T;
+    }
+    return combinedFilter;
+}
+
+export const printObject = (obj: any) => JSON.stringify(obj, null, 2);
+
+
+/* export async function getByFieldValues<T>(
     prismaClient: any,
     modelName: string,
     fieldsAndValues: Record<string, number | string>,
@@ -39,8 +169,6 @@ export async function getManyByFieldValues<T>(
         );
     }
 }
-
-/** Filters **/
 
 export enum FilterOperatorEnum {
     equals,
@@ -85,4 +213,5 @@ export interface StorePostData<T> {
     modelFilter?: ModelFilter<T>;
 }
 
-export const printObject = (obj: any) => JSON.stringify(obj, null, 2);
+export const printObject = (obj: any) => JSON.stringify(obj, null, 2); 
+*/
