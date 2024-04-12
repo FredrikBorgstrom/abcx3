@@ -50,14 +50,14 @@ interface LogicalOperators<T> {
     OR?: T | T[]; 
     NOT?: T | T[];
 }
-export type WithoutLogicalOperators<T> = Omit<T, 'AND' | 'OR' | 'NOT'>;
+export type WithoutLogicalOperators<T> = Omit<T, keyof LogicalOperators<T>>;
 
 export type WithLogicalOperators<T> = T & LogicalOperators<T>; //{[K in keyof T]: T[K]};
 
 
 /**      Store helper functions     **/
 
-export async function getByFieldValues<T, I>(
+export async function getByFieldValuesHelper<T, I>(
     findFirstFunction: Function,
     fieldsAndValues: WithoutLogicalOperators<I>,
     modelFilter?: WithLogicalOperators<I>
@@ -80,9 +80,9 @@ export async function getByFieldValues<T, I>(
     }
 }
 
-export async function getManyByFieldValues<T, I>(
+export async function getManyByFieldValuesHelper<T, I>(
 		findManyFunction: Function,
-		fieldsAndValues: WithoutLogicalOperators<I>,
+		fieldsAndValues?: WithoutLogicalOperators<I>,
 		modelFilter?: WithLogicalOperators<I>,
 	): Promise<T[] | Error> {
 		const combinedFilter = combineFilters(
@@ -103,9 +103,20 @@ export async function getManyByFieldValues<T, I>(
 		}
 	}
 
+    export function combineFilters<T extends LogicalOperators<T>>(
+        fieldsAndValues?: WithoutLogicalOperators<T>,
+        modelFilter?: T,
+    ): T {
+        let combinedFilter: T = {
+            AND: [...(modelFilter?.AND as T[]), fieldsAndValues],
+            OR: modelFilter?.OR,
+            NOT: modelFilter?.NOT,
+        } as T;
+       
+        return combinedFilter;
+    }
 
-
-export function combineFilters<T extends LogicalOperators<T>>(
+/* export function combineFilters<T extends LogicalOperators<T>>(
     fieldsAndValues: WithoutLogicalOperators<T>,
     modelFilter?: T,
 ): T {
@@ -127,7 +138,7 @@ export function combineFilters<T extends LogicalOperators<T>>(
         combinedFilter = fieldsAndValues as T;
     }
     return combinedFilter;
-}
+} */
 
 export const printObject = (obj: any) => JSON.stringify(obj, null, 2);
 
