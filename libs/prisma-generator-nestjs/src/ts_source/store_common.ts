@@ -29,7 +29,7 @@ export type ModelFilter<T> = {
     [K in keyof LogicalOperators<T>]: PropertyFilter<T>[];
 }
 
-export type PropertyFilter<T> ={
+export type PropertyFilter<T> = {
     [K in keyof T]: FilterOperatorAndValue;
 }
 
@@ -47,7 +47,7 @@ export interface StorePostData<T> {
 } */
 interface LogicalOperators<T> {
     AND?: T | T[];
-    OR?: T | T[]; 
+    OR?: T | T[];
     NOT?: T | T[];
 }
 export type WithoutLogicalOperators<T> = Omit<T, keyof LogicalOperators<T>>;
@@ -64,9 +64,9 @@ export async function getByFieldValuesHelper<T, I>(
 ): Promise<T | Error> {
     try {
         const combinedFilter = combineFilters(
-			fieldsAndValues,
-			modelFilter,
-		);
+            fieldsAndValues,
+            modelFilter,
+        );
         const result = await findFirstFunction({
             where: fieldsAndValues,
         });
@@ -81,40 +81,49 @@ export async function getByFieldValuesHelper<T, I>(
 }
 
 export async function getManyByFieldValuesHelper<T, I>(
-		findManyFunction: Function,
-		fieldsAndValues?: WithoutLogicalOperators<I>,
-		modelFilter?: WithLogicalOperators<I>,
-	): Promise<T[] | Error> {
-		const combinedFilter = combineFilters(
-			fieldsAndValues,
-			modelFilter,
-		);
-		try {
-			const result = await findManyFunction({
-				where: combinedFilter,
-			});
-			return result;
-		} catch (error: any) {
-			console.log(printObject(error));
-			console.log("message: ", error?.message);
-			throw new InternalServerErrorException(
-				`Could not find any models where ${printObject(fieldsAndValues)}`,
-			);
-		}
-	}
-
-    export function combineFilters<T extends LogicalOperators<T>>(
-        fieldsAndValues?: WithoutLogicalOperators<T>,
-        modelFilter?: T,
-    ): T {
-        let combinedFilter: T = {
-            AND: [...(modelFilter?.AND as T[]), fieldsAndValues],
-            OR: modelFilter?.OR,
-            NOT: modelFilter?.NOT,
-        } as T;
-       
-        return combinedFilter;
+    findManyFunction: Function,
+    fieldsAndValues?: WithoutLogicalOperators<I>,
+    modelFilter?: WithLogicalOperators<I>,
+): Promise<T[] | Error> {
+    const combinedFilter = combineFilters(
+        fieldsAndValues,
+        modelFilter,
+    );
+    try {
+        const result = await findManyFunction({
+            where: combinedFilter,
+        });
+        return result;
+    } catch (error: any) {
+        console.log(printObject(error));
+        console.log("message: ", error?.message);
+        throw new InternalServerErrorException(
+            `Could not find any models where ${printObject(fieldsAndValues)}`,
+        );
     }
+}
+
+export function combineFilters<T extends LogicalOperators<T>>(
+    fieldsAndValues?: WithoutLogicalOperators<T>,
+    modelFilter?: T,
+): T {
+    let combinedFilter: T = {
+        AND: [...(modelFilter?.AND as T[]), fieldsAndValues],
+        OR: modelFilter?.OR,
+        NOT: modelFilter?.NOT,
+    } as T;
+
+    return combinedFilter;
+}
+
+export function printObject(obj: any) {
+    return JSON.stringify(obj, null, 2);
+}
+
+export function numberIfNumber(value: string) : string | number {
+    return isNaN(Number(value)) ? value : Number(value);
+}
+
 
 /* export function combineFilters<T extends LogicalOperators<T>>(
     fieldsAndValues: WithoutLogicalOperators<T>,
@@ -140,7 +149,7 @@ export async function getManyByFieldValuesHelper<T, I>(
     return combinedFilter;
 } */
 
-export const printObject = (obj: any) => JSON.stringify(obj, null, 2);
+
 
 
 /* export async function getByFieldValues<T>(

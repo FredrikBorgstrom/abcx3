@@ -1,8 +1,8 @@
 import { DMMF } from "@prisma/generator-helper";
 import { FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
-import { NestGeneratorSettings } from "../nest_settings.interface";
 import { NameGenerator } from "../nameGenerator";
-import { controllerGetByFieldValuesStub, controllerGetManyByFieldValuesStub, controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
+import { NestGeneratorSettings } from "../nest_settings.interface";
+import { controllerGetByFieldValuesStub, controllerGetManyByFieldValuesStub, controllerGetManyByManyIdsStub, controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
 
 const controllerCommentDirectives: Record<string, PrismaCommentDirective> = {
     omit: { name: '@abcx3_omit' },
@@ -61,10 +61,13 @@ export class ControllerGenerator {
     private createFieldRoutes() {
         let code = '';
         this.model.fields.forEach(field => {
-            if (field.kind != 'object') {
-
-                let content = (field.isUnique || field.isId) ? controllerGetByFieldValuesStub : controllerGetManyByFieldValuesStub;
-
+            if (field.kind != 'object' || (field.kind === 'object' && field.isList && field.relationFromFields?.length === 0)) {
+                let content: string;
+                if (field.kind != 'object') {
+                    content = (field.isUnique || field.isId) ? controllerGetByFieldValuesStub : controllerGetManyByFieldValuesStub;
+                } else {
+                    content = controllerGetManyByManyIdsStub
+                }
                 content = content.replace(/#{GuardDecorator}/g, this.settings?.GuardClass ? `@UseGuards(${this.settings.GuardClass})` : '');
                 const tsType = this.prismaHelper.convertToTypescriptType(field);
                 content = content.replace(/#{Model}/g, this.model.name);
