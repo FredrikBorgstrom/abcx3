@@ -4,8 +4,7 @@ export const dartStoreStub = `
 
 part of '../abcx3_stores_library.dart';
 
-
-class #{Model}Store extends ModelStreamStore<int, #{Model}> {
+class #{Model}Store extends ModelStreamStore<#{ModelsIdDartType}, #{Model}> {
 
   static #{Model}Store? _instance;
 

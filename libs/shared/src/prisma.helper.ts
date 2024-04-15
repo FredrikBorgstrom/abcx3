@@ -6,6 +6,8 @@ export interface FieldNameAndType {
     type: string;
 }
 
+export type ProgrammingLanguage = 'typescript' | 'dart';
+
 export type CommentDirectiveName = '@abcx3_omit' | '@abcx3_disableControllers' | '@abcx3_enableControllers' | '@abcx3_enableCreate' | '@abcx3_enableUpdate' | '@abcx3_enableDelete' | '@abcx3_enableGetAll' | '@abcx3_enableGetById' | '@abcx3enableCreateWithUser' | '@abcx3_enableUpdateWithUser' | '@abcx3_enableDeleteWithUser' | '@abcx3_enableGetAllWithUser' | '@abcx3_enableGetByIdWithUser';
 
 
@@ -26,6 +28,18 @@ export const PrismaTypeScriptTypeMap = {
     String: 'string'
 }
 
+export const DartTypeMap = {
+    BigInt: 'BigInt',
+    Boolean: 'bool',
+    Bytes: 'ByteBuffer',
+    DateTime: 'DateTime',
+    Decimal: 'double',
+    Float: 'double',
+    Int: 'int',
+    Json: 'Json',
+    String: 'String'
+}
+
 export class PrismaHelper {
     static instance: PrismaHelper;
 
@@ -42,10 +56,15 @@ export class PrismaHelper {
         return (tsType != null) ? tsType : field.type;
     }
 
-    public getIdFieldNameAndType(model: DMMF.Model): FieldNameAndType | null {
+    public convertToDartType(field: DMMF.Field): string {
+        let dartType = DartTypeMap[field.type as keyof typeof DartTypeMap];
+        return dartType ?? field.type;
+    }
+
+    public getIdFieldNameAndType(model: DMMF.Model, language: ProgrammingLanguage = 'typescript'): FieldNameAndType | null {
         const idField = model.fields.find(field => field.isId === true);
         if (idField) {
-            return this.getFieldNameAndType(idField);
+            return this.getFieldNameAndType(idField, language);
         } else {
             return null;
         }
@@ -73,10 +92,18 @@ export class PrismaHelper {
     public getFieldWithRelationName = (model: DMMF.Model, relationName: string): DMMF.Field | undefined =>
         model.fields.find(field => field.relationName === relationName);
 
-    public getFieldNameAndType(field: DMMF.Field): FieldNameAndType {
+    public getFieldNameAndType(field: DMMF.Field, language: ProgrammingLanguage = 'typescript'): FieldNameAndType {
+        let type: string;
+        if (language === 'typescript') {
+            type = this.convertToTypescriptType(field);
+        } else if (language === 'dart') {
+            type = this.convertToDartType(field);
+        } else {
+            type = field.type;
+        }
         return {
             name: field.name,
-            type: this.convertToTypescriptType(field)
+            type
         };
     }
 

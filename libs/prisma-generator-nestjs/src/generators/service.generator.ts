@@ -1,15 +1,15 @@
-import { NestGeneratorSettings } from '../nest_settings.interface';
 import { DMMF } from '@prisma/generator-helper';
-import {
-    crudRelationFieldStub,
-    ServiceStub,
-    idMethods_neverThrow,
-    NeverthrowImport
-} from '../stubs/service.stub';
-import * as path from 'path';
-import { promises as fs } from 'fs';
-import { NameGenerator } from '../nameGenerator';
 import { FieldNameAndType, PrismaHelper, StringFns } from '@shared';
+import { promises as fs } from 'fs';
+import * as path from 'path';
+import { NameGenerator } from '../nameGenerator';
+import { NestGeneratorSettings } from '../nest_settings.interface';
+import {
+    NeverthrowImport,
+    ServiceStub,
+    crudRelationFieldStub,
+    idMethods_neverThrow
+} from '../stubs/service.stub';
 
 export class ServiceGenerator {
 

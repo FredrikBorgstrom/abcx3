@@ -1,7 +1,7 @@
 import { DMMF } from "@prisma/generator-helper";
 import { FieldNameAndType, PrismaCommentDirective, PrismaHelper, StringFns } from "@shared";
-import { NestGeneratorSettings } from "../nest_settings.interface";
 import { NameGenerator } from "../nameGenerator";
+import { NestGeneratorSettings } from "../nest_settings.interface";
 import { controllerMethodNames, controllerMethodStubs, controllerReferenceFieldStub, controllerStub } from "../stubs/controller.stub";
 
 const controllerCommentDirectives: Record<string, PrismaCommentDirective> = {

@@ -1,5 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
-import { PrismaHelper, StringFns } from '@shared';
+import { DartTypeMap, PrismaHelper, StringFns } from '@shared';
 import { DartGeneratorSettings } from '../dart_settings.interface';
 import {
     dartBaseClassStub,
@@ -29,7 +29,7 @@ import {
     updateWithInstanceSetters
 } from '../stubs/dart.stub';
 
-export const dartTypeMap = {
+/* export const DartTypeMap = {
     BigInt: 'BigInt',
     Boolean: 'bool',
     Bytes: 'ByteBuffer',
@@ -39,9 +39,9 @@ export const dartTypeMap = {
     Int: 'int',
     Json: 'Json',
     String: 'String'
-}
+} */
 
-type DartTypeMapKey = keyof typeof dartTypeMap;
+type DartTypeMapKey = keyof typeof DartTypeMap;
 
 
 export class DartGenerator {
@@ -359,8 +359,8 @@ export class DartGenerator {
         return (field.isList) ? `List<${dartType}>` : dartType;
     }
 
-    getDartBaseType = (field: DMMF.Field) => dartTypeMap[field.type as DartTypeMapKey] || field.type;
-    isProprietaryType = (type: string) => dartTypeMap[type as DartTypeMapKey] == null;
+    getDartBaseType = (field: DMMF.Field) => DartTypeMap[field.type as DartTypeMapKey] || field.type;
+    isProprietaryType = (type: string) => DartTypeMap[type as DartTypeMapKey] == null;
 
 
     replaceNullable = (content: string, field: DMMF.Field) => content.replace(/#{Nullable}/g, this.isFieldRequired(field) ? '' : '?');
