@@ -67,6 +67,12 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     }
   }
 
+  List<T> getManyByManyValuesAndFilter<W>(
+      GetPropertyValueFunction<T, W> getPropVal, List<W> values,
+      {ModelFilter<T>? modelFilter}) {
+    return items.where((m) => values.contains(getPropVal(m))).toList();
+  }
+
   @override
   void add(T item) => items = [...items, item];
 
