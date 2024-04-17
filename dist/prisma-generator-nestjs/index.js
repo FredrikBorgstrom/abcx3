@@ -929,7 +929,7 @@ export class #{ServiceClassName}<T extends #{Model} = #{Model}, I extends Prisma
 		modelFilter?: WithLogicalOperators<I>,
 	): Promise<T[] | Error> {
 		return getManyByFieldValuesHelper<T, I>(
-			this.prismaService.gameSettings.findMany,
+			this.prismaService.#{moDel}.findMany,
 			null,
 			modelFilter,
 		);
@@ -940,7 +940,7 @@ export class #{ServiceClassName}<T extends #{Model} = #{Model}, I extends Prisma
             modelFilter?: WithLogicalOperators<I>,
         ): Promise<T | Error> {
             return getByFieldValuesHelper<T, I>(
-                this.prismaService.gameSettings.findFirst,
+                this.prismaService.#{moDel}.findFirst,
                 fieldsAndValues,
                 modelFilter,
             );
@@ -951,7 +951,7 @@ export class #{ServiceClassName}<T extends #{Model} = #{Model}, I extends Prisma
             modelFilter?: WithLogicalOperators<I>,
         ): Promise<T[] | Error> {
             return getManyByFieldValuesHelper<T, I>(
-                this.prismaService.gameSettings.findMany,
+                this.prismaService.#{moDel}.findMany,
                 fieldsAndValues,
                 modelFilter,
             );

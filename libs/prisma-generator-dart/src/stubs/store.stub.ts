@@ -33,6 +33,10 @@ class #{Model}Store extends ModelStreamStore<#{ModelsIdDartType}, #{Model}> {
 
   #{GetManyByPropertyVal}
 
+  // GET THIS MODEL BY RELATED MODEL ID IN MANY TO MANY RELATION
+
+  
+
   /// GET RELATED MODELS WITH ID STORED IN THIS MODEL
 
   #{GetRelatedModelsWithId}

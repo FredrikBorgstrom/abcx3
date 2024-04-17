@@ -1145,6 +1145,10 @@ class #{Model}Store extends ModelStreamStore<#{ModelsIdDartType}, #{Model}> {
 
   #{GetManyByPropertyVal}
 
+  // GET THIS MODEL BY RELATED MODEL ID IN MANY TO MANY RELATION
+
+  
+
   /// GET RELATED MODELS WITH ID STORED IN THIS MODEL
 
   #{GetRelatedModelsWithId}
@@ -1396,6 +1400,7 @@ var DartStoreGenerator = class {
           const relatedFieldName = relationFromFields[0];
           GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName));
           GetRelatedModelsWithId.push(this.generateGetRelatedModelsWithId(field, relatedFieldName));
+        } else if (relationFromFields != null && relationFromFields.length === 0) {
         } else {
           const relatedModelStore = `${field.type}Store`;
           GetRelatedModels$.push(this.generateGetRelatedModels$(field, relatedModelStore));

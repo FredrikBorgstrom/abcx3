@@ -30,6 +30,15 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
     return models;
   }
 
+  getManyByManyIncluding<W>(
+      GetPropertyValueFunction<T, W> getPropVal, List<W> values,
+      {ModelFilter<T>? modelFilter, List<StoreIncludes>? includes}) {
+    final models = getManyByManyValuesAndFilter(getPropVal, values,
+        modelFilter: modelFilter);
+    setIncludedReferencesForList(models, includes: includes);
+    return models;
+  }
+
   setIncludedReferences<U>(U? item, {List<StoreIncludes>? includes}) {
     if (item != null && includes != null) {
       for (var include in includes) {
