@@ -1400,7 +1400,6 @@ var DartStoreGenerator = class {
           const relatedFieldName = relationFromFields[0];
           GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName));
           GetRelatedModelsWithId.push(this.generateGetRelatedModelsWithId(field, relatedFieldName));
-        } else if (relationFromFields != null && relationFromFields.length === 0) {
         } else {
           const relatedModelStore = `${field.type}Store`;
           GetRelatedModels$.push(this.generateGetRelatedModels$(field, relatedModelStore));

@@ -48,9 +48,9 @@ export class DartStoreGenerator {
                     const relatedFieldName = relationFromFields[0];
                     GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName));
                     GetRelatedModelsWithId.push(this.generateGetRelatedModelsWithId(field, relatedFieldName));
-                } else if (relationFromFields != null && relationFromFields.length === 0) {
+                } /* else if (relationFromFields != null && relationFromFields.length === 0) {
 
-                } else {
+                } */ else {
                     const relatedModelStore = `${field.type}Store`;
                     GetRelatedModels$.push(this.generateGetRelatedModels$(field, relatedModelStore));
                     GetRelatedModels.push(this.generateGetRelatedModels(field, relatedModelStore));
