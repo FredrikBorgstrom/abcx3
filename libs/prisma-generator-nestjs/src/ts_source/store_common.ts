@@ -108,11 +108,16 @@ export function combineFilters<T extends LogicalOperators<T>>(
     modelFilter?: T,
 ): T {
     let combinedFilter: T = {
-        AND: [...(modelFilter?.AND as T[]), fieldsAndValues],
+        AND: modelFilter?.AND,
         OR: modelFilter?.OR,
         NOT: modelFilter?.NOT,
     } as T;
-
+    if (fieldsAndValues) {
+        combinedFilter.AND = [
+            ...(combinedFilter?.AND as T[] ?? []), 
+            fieldsAndValues as T,
+        ];
+    }
     return combinedFilter;
 }
 
