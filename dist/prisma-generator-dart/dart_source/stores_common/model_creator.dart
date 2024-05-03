@@ -8,7 +8,9 @@ class ModelCreator<T> {
       : authHttp = ServiceManager.I.get<AuthHttpService>()!;
 
   create(json) {
-    if (json is List) {
+    if (json == null) {
+      return null;
+    } else if (json is List) {
       return createMany(json);
     } else {
       return createOne(json);

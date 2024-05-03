@@ -48,7 +48,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
             param: value,
             modelFilter: modelFilter,
             body: body)
-        .map((model) => upsert(model));
+        .map((model) => model != null ? upsert(model) : null);
   }
 
   /// Returns a stream of all the models that match the given field value,

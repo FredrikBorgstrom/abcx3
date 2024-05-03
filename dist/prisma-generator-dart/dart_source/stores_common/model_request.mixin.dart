@@ -3,13 +3,17 @@ part of '../abcx3_stores_library.dart';
 mixin ModelRequestMixin<T> on ModelCreator<T> {
   final _cachedStreams = MemCachedStreams();
 
-  Stream<T> getOne$(
+  Stream<T?> getOne$(
       {dynamic param,
       required Endpoint endpoint,
       ModelFilter? modelFilter,
       Json? body}) {
-    return get$<T>(
-        param: param, endpoint: endpoint, modelFilter: modelFilter, body: body);
+    return get$<T?>(
+        param: param,
+        endpoint: endpoint,
+        modelFilter: modelFilter,
+        body: body,
+        nullReturnsEmptyList: false);
   }
 
   Stream<List<T>> getMany$(
@@ -25,7 +29,8 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
       {dynamic param,
       required Endpoint endpoint,
       ModelFilter? modelFilter,
-      Json? body}) {
+      Json? body,
+      bool nullReturnsEmptyList = true}) {
     if (modelFilter != null) {
       body ??= {};
       body['modelFilter'] = modelFilter.toJson();
@@ -45,7 +50,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
 
     final broadcastStream$$ = FromCallableStream<U>(() => authHttp
             .request(endpoint, param: param, body: body)
-            .then(handleRequestResult)
+            .then((result) => handleRequestResult(result, nullReturnsEmptyList))
             .then((result) {
           _cachedStreams.remove(cachedStream);
           return result;
@@ -55,9 +60,10 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     return broadcastStream$$;
   }
 
-  handleRequestResult<U>(Result<U, DioException> result) {
+  handleRequestResult<U>(
+      Result<U, DioException> result, bool nullReturnsEmptyList) {
     if (result.isSuccess) {
-      final json = result.success ?? [];
+      final json = result.success ?? (nullReturnsEmptyList ? [] : null);
       final models = create(json);
       return models;
     } else {

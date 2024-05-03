@@ -33,8 +33,8 @@ class MemCachedStream<U> {
       : dateTime = DateTime.now() {
     serializedRequest =
         _serializeRequest(param: param, endpoint: endpoint, body: body);
-    print('serializedRequest: $serializedRequest');
-    print('dateTime: $dateTime');
+    // print('serializedRequest: $serializedRequest');
+    // print('dateTime: $dateTime');
   }
 
   bool hasNotExpired() {
@@ -44,8 +44,8 @@ class MemCachedStream<U> {
   bool isExpired() {
     final now = DateTime.now();
     final age = now.difference(dateTime).inSeconds;
-    print('age: $age');
-    print('is expired: ${age > MAX_AGE_OF_CACHED_REQUEST_IN_SECONDS}');
+    // print('age: $age');
+    // print('is expired: ${age > MAX_AGE_OF_CACHED_REQUEST_IN_SECONDS}');
     return age > MAX_AGE_OF_CACHED_REQUEST_IN_SECONDS;
   }
 
