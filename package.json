@@ -31,9 +31,9 @@
         "typescript": "~5.4.5"
     },
     "engines": {
-        "node": "18.0.0 - 22.0.0",
+        "node": "18.0.0 - 23.0.0",
         "npm": "^9.6.5",
-        "pnpm": "^8.13.1"
+        "pnpm": "^9.0.0"
     },
     "author": {
         "name": "Fredrik Borgström",
@@ -43,5 +43,5 @@
     "workspaces": [
         "libs/*"
     ],
-    "packageManager": "pnpm@8.15.7+sha256.50783dd0fa303852de2dd1557cd4b9f07cb5b018154a6e76d0f40635d6cee019"
+    "packageManager": "pnpm@9.1.0"
 }
