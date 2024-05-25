@@ -43,5 +43,5 @@
     "workspaces": [
         "libs/*"
     ],
-    "packageManager": "pnpm@9.1.0"
+    "packageManager": "pnpm@9.1.2"
 }
