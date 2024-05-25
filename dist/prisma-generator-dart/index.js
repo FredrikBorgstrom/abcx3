@@ -588,8 +588,7 @@ var PrismaHelper = class _PrismaHelper {
   modelContainsObjectReference = (model) => model.fields.some((field) => field.kind === "object");
   getReferenceFields = (model) => model.fields.filter((field) => field.kind === "object");
   getUniqueReferenceFields = (model) => model.fields.reduce((acc, field) => {
-    if (field.kind === "object" && !acc.some((f) => f.type === field.type))
-      acc.push(field);
+    if (field.kind === "object" && !acc.some((f) => f.type === field.type)) acc.push(field);
     return acc;
   }, []);
   //(field => field.kind === 'object');
@@ -635,16 +634,14 @@ var PrismaHelper = class _PrismaHelper {
 function convertBooleanStrings(obj) {
   const result = {};
   for (const key in obj) {
-    if (obj[key] != void 0)
-      result[key] = convertBooleanString(obj[key]);
+    if (obj[key] != void 0) result[key] = convertBooleanString(obj[key]);
   }
   return result;
 }
 function convertEnvStrings(obj) {
   const result = {};
   for (const key in obj) {
-    if (obj[key] != void 0)
-      result[key] = convertEnvString(obj[key]);
+    if (obj[key] != void 0) result[key] = convertEnvString(obj[key]);
   }
   return result;
 }
