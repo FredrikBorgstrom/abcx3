@@ -1259,10 +1259,14 @@ List<#{Model}> getBy#{FieldName}(
     getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, modelFilter: modelFilter, includes: includes);`;
 var dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(
     #{Model} #{moDel}, {ModelFilter? modelFilter, #{IncludeType} includes}) {
-    final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
-    #{moDel}.#{fieldName} = #{fieldName};
-    // setIncludedReferences(#{fieldName}, includes: includes);
-    return #{fieldName};
+    if (#{moDel}.#{relationFromField} == null) {
+        return null;
+    } else {
+        final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
+        #{moDel}.#{fieldName} = #{fieldName};
+        // setIncludedReferences(#{fieldName}, includes: includes);
+        return #{fieldName};
+    }
 }`;
 var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
     #{Model} #{moDel}, {ModelFilter<#{FieldType}>? modelFilter, #{IncludeType} includes}) {
@@ -1331,14 +1335,18 @@ var dartStoreGetManyByPropertyVal$ = `
 `;
 var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
     #{Model} #{moDel}, {bool useCache = true, ModelFilter<#{FieldType}>? modelFilter, #{IncludeType} includes}) {
-    return #{FieldType}Store.instance.getById$(
-        #{moDel}.#{relationFromField}!,
-        useCache: useCache,
-        modelFilter: modelFilter,
-        includes: includes)
-    .doOnData((#{fieldName}) {
-        #{moDel}.#{fieldName} = #{fieldName};
-    });
+    if (#{moDel}.#{relationFromField} == null) {
+        return Stream.value(null);
+    } else {
+        return #{FieldType}Store.instance.getById$(
+            #{moDel}.#{relationFromField}!,
+            useCache: useCache,
+            modelFilter: modelFilter,
+            includes: includes)
+        .doOnData((#{fieldName}) {
+            #{moDel}.#{fieldName} = #{fieldName};
+        });
+    }
 }`;
 var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
     #{Model} #{moDel}, {bool useCache = true, ModelFilter<#{FieldType}>? modelFilter, #{IncludeType} includes}) {
