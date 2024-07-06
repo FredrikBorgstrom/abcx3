@@ -17,7 +17,8 @@ export interface PrismaCommentDirective {
 }
 
 export const PrismaTypeScriptTypeMap = {
-    BigInt: 'BigInt',
+   
+    BigInt: 'bigint', // BigInt
     Boolean: 'boolean',
     Bytes: 'Buffer',
     DateTime: 'Date',

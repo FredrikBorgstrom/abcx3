@@ -103,6 +103,8 @@ export class ControllerGenerator {
                 return `new Date(${field.name})`;
             } else if (field.type === 'String') {
                 return field.name;
+            } else if (field.type === 'BigInt') {
+                return `BigInt(${field.name})`;
             } else {
                 return `(${field.name} as ${field.type})`;
             }

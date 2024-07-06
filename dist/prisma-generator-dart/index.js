@@ -505,7 +505,8 @@ var StringFns = class {
 
 // libs/shared/src/prisma.helper.ts
 var PrismaTypeScriptTypeMap = {
-  BigInt: "BigInt",
+  BigInt: "bigint",
+  // BigInt
   Boolean: "boolean",
   Bytes: "Buffer",
   DateTime: "Date",

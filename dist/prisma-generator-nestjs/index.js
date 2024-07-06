@@ -492,7 +492,8 @@ var StringFns = class {
 
 // libs/shared/src/prisma.helper.ts
 var PrismaTypeScriptTypeMap = {
-  BigInt: "BigInt",
+  BigInt: "bigint",
+  // BigInt
   Boolean: "boolean",
   Bytes: "Buffer",
   DateTime: "Date",
@@ -835,6 +836,8 @@ var ControllerGenerator = class {
         return `new Date(${field.name})`;
       } else if (field.type === "String") {
         return field.name;
+      } else if (field.type === "BigInt") {
+        return `BigInt(${field.name})`;
       } else {
         return `(${field.name} as ${field.type})`;
       }
