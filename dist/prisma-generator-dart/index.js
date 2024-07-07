@@ -783,8 +783,10 @@ var dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 var dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
 var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
+var dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}']) : null`;
 var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
-var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.parse(e.toString())).toList() : null`;
+var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.tryParse(e.toString())).toList() : null`;
+var dartFromJsonScalarBigIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => BigInt.tryParse(e.toString())).toList() : null`;
 var dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
 var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
 var dartFromJsonEnumArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}']) : null`;
@@ -1025,6 +1027,8 @@ var DartGenerator = class {
             code = dartFromJsonScalarIntListArg;
           } else if (field.type === "String") {
             code = dartFromJsonScalarStringListArg;
+          } else if (field.type === "BigInt") {
+            code = dartFromJsonScalarBigIntListArg;
           } else {
             code = dartFromJsonScalarStringListArg;
           }
@@ -1040,6 +1044,8 @@ var DartGenerator = class {
         code = dartFromJsonDateTimeArg;
       } else if (field.kind === "object") {
         code = dartFromJsonRefArg;
+      } else if (field.type === "BigInt") {
+        code = dartFromJsonBigIntArg;
       } else {
         code = dartFromJsonArg;
       }

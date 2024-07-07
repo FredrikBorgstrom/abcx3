@@ -6,11 +6,15 @@ class FilterOperatorAndValue {
 
   FilterOperatorAndValue(this.operator, this.value);
 
-  Json toJson() {
+  /* Json toJson() {
     return {
       operator.name: value,
     };
-  }
+  } */
+
+  Json toJson() => value is BigInt
+      ? {operator.name: value.toString()}
+      : {operator.name: value};
 
   factory FilterOperatorAndValue.fromJson(Json json) {
     return FilterOperatorAndValue(

@@ -11,11 +11,13 @@ import {
     dartEqualByIdStub,
     dartEqualStub,
     dartFromJsonArg,
+    dartFromJsonBigIntArg,
     dartFromJsonDateTimeArg,
     dartFromJsonEnumArg,
     dartFromJsonEnumListArg,
     dartFromJsonModelListArg,
     dartFromJsonRefArg,
+    dartFromJsonScalarBigIntListArg,
     dartFromJsonScalarIntListArg,
     dartFromJsonScalarStringListArg,
     dartHashCodeKeyValue,
@@ -300,6 +302,8 @@ export class DartGenerator {
                         code = dartFromJsonScalarIntListArg;
                     } else if (field.type === 'String') {
                         code = dartFromJsonScalarStringListArg;
+                    } else if (field.type === 'BigInt') {
+                        code = dartFromJsonScalarBigIntListArg;
                     } else {
                         // todo: add other types here
                         code = dartFromJsonScalarStringListArg;
@@ -310,12 +314,15 @@ export class DartGenerator {
                     break;
             }
         } else {
+            // console.log(field.type, field.kind);
             if (field.kind === 'enum') {
                 code = dartFromJsonEnumArg;
             } else if (field.type === 'DateTime') {
                 code = dartFromJsonDateTimeArg;
             } else if (field.kind === "object") {
                 code = dartFromJsonRefArg;
+            } else if (field.type === "BigInt") {
+                code = dartFromJsonBigIntArg;
             } else {
                 code = dartFromJsonArg;
             }
