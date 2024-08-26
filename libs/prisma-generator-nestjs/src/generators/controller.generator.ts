@@ -105,6 +105,8 @@ export class ControllerGenerator {
                 return field.name;
             } else if (field.type === 'BigInt') {
                 return `BigInt(${field.name})`;
+            } else if (field.type === 'Float') {
+                return `parseFloat(${field.name})`;
             } else {
                 return `(${field.name} as ${field.type})`;
             }
