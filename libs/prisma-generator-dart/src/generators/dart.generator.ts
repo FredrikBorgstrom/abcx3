@@ -25,6 +25,7 @@ import {
     dartPropertyStub,
     dartUIDStub,
     getPropertyValueFunctionStub,
+    toJsonBigIntPropertyStub,
     toJsonObjectListStub,
     toJsonObjectStub,
     toJsonPropertyStub,
@@ -104,7 +105,7 @@ export class DartGenerator {
                 uidGetter = this.generateUIDGetter(field);
                 equalById = this.generateEqualById(field);
                 content = content.replace(/#{ImplementsPrismaModel}/g, `PrismaModel<${this.getDartType(field)}, ${className}>`);
-                content = content.replace(/#{ImplementsId}/g, (field.name == 'id') ? `, Id<${this.getDartType(field)}>`  : '');
+                content = content.replace(/#{ImplementsId}/g, (field.name == 'id') ? `, Id<${this.getDartType(field)}>` : '');
             }
 
             properties.push(this.generatePropertyContent(field));
@@ -338,6 +339,8 @@ export class DartGenerator {
         let content: string;
         if (field.kind === 'object' || field.kind === 'enum') {
             content = field.isList ? toJsonObjectListStub : toJsonObjectStub;
+        } else if (field.type === 'BigInt') {
+            content = toJsonBigIntPropertyStub;
         } else {
             content = toJsonPropertyStub;
         }
@@ -357,7 +360,7 @@ export class DartGenerator {
 
         if (field.name === 'id' && field.isId) {
             content = '@override\n' + content;
-        } 
+        }
         return content;
     }
 

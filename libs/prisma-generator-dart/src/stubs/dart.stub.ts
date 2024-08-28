@@ -120,6 +120,7 @@ export const dartFromJsonEnumListArg = `#{PropName}: json['#{PropName}'] != null
 export const dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 
 export const toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
+export const toJsonBigIntPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toString()`;
 export const toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
 export const toJsonObjectListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
 

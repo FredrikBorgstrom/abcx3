@@ -793,6 +793,7 @@ var dartFromJsonEnumArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fr
 var dartFromJsonEnumListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}']).map((item) => #{Type}.fromJson(item)).toList()) : null`;
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 var toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
+var toJsonBigIntPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toString()`;
 var toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
 var toJsonObjectListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
 var dartEqualStub = `#{PropName} == other.#{PropName}`;
@@ -1059,6 +1060,8 @@ var DartGenerator = class {
     let content;
     if (field.kind === "object" || field.kind === "enum") {
       content = field.isList ? toJsonObjectListStub : toJsonObjectStub;
+    } else if (field.type === "BigInt") {
+      content = toJsonBigIntPropertyStub;
     } else {
       content = toJsonPropertyStub;
     }
