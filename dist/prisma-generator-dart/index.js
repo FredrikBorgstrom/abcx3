@@ -785,6 +785,7 @@ var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 var dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}']) : null`;
 var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
+var dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
 var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.tryParse(e.toString())).toList() : null`;
 var dartFromJsonScalarBigIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => BigInt.tryParse(e.toString())).toList() : null`;
 var dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
@@ -1047,6 +1048,8 @@ var DartGenerator = class {
         code = dartFromJsonRefArg;
       } else if (field.type === "BigInt") {
         code = dartFromJsonBigIntArg;
+      } else if (field.type === "Float") {
+        code = dartFromJsonFloatArg;
       } else {
         code = dartFromJsonArg;
       }

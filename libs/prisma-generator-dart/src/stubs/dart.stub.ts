@@ -105,6 +105,7 @@ export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropNa
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 export const dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}']) : null`;
 export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
+export const dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
 
 export const dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.tryParse(e.toString())).toList() : null`;
 export const dartFromJsonScalarBigIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => BigInt.tryParse(e.toString())).toList() : null`;

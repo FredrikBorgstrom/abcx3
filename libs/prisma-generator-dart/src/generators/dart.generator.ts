@@ -15,6 +15,7 @@ import {
     dartFromJsonDateTimeArg,
     dartFromJsonEnumArg,
     dartFromJsonEnumListArg,
+    dartFromJsonFloatArg,
     dartFromJsonModelListArg,
     dartFromJsonRefArg,
     dartFromJsonScalarBigIntListArg,
@@ -306,7 +307,6 @@ export class DartGenerator {
                     } else if (field.type === 'BigInt') {
                         code = dartFromJsonScalarBigIntListArg;
                     } else {
-                        // todo: add other types here
                         code = dartFromJsonScalarStringListArg;
                     }
                     break;
@@ -324,7 +324,9 @@ export class DartGenerator {
                 code = dartFromJsonRefArg;
             } else if (field.type === "BigInt") {
                 code = dartFromJsonBigIntArg;
-            } else {
+            } else if (field.type === 'Float') {
+                code = dartFromJsonFloatArg;
+            }else {
                 code = dartFromJsonArg;
             }
         }
