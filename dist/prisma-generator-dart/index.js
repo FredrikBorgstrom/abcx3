@@ -1590,9 +1590,7 @@ var generateDartEnum = ({ name, values }, autoGenText) => {
 
 // libs/prisma-generator-dart/src/stubs/stores_library.stub.ts
 var dartStoreLibrary = `
-library abcx3_stores;
-
-import 'dart:convert';
+library;
 
 import 'package:abcx3/services/authentication/auth.library.dart';
 import 'package:abcx3/services/service_manager.dart';

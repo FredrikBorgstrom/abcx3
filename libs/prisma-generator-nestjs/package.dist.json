@@ -18,8 +18,8 @@
   "homepage": "https://github.com/FredrikBorgstrom/abcx3",
   "license": "ISC",
   "dependencies": {
-    "prettier": "^3.3.2",
-    "@prisma/generator-helper": "^5.20.0",
+    "prettier": "^3.3.3",
+    "@prisma/generator-helper": "^5.21.1",
     "dotenv": "^16.4.5"
   }
 }
