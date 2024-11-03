@@ -3,11 +3,9 @@ part of '../abcx3_stores_library.dart';
 /// `PropertyFilter` is a class that provides functionality to filter Prisma models.
 /// It takes one property, and a list of values and operators as parameters to perform the filtering.
 
-class PropertyFilter<T extends GetPropToValueFunction> {
+class PropertyFilter<T extends GetPropToValueFunction<T>, V> {
   String property;
   List<FilterOperatorAndValue> operatorsAndValues;
-  // dynamic value;
-  // FilterOperator operator;
 
   /// Constructor for the `PropertyFilter` class.
   /// It requires a property, value and operator to be passed.
@@ -29,7 +27,7 @@ class PropertyFilter<T extends GetPropToValueFunction> {
   /// It returns true if the item matches the conditions, otherwise it returns false.
   bool isMatching(T item) {
     int numberOfNotMatchingFilters = operatorsAndValues.length;
-    final propertyValueFunction = item.getPropToValueFunction(property);
+    final propertyValueFunction = item.getPropToValueFunction<V>(property);
     final propertyValue = propertyValueFunction(item);
     for (var operatorAndValue in operatorsAndValues) {
       if (_matches(

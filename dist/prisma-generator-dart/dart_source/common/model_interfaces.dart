@@ -19,8 +19,9 @@ abstract interface class CopyWith<T> {
   T updateWithInstanceValues(T model);
 }
 
+// M is the model type, V is the value type
 abstract interface class GetPropToValueFunction<T> {
-  dynamic Function(T model) getPropToValueFunction(String propName);
+  V? Function(T model) getPropToValueFunction<V>(String propName);
 }
 
 abstract interface class UID<K> {
@@ -36,9 +37,6 @@ abstract interface class PrismaModel<K, T>
         CopyWith<T>,
         UID<K>,
         GetPropToValueFunction<T> {}
-
-/*abstract interface class PrismaModel<T extends Object, U>
-    implements JsonSerializable, CopyWithAndUID<T, U> {}*/
 
 // NOT USED:
 
@@ -60,4 +58,7 @@ abstract interface class Id<K> {
   K? id;
 }
 
+/*abstract interface class PrismaModel<T extends Object, U>
+    implements JsonSerializable, CopyWithAndUID<T, U> {}*/
+    
 // abstract interface class PrismaIdModel<M, K> implements PrismaModel<M>, Id<K> {}

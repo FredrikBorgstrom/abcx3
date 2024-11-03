@@ -2,8 +2,14 @@ part of '../abcx3_stores_library.dart';
 
 enum LogicalOperator { AND, OR, NOT }
 
+/// `LogicalFilterGroup` is a class that provides functionality to filter Prisma models.
+/// It takes a list of `PropertyFilter` objects and a logical operator as parameters to perform the filtering.
+/// The `filtersMatch` method is used to check if an item matches the filter conditions.
+/// The `filterOne` method is used to filter a single item.
+/// The `filterMany` method is used to filter a list of items.
+
 class LogicalFilterGroup<T extends GetPropToValueFunction> {
-  List<PropertyFilter<T>> filters;
+  List<PropertyFilter> filters;
   LogicalOperator logicalOperator;
 
   LogicalFilterGroup(this.filters,

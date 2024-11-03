@@ -19,12 +19,12 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
 
     /// gets a function by property name that returns the property value from the model
     @override
-  dynamic Function(#{Model}) getPropToValueFunction(String propertyName) {
+  V? Function(#{Model}) getPropToValueFunction<V>(String propertyName) {
     final propFunction = propertyValueFunctionMap[propertyName];
     if (propFunction == null) {
       throw Exception('Property "$propertyName" not found in #{Model}');
     }
-    return propFunction;
+    return propFunction as V? Function(#{Model});
   }
 
     #{EqualById}

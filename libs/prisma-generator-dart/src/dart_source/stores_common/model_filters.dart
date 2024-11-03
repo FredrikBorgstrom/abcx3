@@ -1,11 +1,11 @@
 part of '../abcx3_stores_library.dart';
 
 class ModelFilter<T extends GetPropToValueFunction> {
-  List<LogicalFilterGroup> filters;
+  List<LogicalFilterGroup<T>> filters;
 
   ModelFilter(this.filters);
 
-  filterOne(T item) {
+  T? filterOne(T item) {
     return filtersMatch(item) ? item : null;
   }
 
@@ -13,7 +13,7 @@ class ModelFilter<T extends GetPropToValueFunction> {
     return items.where((item) => filtersMatch(item)).toList();
   }
 
-  filtersMatch(T item) {
+  bool filtersMatch(T item) {
     return filters.every((filter) => filter.filtersMatch(item));
   }
 
