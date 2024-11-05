@@ -32,14 +32,6 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     return items.find((m) => getPropVal(m) == value);
   }
 
-  /*T? filterOne(T item, ModelFilterGroup<T> filterGroup) {
-    return filterGroup.filterOne(item);
-  }
-
-  List<T> filterMany(List<T> items, ModelFilterGroup<T> filterGroup) {
-    return filterGroup.filterMany(items);
-  }*/
-
   T? getByPropertyValueAndFilter<U>(
       GetPropertyValueFunction<T, U> getPropVal, value,
       {ModelFilter<T>? modelFilter}) {
@@ -70,7 +62,13 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   List<T> getManyByManyValuesAndFilter<W>(
       GetPropertyValueFunction<T, W> getPropVal, List<W> values,
       {ModelFilter<T>? modelFilter}) {
-    return items.where((m) => values.contains(getPropVal(m))).toList();
+    final foundItems =
+        items.where((m) => values.contains(getPropVal(m))).toList();
+    if (foundItems.isNotEmpty && modelFilter != null) {
+      return modelFilter.filterMany(foundItems);
+    } else {
+      return foundItems;
+    }
   }
 
   @override
