@@ -5,7 +5,7 @@ part of '../abcx3_stores_library.dart';
 ///
 class ModelStreamStore<K, T extends PrismaModel<K, T>>
     extends ModelStore<K, T> {
-  ModelStreamStore(JsonFactory<T> fromJson) : super(fromJson);
+  ModelStreamStore(super.fromJson);
 
   /// A private BehaviorSubject that holds a list of all the models.
   ///  When the list is updated, the public stream (defined below) outputs a new event consisting of all the models at their current state.
@@ -98,37 +98,42 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
   }
 
   /// Returns a stream of a model including the given relational fields.
-  Stream<V?> getIncluding$<V>(
-      Stream<V?> item$, List<StoreIncludes> storeGetters) {
+  Stream<T?> getIncluding$(
+      Stream<T?> model$, List<StoreIncludes> storeGetters) {
     List<Stream<dynamic>> listOfZipStreams = [];
-    return item$.switchMap((item) {
-      if (item == null) {
-        return Stream.value(item); // .asBroadcastStream();
+    return model$.switchMap((model) {
+      if (model == null) {
+        return Stream.value(model); // .asBroadcastStream();
       } else {
         for (var modelField in storeGetters) {
-          listOfZipStreams.add(modelField.method(item));
+          listOfZipStreams.add(modelField.method(model));
         }
         return Rx.zipList(listOfZipStreams).switchMap((value) {
-          return Stream.value(item); // .asBroadcastStream();
-        }); // .asBroadcastStream();
+          return Stream.value(model);
+        }).doOnData((model) {
+          upsert(model);
+        });
       }
     });
   }
 
   /// Returns a stream of a list of models including the given relational fields.
-  Stream<List<V>> getManyIncluding$<V>(
-      Stream<List<V>> items$, List<StoreIncludes> storeGetters) {
-    return items$.switchMap((items) {
-      if (items.isEmpty) {
-        return Stream.value(items);
+  Stream<List<T>> getManyIncluding$(
+      Stream<List<T>> models$, List<StoreIncludes> storeGetters) {
+    return models$.switchMap((models) {
+      if (models.isEmpty) {
+        return Stream.value(models);
       } else {
         List<Stream<dynamic>> listOfZipStreams = [];
         for (var modelField in storeGetters) {
-          listOfZipStreams.addAll(items.map((item) => modelField.method(item)));
+          listOfZipStreams
+              .addAll(models.map((model) => modelField.method(model)));
         }
         return Rx.zipList(listOfZipStreams).switchMap((value) {
-          return Stream.value(items); // .asBroadcastStream();
-        }); //.asBroadcastStream();
+          return Stream.value(models);
+        }).doOnData((models) {
+          items = [...items];
+        });
       }
     });
   }

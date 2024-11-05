@@ -236,7 +236,7 @@ export const dartStoreGetByPropertyVal$ = `
     if (includes == null || includes.isEmpty) {
         return item$;
     } else {
-        return getIncluding$<#{Model}?>(item$, includes);
+        return getIncluding$(item$, includes);
     }
 }
 `;
@@ -256,7 +256,7 @@ export const dartStoreGetManyByPropertyVal$ = `
     if (includes == null || includes.isEmpty) {
         return items$;
     } else {
-        return getManyIncluding$<#{Model}>(items$, includes);
+        return getManyIncluding$(items$, includes);
     }
 }
 `;
