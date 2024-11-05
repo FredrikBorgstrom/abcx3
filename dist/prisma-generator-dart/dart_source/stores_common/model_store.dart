@@ -53,4 +53,12 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
       setIncludedReferences(item, includes: includes);
     }
   }
+
+  /// If items are being observed (for example in a StreamBuilder),
+  /// this method can be used to trigger a refresh of the observer's renderer
+  /// That would also require that the items' store is implemented as an observable,
+  /// like they are in the ModelStreamStore
+  refreshItems() {
+    items = [...items];
+  }
 }
