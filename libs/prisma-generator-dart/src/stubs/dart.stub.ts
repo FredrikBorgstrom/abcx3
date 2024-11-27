@@ -103,7 +103,7 @@ export const dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.
 export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
-export const dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}']) : null`;
+export const dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}'].toString()) : null`;
 export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
 export const dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
 

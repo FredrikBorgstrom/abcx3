@@ -363,62 +363,68 @@ var require_main = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv-expand@11.0.6/node_modules/dotenv-expand/lib/main.js
+// node_modules/.pnpm/dotenv-expand@12.0.1/node_modules/dotenv-expand/lib/main.js
 var require_main2 = __commonJS({
-  "node_modules/.pnpm/dotenv-expand@11.0.6/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv-expand@12.0.1/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
     "use strict";
-    var DOTENV_SUBSTITUTION_REGEX = /(\\)?(\$)(?!\()(\{?)([\w.]+)(?::?-((?:\$\{(?:\$\{(?:\$\{[^}]*\}|[^}])*}|[^}])*}|[^}])+))?(\}?)/gi;
     function _resolveEscapeSequences(value) {
       return value.replace(/\\\$/g, "$");
     }
-    function interpolate(value, processEnv, parsed) {
-      return value.replace(DOTENV_SUBSTITUTION_REGEX, (match, escaped, dollarSign, openBrace, key, defaultValue, closeBrace) => {
-        if (escaped === "\\") {
-          return match.slice(1);
+    function expandValue(value, processEnv, runningParsed) {
+      const env = { ...runningParsed, ...processEnv };
+      const regex = /(?<!\\)\${([^{}]+)}|(?<!\\)\$([A-Za-z_][A-Za-z0-9_]*)/g;
+      let result = value;
+      let match;
+      const seen = /* @__PURE__ */ new Set();
+      while ((match = regex.exec(result)) !== null) {
+        seen.add(result);
+        const [template, bracedExpression, unbracedExpression] = match;
+        const expression = bracedExpression || unbracedExpression;
+        const opRegex = /(:\+|\+|:-|-)/;
+        const opMatch = expression.match(opRegex);
+        const splitter = opMatch ? opMatch[0] : null;
+        const r = expression.split(splitter);
+        let defaultValue;
+        let value2;
+        const key = r.shift();
+        if ([":+", "+"].includes(splitter)) {
+          defaultValue = env[key] ? r.join(splitter) : "";
+          value2 = null;
         } else {
-          if (processEnv[key]) {
-            if (processEnv[key] === parsed[key]) {
-              return processEnv[key];
-            } else {
-              return interpolate(processEnv[key], processEnv, parsed);
-            }
-          }
-          if (parsed[key]) {
-            if (parsed[key] === value) {
-              return parsed[key];
-            } else {
-              return interpolate(parsed[key], processEnv, parsed);
-            }
-          }
-          if (defaultValue) {
-            if (defaultValue.startsWith("$")) {
-              return interpolate(defaultValue, processEnv, parsed);
-            } else {
-              return defaultValue;
-            }
-          }
-          return "";
+          defaultValue = r.join(splitter);
+          value2 = env[key];
         }
-      });
+        if (value2) {
+          if (seen.has(value2)) {
+            result = result.replace(template, defaultValue);
+          } else {
+            result = result.replace(template, value2);
+          }
+        } else {
+          result = result.replace(template, defaultValue);
+        }
+        if (result === runningParsed[key]) {
+          break;
+        }
+        regex.lastIndex = 0;
+      }
+      return result;
     }
     function expand2(options) {
+      const runningParsed = {};
       let processEnv = process.env;
       if (options && options.processEnv != null) {
         processEnv = options.processEnv;
       }
       for (const key in options.parsed) {
         let value = options.parsed[key];
-        const inProcessEnv = Object.prototype.hasOwnProperty.call(processEnv, key);
-        if (inProcessEnv) {
-          if (processEnv[key] === options.parsed[key]) {
-            value = interpolate(value, processEnv, options.parsed);
-          } else {
-            value = processEnv[key];
-          }
+        if (processEnv[key] && processEnv[key] !== value) {
+          value = processEnv[key];
         } else {
-          value = interpolate(value, processEnv, options.parsed);
+          value = expandValue(value, processEnv, runningParsed);
         }
         options.parsed[key] = _resolveEscapeSequences(value);
+        runningParsed[key] = _resolveEscapeSequences(value);
       }
       for (const processKey in options.parsed) {
         processEnv[processKey] = options.parsed[processKey];
