@@ -23,6 +23,6 @@
     "prettier": "^3.4.1"
   },
   "devDependencies": {
-    "@nestjs/common": "^10.4.10"
+    "@nestjs/common": "^10.4.12"
   }
 }
