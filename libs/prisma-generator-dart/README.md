@@ -15,7 +15,7 @@ This library automatically creates Dart class files for all your Prisma models. 
 ## Installation
 
 ```bash
-npm i prisma-generator-dart -D
+npm i @abcx3/prisma-generator-dart -D
 ```
 
 
@@ -27,7 +27,7 @@ Open your `prisma.schema` file to add a new `generator`.
 # prisma.schema file
 
 generator dart {
-  provider = "node ./node_modules/@abcx3/prisma-generator-nestjs/index.js"
+  provider = "node ./node_modules/@abcx3/prisma-generator-dart/index.js"
   output = "absolute/path/to/your/flutter/project/lib/generated_models"
   # dryRun = true / false
 }
