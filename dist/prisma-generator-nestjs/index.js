@@ -25,12 +25,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json
+// node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/package.json"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "16.4.5",
+      version: "16.4.7",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -51,10 +51,9 @@ var require_package = __commonJS({
       scripts: {
         "dts-check": "tsc --project tests/types/tsconfig.json",
         lint: "standard",
-        "lint-readme": "standard-markdown",
         pretest: "npm run lint && npm run dts-check",
-        test: "tap tests/*.js --100 -Rspec",
-        "test:coverage": "tap --coverage-report=lcov",
+        test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
+        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -75,15 +74,12 @@ var require_package = __commonJS({
       readmeFilename: "README.md",
       license: "BSD-2-Clause",
       devDependencies: {
-        "@definitelytyped/dtslint": "^0.0.133",
         "@types/node": "^18.11.3",
-        decache: "^4.6.1",
+        decache: "^4.6.2",
         sinon: "^14.0.1",
         standard: "^17.0.0",
-        "standard-markdown": "^7.1.0",
         "standard-version": "^9.5.0",
-        tap: "^16.3.0",
-        tar: "^6.1.11",
+        tap: "^19.2.0",
         typescript: "^4.8.4"
       },
       engines: {
@@ -96,9 +92,9 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js
+// node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@16.4.5/node_modules/dotenv/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs3 = require("fs");
     var path4 = require("path");
     var os = require("os");
