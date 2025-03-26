@@ -799,7 +799,7 @@ var toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
 var toJsonBigIntPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toString()`;
 var toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
 var toJsonObjectListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
-var toJsonDatePropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toIso8601String()`;
+var toJsonDatePropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toIso8601String()`;
 var dartEqualStub = `#{PropName} == other.#{PropName}`;
 var dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;
 var dartHashCodeKeyValue = `#{PropName}.hashCode`;
