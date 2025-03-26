@@ -27,6 +27,7 @@ import {
     dartUIDStub,
     getPropertyValueFunctionStub,
     toJsonBigIntPropertyStub,
+    toJsonDatePropertyStub,
     toJsonObjectListStub,
     toJsonObjectStub,
     toJsonPropertyStub,
@@ -339,7 +340,9 @@ export class DartGenerator {
 
     generateToJsonKeyVal(field: DMMF.Field) {
         let content: string;
-        if (field.kind === 'object' || field.kind === 'enum') {
+        if (field.type === 'DateTime') {
+            content = toJsonDatePropertyStub;
+        } else if (field.kind === 'object' || field.kind === 'enum') {
             content = field.isList ? toJsonObjectListStub : toJsonObjectStub;
         } else if (field.type === 'BigInt') {
             content = toJsonBigIntPropertyStub;

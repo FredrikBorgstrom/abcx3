@@ -799,6 +799,7 @@ var toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
 var toJsonBigIntPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toString()`;
 var toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
 var toJsonObjectListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
+var toJsonDatePropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toIso8601String()`;
 var dartEqualStub = `#{PropName} == other.#{PropName}`;
 var dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;
 var dartHashCodeKeyValue = `#{PropName}.hashCode`;
@@ -1063,7 +1064,9 @@ var DartGenerator = class {
   }
   generateToJsonKeyVal(field) {
     let content;
-    if (field.kind === "object" || field.kind === "enum") {
+    if (field.type === "DateTime") {
+      content = toJsonDatePropertyStub;
+    } else if (field.kind === "object" || field.kind === "enum") {
       content = field.isList ? toJsonObjectListStub : toJsonObjectStub;
     } else if (field.type === "BigInt") {
       content = toJsonBigIntPropertyStub;

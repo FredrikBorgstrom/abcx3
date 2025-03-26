@@ -1,2 +1,6 @@
 packages:
-  - "libs/*"
+  - libs/*
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - esbuild
+  - prisma

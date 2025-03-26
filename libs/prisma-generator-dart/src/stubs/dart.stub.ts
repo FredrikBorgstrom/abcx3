@@ -124,6 +124,7 @@ export const toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{Prop
 export const toJsonBigIntPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toString()`;
 export const toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
 export const toJsonObjectListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
+export const toJsonDatePropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toIso8601String()`;
 
 export const dartEqualStub = `#{PropName} == other.#{PropName}`;
 export const dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;

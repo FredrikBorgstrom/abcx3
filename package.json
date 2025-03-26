@@ -13,27 +13,27 @@
     },
     "private": false,
     "dependencies": {
-        "@prisma/generator-helper": "^6.1.0"
+        "@prisma/generator-helper": "^6.5.0"
     },
     "devDependencies": {
         "@types/glob": "^8.1.0",
-        "@types/node": "^22.10.2",
-        "@typescript-eslint/eslint-plugin": "^8.18.1",
-        "@typescript-eslint/parser": "^8.18.1",
-        "esbuild": "^0.24.0",
+        "@types/node": "^22.13.13",
+        "@typescript-eslint/eslint-plugin": "^8.28.0",
+        "@typescript-eslint/parser": "^8.28.0",
+        "esbuild": "^0.25.1",
         "esbuild-plugin-node-externals": "^1.0.1",
-        "eslint": "^9.17.0",
-        "eslint-config-prettier": "^9.1.0",
-        "prisma": "^6.1.0",
+        "eslint": "^9.23.0",
+        "eslint-config-prettier": "^10.1.1",
+        "prisma": "^6.5.0",
         "rimraf": "^6.0.1",
         "ts-node": "^10.9.2",
         "tslib": "^2.8.1",
-        "typescript": "~5.7.2"
+        "typescript": "~5.8.2"
     },
     "engines": {
         "node": "18.0.0 - 24.0.0",
         "npm": "^9.6.5",
-        "pnpm": "^9.0.0"
+        "pnpm": "^10.0.0"
     },
     "author": {
         "name": "Fredrik Borgström",
@@ -43,5 +43,5 @@
     "workspaces": [
         "libs/*"
     ],
-    "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"
+    "packageManager": "pnpm@10.7.0"
 }
