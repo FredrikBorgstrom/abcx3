@@ -7,7 +7,8 @@ import { controllerGetByFieldValuesStub, controllerGetManyByFieldValuesStub, con
 const controllerCommentDirectives: Record<string, PrismaCommentDirective> = {
     omit: { name: '@abcx3_omit' },
     disableControllers: { name: '@abcx3_disableControllers' },
-    enableCreate: { name: '@abcx3_enableCreate' }
+    enableCreate: { name: '@abcx3_enableCreate' },
+    // replaceOnUpdate: { name: '@abcx3_replaceOnUpdate' }
 }
 
 export class ControllerGenerator {

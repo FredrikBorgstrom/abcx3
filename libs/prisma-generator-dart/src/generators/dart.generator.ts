@@ -97,11 +97,14 @@ export class DartGenerator {
         const getPropToValueFunction: string[] = [];
         let uidGetter = '';
         let equalById = '';
-
+        let replaceOnUpdate = false;
         for (const field of this.model.fields) {
             const commentDirectives = this.prismaHelper.parseDocumentation(field);
             if (commentDirectives.some(directive => directive.name === '@abcx3_omit')) {
                 continue;
+            }
+            if (commentDirectives.some(directive => directive.name === '@abcx3_replaceOnUpdate')) {
+                replaceOnUpdate = true;
             }
             if (field.isId) {
                 uidGetter = this.generateUIDGetter(field);
