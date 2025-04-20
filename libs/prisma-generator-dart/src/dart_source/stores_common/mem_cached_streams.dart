@@ -9,7 +9,8 @@ class MemCachedStreams {
 
   MemCachedStream? getByRequest(String serializedRequest) {
     return _memCachedStreams.find(
-        (cachedStream) => cachedStream.serializedRequest == serializedRequest);
+      (cachedStream) => cachedStream.serializedRequest == serializedRequest,
+    );
   }
 
   void remove(MemCachedStream cachedStream) {
@@ -22,17 +23,23 @@ class MemCachedStreams {
 }
 
 class MemCachedStream<U> {
-  static const MAX_AGE_OF_CACHED_REQUEST_IN_SECONDS = 30;
+  static const MAX_AGE_OF_CACHED_REQUEST_IN_SECONDS = 3;
 
   Stream<U>? stream$;
   final DateTime dateTime;
   late final String serializedRequest;
 
-  MemCachedStream(
-      {required Endpoint endpoint, dynamic param, Json? body, this.stream$})
-      : dateTime = DateTime.now() {
-    serializedRequest =
-        _serializeRequest(param: param, endpoint: endpoint, body: body);
+  MemCachedStream({
+    required Endpoint endpoint,
+    dynamic param,
+    Json? body,
+    this.stream$,
+  }) : dateTime = DateTime.now() {
+    serializedRequest = _serializeRequest(
+      param: param,
+      endpoint: endpoint,
+      body: body,
+    );
     // print('serializedRequest: $serializedRequest');
     // print('dateTime: $dateTime');
   }
@@ -53,8 +60,11 @@ class MemCachedStream<U> {
     return other.serializedRequest == serializedRequest;
   }
 
-  String _serializeRequest(
-      {dynamic param, required Endpoint endpoint, Json? body}) {
+  String _serializeRequest({
+    dynamic param,
+    required Endpoint endpoint,
+    Json? body,
+  }) {
     // final dateTime = DateTime.now().toIso8601String();
     final serializedParam = param != null ? param.toString() : '';
     final serializedBody = body != null ? body.toString() : '';

@@ -16,6 +16,7 @@ abstract interface class JsonSerializable {
 abstract interface class CopyWith<T> {
   T copyWith();
   T copyWithInstanceValues(T model);
+  T customCopy(T model);
   T updateWithInstanceValues(T model);
 }
 
@@ -57,8 +58,3 @@ abstract interface class ToJson {
 abstract interface class Id<K> {
   K? id;
 }
-
-/*abstract interface class PrismaModel<T extends Object, U>
-    implements JsonSerializable, CopyWithAndUID<T, U> {}*/
-    
-// abstract interface class PrismaIdModel<M, K> implements PrismaModel<M>, Id<K> {}

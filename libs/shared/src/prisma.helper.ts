@@ -8,7 +8,7 @@ export interface FieldNameAndType {
 
 export type ProgrammingLanguage = 'typescript' | 'dart';
 
-export type CommentDirectiveName = '@abcx3_omit' | '@abcx3_disableControllers' | '@abcx3_enableControllers' | '@abcx3_enableCreate' | '@abcx3_enableUpdate' | '@abcx3_enableDelete' | '@abcx3_enableGetAll' | '@abcx3_enableGetById' | '@abcx3enableCreateWithUser' | '@abcx3_enableUpdateWithUser' | '@abcx3_enableDeleteWithUser' | '@abcx3_enableGetAllWithUser' | '@abcx3_enableGetByIdWithUser' | '@abcx3_replaceOnUpdate';
+export type CommentDirectiveName = '@abcx3_omit' | '@abcx3_disableControllers' | '@abcx3_enableControllers' | '@abcx3_enableCreate' | '@abcx3_enableUpdate' | '@abcx3_enableDelete' | '@abcx3_enableGetAll' | '@abcx3_enableGetById' | '@abcx3_enableCreateWithUser' | '@abcx3_enableUpdateWithUser' | '@abcx3_enableDeleteWithUser' | '@abcx3_enableGetAllWithUser' | '@abcx3_enableGetByIdWithUser' | '@abcx3_replaceOnUpdate' | '@abcx3_replaceList';
 
 
 export interface PrismaCommentDirective {

@@ -33,8 +33,10 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   }
 
   T? getByPropertyValueAndFilter<U>(
-      GetPropertyValueFunction<T, U> getPropVal, value,
-      {ModelFilter<T>? modelFilter}) {
+    GetPropertyValueFunction<T, U> getPropVal,
+    value, {
+    ModelFilter<T>? modelFilter,
+  }) {
     final foundItem = getByPropertyValue(getPropVal, value);
     if (foundItem != null && modelFilter != null) {
       return modelFilter.filterOne(foundItem);
@@ -44,13 +46,17 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   }
 
   List<T> getManyByPropertyValue<W>(
-      GetPropertyValueFunction<T, W> getPropVal, value) {
+    GetPropertyValueFunction<T, W> getPropVal,
+    value,
+  ) {
     return items.where((m) => getPropVal(m) == value).toList();
   }
 
   List<T> getManyByPropertyValueAndFilter<W>(
-      GetPropertyValueFunction<T, W> getPropVal, value,
-      {ModelFilter<T>? modelFilter}) {
+    GetPropertyValueFunction<T, W> getPropVal,
+    value, {
+    ModelFilter<T>? modelFilter,
+  }) {
     final foundItems = getManyByPropertyValue(getPropVal, value);
     if (foundItems.isNotEmpty && modelFilter != null) {
       return modelFilter.filterMany(items);
@@ -60,8 +66,10 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   }
 
   List<T> getManyByManyValuesAndFilter<W>(
-      GetPropertyValueFunction<T, W> getPropVal, List<W> values,
-      {ModelFilter<T>? modelFilter}) {
+    GetPropertyValueFunction<T, W> getPropVal,
+    List<W> values, {
+    ModelFilter<T>? modelFilter,
+  }) {
     final foundItems =
         items.where((m) => values.contains(getPropVal(m))).toList();
     if (foundItems.isNotEmpty && modelFilter != null) {
@@ -107,7 +115,8 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     int index = items.indexWhere((element) => getKey(element) == getKey(item));
     if (index != -1) {
       final existingItem = items[index];
-      T updatedItem = existingItem.copyWithInstanceValues(item);
+      // T updatedItem = existingItem.copyWithInstanceValues(item);
+      T updatedItem = existingItem.customCopy(item);
       items[index] = updatedItem;
       return updatedItem;
     } else {
