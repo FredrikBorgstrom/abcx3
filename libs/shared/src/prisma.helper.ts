@@ -152,18 +152,22 @@ export class PrismaHelper {
         const comments = documentation.split(' ');
 
         const result: PrismaCommentDirective[] = [];
-
+        
         for (const comment of comments) {
-            const argIndex = comment.indexOf('(');
-            const argument = comment.substring(
-                argIndex + 1,
-                comment.lastIndexOf(')'),
-            );
-
-            const directiveName = comment.substring(0, argIndex) as CommentDirectiveName;
-
+            const indexOfOpenBracket = comment.indexOf('(');
+            const indexOfCloseBracket = comment.lastIndexOf(')');
+            let argument: string | undefined;
+            let directiveName: CommentDirectiveName | undefined;
+            if (indexOfCloseBracket > -1 && indexOfCloseBracket > indexOfOpenBracket) {
+                argument = comment.substring(
+                    indexOfOpenBracket + 1,
+                    indexOfCloseBracket,
+                );
+                directiveName = comment.substring(0, indexOfOpenBracket) as CommentDirectiveName;
+            } else {
+                directiveName = comment as CommentDirectiveName;
+            }
             const decorator = { name: directiveName, argument: argument } satisfies PrismaCommentDirective;
-
             result.push(decorator);
         }
         return result;

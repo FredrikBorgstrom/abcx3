@@ -607,12 +607,19 @@ var PrismaHelper = class _PrismaHelper {
     const comments = documentation.split(" ");
     const result = [];
     for (const comment of comments) {
-      const argIndex = comment.indexOf("(");
-      const argument = comment.substring(
-        argIndex + 1,
-        comment.lastIndexOf(")")
-      );
-      const directiveName = comment.substring(0, argIndex);
+      const indexOfOpenBracket = comment.indexOf("(");
+      const indexOfCloseBracket = comment.lastIndexOf(")");
+      let argument;
+      let directiveName;
+      if (indexOfCloseBracket > -1 && indexOfCloseBracket > indexOfOpenBracket) {
+        argument = comment.substring(
+          indexOfOpenBracket + 1,
+          indexOfCloseBracket
+        );
+        directiveName = comment.substring(0, indexOfOpenBracket);
+      } else {
+        directiveName = comment;
+      }
       const decorator = { name: directiveName, argument };
       result.push(decorator);
     }
