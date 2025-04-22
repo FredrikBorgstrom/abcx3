@@ -20,9 +20,9 @@
     "url": "https://github.com/FredrikBorgstrom"
   },
   "dependencies": {
-    "prettier": "^3.4.2"
+    "prettier": "^3.5.3"
   },
   "devDependencies": {
-    "@nestjs/common": "^10.4.15"
+    "@nestjs/common": "^11.0.20"
   }
 }

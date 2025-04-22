@@ -25,12 +25,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/package.json
+// node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/package.json"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "16.4.7",
+      version: "16.5.0",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -61,6 +61,7 @@ var require_package = __commonJS({
         type: "git",
         url: "git://github.com/motdotla/dotenv.git"
       },
+      homepage: "https://github.com/motdotla/dotenv#readme",
       funding: "https://dotenvx.com",
       keywords: [
         "dotenv",
@@ -92,9 +93,9 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/lib/main.js
+// node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs2 = require("fs");
     var path3 = require("path");
     var os = require("os");
@@ -145,9 +146,6 @@ var require_main = __commonJS({
         }
       }
       return DotenvModule.parse(decrypted);
-    }
-    function _log(message) {
-      console.log(`[dotenv@${version2}][INFO] ${message}`);
     }
     function _warn(message) {
       console.log(`[dotenv@${version2}][WARN] ${message}`);
@@ -221,7 +219,10 @@ var require_main = __commonJS({
       return envPath[0] === "~" ? path3.join(os.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
-      _log("Loading env from encrypted .env.vault");
+      const debug = Boolean(options && options.debug);
+      if (debug) {
+        _debug("Loading env from encrypted .env.vault");
+      }
       const parsed = DotenvModule._parseVault(options);
       let processEnv = process.env;
       if (options && options.processEnv != null) {
@@ -359,9 +360,9 @@ var require_main = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv-expand@12.0.1/node_modules/dotenv-expand/lib/main.js
+// node_modules/.pnpm/dotenv-expand@12.0.2/node_modules/dotenv-expand/lib/main.js
 var require_main2 = __commonJS({
-  "node_modules/.pnpm/dotenv-expand@12.0.1/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv-expand@12.0.2/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
     "use strict";
     function _resolveEscapeSequences(value) {
       return value.replace(/\\\$/g, "$");
@@ -781,13 +782,12 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     #{OverrideAnnotation}
     bool operator == (Object other) =>
             identical(this, other) || other is #{ClassName} &&
-                runtimeType == other.runtimeType &&
-                #{equalsKeyValues};
+                runtimeType == other.runtimeType && $uid == other.$uid;
 
     /// Updates this instance with the values of the given instance,
     /// where this instance has precedence.
     #{OverrideAnnotation}
-        int get hashCode => #{hashCodeKeyValues};
+        int get hashCode => $uid.hashCode;
     }
     `;
 var dartUIDStub = `
@@ -952,8 +952,6 @@ var DartGenerator = class {
     content = content.replace(/#{toJsonKeyValues}/g, toJsonContent);
     content = content.replace(/#{Properties}/g, propertiesContent);
     content = content.replace(/#{ConstructorArgs}/g, constructorContent);
-    content = content.replace(/#{equalsKeyValues}/g, equalsContent);
-    content = content.replace(/#{hashCodeKeyValues}/g, hashCodeContent);
     content = content.replace(/#{CopyWithArgs}/g, copyWithArgsContent);
     content = content.replace(/#{CopyWithConstructorArgs}/g, copyWithConstructorArgsContent);
     content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);

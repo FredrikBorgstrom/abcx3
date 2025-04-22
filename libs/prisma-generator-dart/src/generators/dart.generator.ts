@@ -187,8 +187,8 @@ export class DartGenerator {
         content = content.replace(/#{Properties}/g, propertiesContent);
         content = content.replace(/#{ConstructorArgs}/g, constructorContent);
 
-        content = content.replace(/#{equalsKeyValues}/g, equalsContent);
-        content = content.replace(/#{hashCodeKeyValues}/g, hashCodeContent);
+        //content = content.replace(/#{equalsKeyValues}/g, equalsContent);
+        //content = content.replace(/#{hashCodeKeyValues}/g, hashCodeContent);
 
         content = content.replace(/#{CopyWithArgs}/g, copyWithArgsContent);
         content = content.replace(/#{CopyWithConstructorArgs}/g, copyWithConstructorArgsContent);

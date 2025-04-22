@@ -86,16 +86,22 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     #{OverrideAnnotation}
     bool operator == (Object other) =>
             identical(this, other) || other is #{ClassName} &&
-                runtimeType == other.runtimeType &&
-                #{equalsKeyValues};
+                runtimeType == other.runtimeType && $uid == other.$uid;
 
     /// Updates this instance with the values of the given instance,
     /// where this instance has precedence.
     #{OverrideAnnotation}
-        int get hashCode => #{hashCodeKeyValues};
+        int get hashCode => $uid.hashCode;
     }
     `;
 
+    /* bool operator == (Object other) =>
+      identical(this, other) || other is #{ClassName} &&
+          runtimeType == other.runtimeType &&
+          #{equalsKeyValues}; */
+
+  // int get hashCode => #{hashCodeKeyValues};
+  
 export const dartUIDStub = `
 #{OverrideAnnotation}
 #{Type}#{Nullable} get $uid => #{PropName};`;
