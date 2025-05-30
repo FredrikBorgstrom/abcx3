@@ -4,8 +4,8 @@ library;
 import 'package:abcx3/services/authentication/auth.library.dart';
 import 'package:abcx3/services/service_manager.dart';
 import 'package:dio/dio.dart';
-import 'package:simple_result/simple_result.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:simple_result/simple_result.dart';
 
 import 'abcx3_common.library.dart';
 import 'models_library.dart';

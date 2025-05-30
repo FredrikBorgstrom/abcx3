@@ -14,32 +14,52 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
   T? getById(K id, {List<StoreIncludes>? includes}) =>
       getIncluding(getId, id, includes: includes);
 
-  getIncluding<W>(GetPropertyValueFunction<T, W> getPropVal, W value,
-      {ModelFilter<T>? modelFilter, List<StoreIncludes>? includes}) {
-    final model = getByPropertyValueAndFilter(getPropVal, value,
-        modelFilter: modelFilter);
+  T? getIncluding<W>(
+    GetPropertyValueFunction<T, W> getPropVal,
+    W value, {
+    ModelFilter<T>? modelFilter,
+    List<StoreIncludes>? includes,
+  }) {
+    final model = getByPropertyValueAndFilter(
+      getPropVal,
+      value,
+      modelFilter: modelFilter,
+    );
     setIncludedReferences(model, includes: includes);
     return model;
   }
 
-  getManyIncluding<W>(GetPropertyValueFunction<T, W> getPropVal, W value,
-      {ModelFilter<T>? modelFilter, List<StoreIncludes>? includes}) {
-    final models = getManyByPropertyValueAndFilter(getPropVal, value,
-        modelFilter: modelFilter);
+  List<T> getManyIncluding<W>(
+    GetPropertyValueFunction<T, W> getPropVal,
+    W value, {
+    ModelFilter<T>? modelFilter,
+    List<StoreIncludes>? includes,
+  }) {
+    final models = getManyByPropertyValueAndFilter(
+      getPropVal,
+      value,
+      modelFilter: modelFilter,
+    );
     setIncludedReferencesForList(models, includes: includes);
     return models;
   }
 
-  getManyByManyIncluding<W>(
-      GetPropertyValueFunction<T, W> getPropVal, List<W> values,
-      {ModelFilter<T>? modelFilter, List<StoreIncludes>? includes}) {
-    final models = getManyByManyValuesAndFilter(getPropVal, values,
-        modelFilter: modelFilter);
+  List<T> getManyByManyIncluding<W>(
+    GetPropertyValueFunction<T, W> getPropVal,
+    List<W> values, {
+    ModelFilter<T>? modelFilter,
+    List<StoreIncludes>? includes,
+  }) {
+    final models = getManyByManyValuesAndFilter(
+      getPropVal,
+      values,
+      modelFilter: modelFilter,
+    );
     setIncludedReferencesForList(models, includes: includes);
     return models;
   }
 
-  setIncludedReferences<U>(U? item, {List<StoreIncludes>? includes}) {
+  void setIncludedReferences<U>(U? item, {List<StoreIncludes>? includes}) {
     if (item != null && includes != null) {
       for (var include in includes) {
         include.method(item);
@@ -47,8 +67,10 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
     }
   }
 
-  setIncludedReferencesForList<U>(List<U>? items,
-      {List<StoreIncludes>? includes}) {
+  void setIncludedReferencesForList<U>(
+    List<U>? items, {
+    List<StoreIncludes>? includes,
+  }) {
     for (var item in items ?? []) {
       setIncludedReferences(item, includes: includes);
     }
@@ -58,7 +80,7 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
   /// this method can be used to trigger a refresh of the observer's renderer
   /// That would also require that the items' store is implemented as an observable,
   /// like they are in the ModelStreamStore
-  refreshItems() {
+  void refreshItems() {
     items = [...items];
   }
 }

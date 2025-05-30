@@ -1,6 +1,6 @@
 part of '../abcx3_stores_library.dart';
 
-enum LogicalOperator { AND, OR, NOT }
+enum LogicalOperator { AND, OR, NOT, XOR, XNOR }
 
 /// `LogicalFilterGroup` is a class that provides functionality to filter Prisma models.
 /// It takes a list of `PropertyFilter` objects and a logical operator as parameters to perform the filtering.
@@ -12,16 +12,13 @@ class LogicalFilterGroup<T extends GetPropToValueFunction> {
   List<PropertyFilter> filters;
   LogicalOperator logicalOperator;
 
-  LogicalFilterGroup(this.filters,
-      {this.logicalOperator = LogicalOperator.AND});
+  LogicalFilterGroup(
+    this.filters, {
+    this.logicalOperator = LogicalOperator.AND,
+  });
 
   T? filterOne(T item) {
     return filtersMatch(item) ? item : null;
-    /* if (filtersMatch(item) && logicalOperator != LogicalOperator.NOT) {
-      return item;
-    } else {
-      return null;
-    }*/
   }
 
   List<T> filterMany(List<T> items) {
@@ -36,8 +33,13 @@ class LogicalFilterGroup<T extends GetPropToValueFunction> {
         return filters.any((filter) => filter.isMatching(item));
       case LogicalOperator.NOT:
         return filters.every((filter) => !filter.isMatching(item));
-      default:
-        return false;
+      case LogicalOperator.XOR:
+        return filters.any((filter) => filter.isMatching(item)) &&
+            filters.where((filter) => filter.isMatching(item)).length == 1;
+      case LogicalOperator.XNOR:
+        return filters.every((filter) => filter.isMatching(item)) ||
+            filters.where((filter) => filter.isMatching(item)).length ==
+                filters.length;
     }
   }
 
@@ -54,23 +56,3 @@ class LogicalFilterGroup<T extends GetPropToValueFunction> {
     };
   }
 }
-
-/*bool filtersMatch(T item) {
-
-    /// for the NOT operator to match, all the filters must return FALSE
-    final filtersMatch = logicalOperator == LogicalOperator.NOT ? false : true;
-
-
-    /// If the logical operator is OR, then only one filter must match.
-    /// If the logical operator is NOT and AND, then every filter must match.
-    int requiredNumberOfMatches = (logicalOperator == LogicalOperator.OR) ? 1 : filters.length;
-    for (var filter in filters) {
-      if (filter.isMatching(item)) {
-        requiredNumberOfMatches--;
-      }
-      if (requiredNumberOfMatches == 0) {
-        return true;
-      }
-    }
-    return false;
-  }*/

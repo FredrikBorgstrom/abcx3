@@ -810,7 +810,7 @@ var dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
 var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.tryParse(e.toString())).toList() : null`;
 var dartFromJsonScalarBigIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => BigInt.tryParse(e.toString())).toList() : null`;
 var dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
-var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
+var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>((json['#{PropName}'] as List).cast<Json>(), #{Type}.fromJson) : null`;
 var dartFromJsonEnumArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}']) : null`;
 var dartFromJsonEnumListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}']).map((item) => #{Type}.fromJson(item)).toList()) : null`;
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
@@ -830,7 +830,7 @@ var dartEnumStub = `
 enum #{ModelName} {
     #{EnumValues};
    
-    toJson() => toString().split('.').last;
+    String toJson() => toString().split('.').last;
 
     factory #{ModelName}.fromJson(String name) => values.byName(name);
   
@@ -1636,8 +1636,8 @@ library;
 import 'package:abcx3/services/authentication/auth.library.dart';
 import 'package:abcx3/services/service_manager.dart';
 import 'package:dio/dio.dart';
-import 'package:simple_result/simple_result.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:simple_result/simple_result.dart';
 
 import 'abcx3_common.library.dart';
 import 'models_library.dart';

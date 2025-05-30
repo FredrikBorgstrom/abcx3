@@ -5,30 +5,27 @@ class ModelCreator<T> {
   final HttpService authHttp;
 
   ModelCreator(this.jsonModelFactory)
-      : authHttp = ServiceManager.I.get<AuthHttpService>()!;
+    : authHttp = ServiceManager.I.get<AuthHttpService>()!;
 
-  create(json) {
-    if (json == null || json == '') {
+  dynamic create(Object? data) {
+    if (data == null || data == '') {
       return null;
-    } else if (json is List) {
-      return createMany(json);
+    } else if (data is List) {
+      return createMany(data.cast<Json>());
     } else {
-      return createOne(json);
+      return createOne(data as Json);
     }
   }
 
-  List<T> createMany(json) {
+  List<T> createMany(List<Json> jsonList) {
     List<T> instances = [];
-    for (final item in json) {
-      instances.add(createOne(item as Json));
+    for (final item in jsonList) {
+      instances.add(createOne(item));
     }
     return instances;
   }
 
-  T createOne(json) {
-    return jsonModelFactory(json as Json);
+  T createOne(Json json) {
+    return jsonModelFactory(json);
   }
-
-  // @override
-  // void dispose() {}
 }

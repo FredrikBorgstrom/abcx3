@@ -129,7 +129,8 @@ export const dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] !=
 export const dartFromJsonScalarBigIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => BigInt.tryParse(e.toString())).toList() : null`;
 export const dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
 
-export const dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
+// export const dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
+export const dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>((json['#{PropName}'] as List).cast<Json>(), #{Type}.fromJson) : null`;
 
 // export const dartFromJsonEnumArg = `#{PropName}: #{Type}.values.byName(json['#{PropName}'])`;
 // export const dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.values.byName(json[item])).toList())`;
@@ -161,7 +162,7 @@ export const dartEnumStub = `
 enum #{ModelName} {
     #{EnumValues};
    
-    toJson() => toString().split('.').last;
+    String toJson() => toString().split('.').last;
 
     factory #{ModelName}.fromJson(String name) => values.byName(name);
   

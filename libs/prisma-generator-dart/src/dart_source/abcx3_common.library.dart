@@ -1,5 +1,5 @@
-library abcx3_common;
+library;
 
-part 'common/model_interfaces.dart';
 part 'common/extensions.dart';
+part 'common/model_interfaces.dart';
 part 'common/utils.dart';

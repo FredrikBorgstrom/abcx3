@@ -31,7 +31,10 @@ class PropertyFilter<T extends GetPropToValueFunction<T>, V> {
     final propertyValue = propertyValueFunction(item);
     for (var operatorAndValue in operatorsAndValues) {
       if (_matches(
-          propertyValue, operatorAndValue.operator, operatorAndValue.value)) {
+        propertyValue,
+        operatorAndValue.operator,
+        operatorAndValue.value,
+      )) {
         numberOfNotMatchingFilters--;
       }
     }
@@ -72,8 +75,6 @@ class PropertyFilter<T extends GetPropToValueFunction<T>, V> {
         return valueA == null;
       case FilterOperator.isNotNull:
         return valueA != null;
-      default:
-        return false;
     }
   }
 
@@ -83,9 +84,7 @@ class PropertyFilter<T extends GetPropToValueFunction<T>, V> {
     for (var operatorAndValue in operatorsAndValues) {
       operatorsAndValuesMap.addAll(operatorAndValue.toJson());
     }
-    return {
-      property: operatorsAndValuesMap,
-    };
+    return {property: operatorsAndValuesMap};
   }
 
   /// Factory constructor to create a new instance of `ModelFilter` from a JSON object.
@@ -93,8 +92,10 @@ class PropertyFilter<T extends GetPropToValueFunction<T>, V> {
     return PropertyFilter(
       property: json.keys.first,
       operatorsAndValues: json.values.first
-          .map<FilterOperatorAndValue>((operatorAndValue) =>
-              FilterOperatorAndValue.fromJson(operatorAndValue))
+          .map<FilterOperatorAndValue>(
+            (operatorAndValue) =>
+                FilterOperatorAndValue.fromJson(operatorAndValue),
+          )
           .toList(),
     );
   }
