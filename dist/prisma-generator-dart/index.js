@@ -25,12 +25,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/package.json
+// node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/package.json"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "16.5.0",
+      version: "17.2.1",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -53,7 +53,7 @@ var require_package = __commonJS({
         lint: "standard",
         pretest: "npm run lint && npm run dts-check",
         test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=lcov",
+        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -93,15 +93,45 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/lib/main.js
+// node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@16.5.0/node_modules/dotenv/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs2 = require("fs");
     var path3 = require("path");
     var os = require("os");
     var crypto = require("crypto");
     var packageJson = require_package();
     var version2 = packageJson.version;
+    var TIPS = [
+      "\u{1F510} encrypt with Dotenvx: https://dotenvx.com",
+      "\u{1F510} prevent committing .env to code: https://dotenvx.com/precommit",
+      "\u{1F510} prevent building .env in docker: https://dotenvx.com/prebuild",
+      "\u{1F4E1} observe env with Radar: https://dotenvx.com/radar",
+      "\u{1F4E1} auto-backup env with Radar: https://dotenvx.com/radar",
+      "\u{1F4E1} version env with Radar: https://dotenvx.com/radar",
+      "\u{1F6E0}\uFE0F  run anywhere with `dotenvx run -- yourcommand`",
+      "\u2699\uFE0F  specify custom .env file path with { path: '/custom/path/.env' }",
+      "\u2699\uFE0F  enable debug logging with { debug: true }",
+      "\u2699\uFE0F  override existing env vars with { override: true }",
+      "\u2699\uFE0F  suppress all logs with { quiet: true }",
+      "\u2699\uFE0F  write to custom object with { processEnv: myObject }",
+      "\u2699\uFE0F  load multiple .env files with { path: ['.env.local', '.env'] }"
+    ];
+    function _getRandomTip() {
+      return TIPS[Math.floor(Math.random() * TIPS.length)];
+    }
+    function parseBoolean(value) {
+      if (typeof value === "string") {
+        return !["false", "0", "no", "off", ""].includes(value.toLowerCase());
+      }
+      return Boolean(value);
+    }
+    function supportsAnsi() {
+      return process.stdout.isTTY;
+    }
+    function dim(text) {
+      return supportsAnsi() ? `\x1B[2m${text}\x1B[0m` : text;
+    }
     var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
     function parse(src) {
       const obj = {};
@@ -123,8 +153,10 @@ var require_main = __commonJS({
       return obj;
     }
     function _parseVault(options) {
+      options = options || {};
       const vaultPath = _vaultPath(options);
-      const result = DotenvModule.configDotenv({ path: vaultPath });
+      options.path = vaultPath;
+      const result = DotenvModule.configDotenv(options);
       if (!result.parsed) {
         const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
         err.code = "MISSING_DATA";
@@ -148,10 +180,13 @@ var require_main = __commonJS({
       return DotenvModule.parse(decrypted);
     }
     function _warn(message) {
-      console.log(`[dotenv@${version2}][WARN] ${message}`);
+      console.error(`[dotenv@${version2}][WARN] ${message}`);
     }
     function _debug(message) {
       console.log(`[dotenv@${version2}][DEBUG] ${message}`);
+    }
+    function _log(message) {
+      console.log(`[dotenv@${version2}] ${message}`);
     }
     function _dotenvKey(options) {
       if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
@@ -219,9 +254,10 @@ var require_main = __commonJS({
       return envPath[0] === "~" ? path3.join(os.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
-      const debug = Boolean(options && options.debug);
-      if (debug) {
-        _debug("Loading env from encrypted .env.vault");
+      const debug = parseBoolean(process.env.DOTENV_CONFIG_DEBUG || options && options.debug);
+      const quiet = parseBoolean(process.env.DOTENV_CONFIG_QUIET || options && options.quiet);
+      if (debug || !quiet) {
+        _log("Loading env from encrypted .env.vault");
       }
       const parsed = DotenvModule._parseVault(options);
       let processEnv = process.env;
@@ -234,7 +270,12 @@ var require_main = __commonJS({
     function configDotenv(options) {
       const dotenvPath = path3.resolve(process.cwd(), ".env");
       let encoding = "utf8";
-      const debug = Boolean(options && options.debug);
+      let processEnv = process.env;
+      if (options && options.processEnv != null) {
+        processEnv = options.processEnv;
+      }
+      let debug = parseBoolean(processEnv.DOTENV_CONFIG_DEBUG || options && options.debug);
+      let quiet = parseBoolean(processEnv.DOTENV_CONFIG_QUIET || options && options.quiet);
       if (options && options.encoding) {
         encoding = options.encoding;
       } else {
@@ -266,11 +307,25 @@ var require_main = __commonJS({
           lastError = e;
         }
       }
-      let processEnv = process.env;
-      if (options && options.processEnv != null) {
-        processEnv = options.processEnv;
+      const populated = DotenvModule.populate(processEnv, parsedAll, options);
+      debug = parseBoolean(processEnv.DOTENV_CONFIG_DEBUG || debug);
+      quiet = parseBoolean(processEnv.DOTENV_CONFIG_QUIET || quiet);
+      if (debug || !quiet) {
+        const keysCount = Object.keys(populated).length;
+        const shortPaths = [];
+        for (const filePath of optionPaths) {
+          try {
+            const relative = path3.relative(process.cwd(), filePath);
+            shortPaths.push(relative);
+          } catch (e) {
+            if (debug) {
+              _debug(`Failed to load ${filePath} ${e.message}`);
+            }
+            lastError = e;
+          }
+        }
+        _log(`injecting env (${keysCount}) from ${shortPaths.join(",")} ${dim(`-- tip: ${_getRandomTip()}`)}`);
       }
-      DotenvModule.populate(processEnv, parsedAll, options);
       if (lastError) {
         return { parsed: parsedAll, error: lastError };
       } else {
@@ -318,6 +373,7 @@ var require_main = __commonJS({
     function populate(processEnv, parsed, options = {}) {
       const debug = Boolean(options && options.debug);
       const override = Boolean(options && options.override);
+      const populated = {};
       if (typeof parsed !== "object") {
         const err = new Error("OBJECT_REQUIRED: Please check the processEnv argument being passed to populate");
         err.code = "OBJECT_REQUIRED";
@@ -327,6 +383,7 @@ var require_main = __commonJS({
         if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
           if (override === true) {
             processEnv[key] = parsed[key];
+            populated[key] = parsed[key];
           }
           if (debug) {
             if (override === true) {
@@ -337,8 +394,10 @@ var require_main = __commonJS({
           }
         } else {
           processEnv[key] = parsed[key];
+          populated[key] = parsed[key];
         }
       }
+      return populated;
     }
     var DotenvModule = {
       configDotenv,
