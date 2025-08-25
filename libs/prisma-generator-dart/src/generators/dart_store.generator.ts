@@ -46,7 +46,9 @@ export class DartStoreGenerator {
                 
                 if (relationFromFields != null && relationFromFields?.length > 0) {
                     const relatedFieldName = relationFromFields[0];
-                    GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName));
+                    // const relationToField = this.prismaHelper.getRelationToFieldName(field, this.options) ?? '';
+                    const relationToField = field.relationToFields?.[0] ?? '';
+                    GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName, relationToField));
                     GetRelatedModelsWithId.push(this.generateGetRelatedModelsWithId(field, relatedFieldName));
                 } /* else if (relationFromFields != null && relationFromFields.length === 0) {
 
@@ -191,10 +193,13 @@ export class DartStoreGenerator {
     }
 
 
-    generateGetRelatedModelsWithId$(field: DMMF.Field, relationFromField: string) {
+    generateGetRelatedModelsWithId$(field: DMMF.Field, relationFromField: string, relationToField: string) {
         let content = dartStoreGetRelatedModelsWithId$;
         content = content.replace(/#{relationFromField}/g, relationFromField);
         content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
+        // const fieldObject = this.prismaHelper.getModel(field.type);
+        // const getByIdInRelatedModel$ = this.prismaHelper.getIdFieldNameAndType(relationToField, 'dart')?.name ?? '';
+        content = content.replace(/#{getByIdInRelatedModel\$}/g, `getBy${StringFns.capitalize(relationToField)}$`);
         // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
         
         /* if (field.isList) {

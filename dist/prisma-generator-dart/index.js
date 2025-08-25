@@ -1375,7 +1375,7 @@ var dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(
     if (#{moDel}.#{relationFromField} == null) {
         return null;
     } else {
-        final #{fieldName} = #{FieldType}Store.instance.getBy#{FieldName}(#{moDel}.#{relationFromField}!, includes: includes);
+        final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
         #{moDel}.#{fieldName} = #{fieldName};
         // setIncludedReferences(#{fieldName}, includes: includes);
         return #{fieldName};
@@ -1451,7 +1451,7 @@ var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldNa
     if (#{moDel}.#{relationFromField} == null) {
         return Stream.value(null);
     } else {
-        return #{FieldType}Store.instance.getBy#{FieldName}$(
+        return #{FieldType}Store.instance.#{getByIdInRelatedModel$}(
             #{moDel}.#{relationFromField}!,
             useCache: useCache,
             modelFilter: modelFilter,
@@ -1516,7 +1516,8 @@ var DartStoreGenerator = class {
         const relationFromFields = field.relationFromFields;
         if (relationFromFields != null && relationFromFields?.length > 0) {
           const relatedFieldName = relationFromFields[0];
-          GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName));
+          const relationToField = field.relationToFields?.[0] ?? "";
+          GetRelatedModelsWithId$.push(this.generateGetRelatedModelsWithId$(field, relatedFieldName, relationToField));
           GetRelatedModelsWithId.push(this.generateGetRelatedModelsWithId(field, relatedFieldName));
         } else {
           const relatedModelStore = `${field.type}Store`;
@@ -1637,10 +1638,11 @@ var DartStoreGenerator = class {
     content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
     return this.replaceAllVariables(content, field);
   }
-  generateGetRelatedModelsWithId$(field, relationFromField) {
+  generateGetRelatedModelsWithId$(field, relationFromField, relationToField) {
     let content = dartStoreGetRelatedModelsWithId$;
     content = content.replace(/#{relationFromField}/g, relationFromField);
     content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
+    content = content.replace(/#{getByIdInRelatedModel\$}/g, `getBy${StringFns.capitalize(relationToField)}$`);
     return this.replaceAllVariables(content, field);
   }
   generateGetRelatedModels$(field, relatedModelStore) {
