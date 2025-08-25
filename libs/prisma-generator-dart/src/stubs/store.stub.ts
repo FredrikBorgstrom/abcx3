@@ -176,7 +176,7 @@ export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldNa
     if (#{moDel}.#{relationFromField} == null) {
         return null;
     } else {
-        final #{fieldName} = #{FieldType}Store.instance.getById(#{moDel}.#{relationFromField}!, includes: includes);
+        final #{fieldName} = #{FieldType}Store.instance.getBy#{FieldName}(#{moDel}.#{relationFromField}!, includes: includes);
         #{moDel}.#{fieldName} = #{fieldName};
         // setIncludedReferences(#{fieldName}, includes: includes);
         return #{fieldName};
@@ -268,7 +268,7 @@ export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get
     if (#{moDel}.#{relationFromField} == null) {
         return Stream.value(null);
     } else {
-        return #{FieldType}Store.instance.getById$(
+        return #{FieldType}Store.instance.getBy#{FieldName}$(
             #{moDel}.#{relationFromField}!,
             useCache: useCache,
             modelFilter: modelFilter,
