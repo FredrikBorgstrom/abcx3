@@ -108,10 +108,12 @@ export class ControllerGenerator {
                 return `BigInt(${field.name})`;
             } else if (field.type === 'Float') {
                 return `parseFloat(${field.name})`;
+            } else if (field.type === 'Json' || field.type === 'JsonList' || field.type === 'jsonb' || field.type === 'jsonbList') {
+                return `(${field.name} as unknown as Prisma.InputJsonObject)`;
             } else {
                 return `(${field.name} as ${field.type})`;
             }
-        } else if(field.kind === 'object') {
+        } else if (field.kind === 'object') {
             return `(${field.name} as ${field.type})`;
         } else if (field.kind === 'enum') {
             return `${field.type}[${field.name}]`;
@@ -119,7 +121,7 @@ export class ControllerGenerator {
             return `(${field.name} as ${field.type})`;
         }
     }
-     
+
 
 
     addReferenceFieldMethods() {

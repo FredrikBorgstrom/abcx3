@@ -562,7 +562,11 @@ var PrismaTypeScriptTypeMap = {
   Decimal: "number",
   Float: "number",
   Int: "number",
-  Json: "object",
+  // Json: 'object',
+  Json: "Prisma.InputJsonObject",
+  JsonList: "Prisma.InputJsonArray",
+  jsonb: "Prisma.InputJsonObject",
+  jsonbList: "Prisma.InputJsonArray",
   String: "string"
 };
 var DartTypeMap = {
@@ -779,16 +783,16 @@ var controllerGetByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
     getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string) {
-      const #{fieldName}value = #{ConvertToFieldTypeFunction};
-      return this.service.getByFieldValues({#{fieldName}: #{fieldName}value}, req?.body?.modelFilter);
+      const #{fieldName}Value = #{ConvertToFieldTypeFunction};
+      return this.service.getByFieldValues({#{fieldName}: #{fieldName}Value}, req?.body?.modelFilter);
     }
 `;
 var controllerGetManyByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
     getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string) {
-        const #{fieldName}value = #{ConvertToFieldTypeFunction};
-        return this.service.getManyByFieldValues({#{fieldName}: #{fieldName}value}, req?.body?.modelFilter);
+        const #{fieldName}Value = #{ConvertToFieldTypeFunction};
+        return this.service.getManyByFieldValues({#{fieldName}: #{fieldName}Value}, req?.body?.modelFilter);
     }
 `;
 var controllerGetManyByManyIdsStub = `
@@ -909,6 +913,8 @@ var ControllerGenerator = class {
         return `BigInt(${field.name})`;
       } else if (field.type === "Float") {
         return `parseFloat(${field.name})`;
+      } else if (field.type === "Json" || field.type === "JsonList" || field.type === "jsonb" || field.type === "jsonbList") {
+        return `(${field.name} as unknown as Prisma.InputJsonObject)`;
       } else {
         return `(${field.name} as ${field.type})`;
       }

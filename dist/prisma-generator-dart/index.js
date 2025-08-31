@@ -575,7 +575,11 @@ var PrismaTypeScriptTypeMap = {
   Decimal: "number",
   Float: "number",
   Int: "number",
-  Json: "object",
+  // Json: 'object',
+  Json: "Prisma.InputJsonObject",
+  JsonList: "Prisma.InputJsonArray",
+  jsonb: "Prisma.InputJsonObject",
+  jsonbList: "Prisma.InputJsonArray",
   String: "string"
 };
 var DartTypeMap = {

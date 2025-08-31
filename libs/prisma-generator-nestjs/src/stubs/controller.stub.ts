@@ -38,8 +38,8 @@ export const controllerGetByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
     getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string) {
-      const #{fieldName}value = #{ConvertToFieldTypeFunction};
-      return this.service.getByFieldValues({#{fieldName}: #{fieldName}value}, req?.body?.modelFilter);
+      const #{fieldName}Value = #{ConvertToFieldTypeFunction};
+      return this.service.getByFieldValues({#{fieldName}: #{fieldName}Value}, req?.body?.modelFilter);
     }
 `;
 
@@ -47,8 +47,8 @@ export const controllerGetManyByFieldValuesStub = `
 #{GuardDecorator}
     @Post('by#{FieldNameCapitalized}/:#{fieldName}')
     getBy#{FieldNameCapitalized}(@Req() req, @Param('#{fieldName}') #{fieldName}: string) {
-        const #{fieldName}value = #{ConvertToFieldTypeFunction};
-        return this.service.getManyByFieldValues({#{fieldName}: #{fieldName}value}, req?.body?.modelFilter);
+        const #{fieldName}Value = #{ConvertToFieldTypeFunction};
+        return this.service.getManyByFieldValues({#{fieldName}: #{fieldName}Value}, req?.body?.modelFilter);
     }
 `;
 
