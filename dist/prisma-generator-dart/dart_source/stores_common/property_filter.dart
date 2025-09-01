@@ -79,8 +79,8 @@ class PropertyFilter<T extends GetPropToValueFunction<T>, V> {
   }
 
   /// Method to convert the `ModelFilter` instance to a JSON object.
-  Json toJson() {
-    Json operatorsAndValuesMap = {};
+  JsonMap toJson() {
+    JsonMap operatorsAndValuesMap = {};
     for (var operatorAndValue in operatorsAndValues) {
       operatorsAndValuesMap.addAll(operatorAndValue.toJson());
     }
@@ -88,7 +88,7 @@ class PropertyFilter<T extends GetPropToValueFunction<T>, V> {
   }
 
   /// Factory constructor to create a new instance of `ModelFilter` from a JSON object.
-  factory PropertyFilter.fromJson(Json json) {
+  factory PropertyFilter.fromJson(JsonMap json) {
     return PropertyFilter(
       property: json.keys.first,
       operatorsAndValues: json.values.first

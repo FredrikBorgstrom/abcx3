@@ -292,7 +292,7 @@ export class DartGenerator {
     }
 
     isFieldRequired(field: DMMF.Field): boolean {
-        return false; //field.isRequired && field.type !== 'DateTime' && fi;
+        return field.type === 'Json'; // since we use dynamic type for Json, we need to make it required because dynamic can be null
     }
 
     printDefaultValue(field: DMMF.Field): string | null {

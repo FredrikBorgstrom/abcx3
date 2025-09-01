@@ -41,7 +41,7 @@ export const DartTypeMap = {
     Decimal: 'double',
     Float: 'double',
     Int: 'int',
-    Json: 'Json',
+    Json: 'dynamic',
     String: 'String'
 }
 

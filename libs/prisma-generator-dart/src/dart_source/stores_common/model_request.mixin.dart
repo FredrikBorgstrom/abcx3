@@ -7,7 +7,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     dynamic param,
     required Endpoint endpoint,
     ModelFilter? modelFilter,
-    Json? body,
+    JsonMap? body,
   }) {
     return _get$<T?>(
       param: param,
@@ -22,7 +22,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     dynamic param,
     required Endpoint endpoint,
     ModelFilter? modelFilter,
-    Json? body,
+    JsonMap? body,
   }) {
     return _get$<List<T>>(
       param: param,
@@ -36,7 +36,7 @@ mixin ModelRequestMixin<T> on ModelCreator<T> {
     dynamic param,
     required Endpoint endpoint,
     ModelFilter? modelFilter,
-    Json? body,
+    JsonMap? body,
     bool nullReturnsEmptyList = true,
   }) {
     if (modelFilter != null) {

@@ -13,7 +13,7 @@ abstract interface class HttpService {
     dynamic param,
     valueOnError,
     String? token,
-    Json? headers,
+    JsonMap? headers,
     Object? body = const {},
   });
 }

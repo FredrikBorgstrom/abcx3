@@ -28,59 +28,68 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
 
   /// Returns a stream of a single model that matches the given field value,
   /// or a stream of null if none is found.
-  Stream<T?> getByFieldValue$<W>(
-      {required GetPropertyValueFunction<T, W> getPropVal,
-      required dynamic value,
-      required Endpoint endpoint,
-      bool useCache = true,
-      ModelFilter<T>? modelFilter,
-      Json? body}) {
+  Stream<T?> getByFieldValue$<W>({
+    required GetPropertyValueFunction<T, W> getPropVal,
+    required dynamic value,
+    required Endpoint endpoint,
+    bool useCache = true,
+    ModelFilter<T>? modelFilter,
+    JsonMap? body,
+  }) {
     if (useCache) {
-      final model = getByPropertyValueAndFilter(getPropVal, value,
-          modelFilter: modelFilter);
+      final model = getByPropertyValueAndFilter(
+        getPropVal,
+        value,
+        modelFilter: modelFilter,
+      );
       if (model != null) {
         // if useCache is true, we return a broadcast stream ONLY if we have a cached value
         return Stream.value(model).asBroadcastStream();
       }
     }
     return getOne$(
-            endpoint: endpoint,
-            param: value,
-            modelFilter: modelFilter,
-            body: body)
-        .map((model) => model != null ? upsert(model) : null);
+      endpoint: endpoint,
+      param: value,
+      modelFilter: modelFilter,
+      body: body,
+    ).map((model) => model != null ? upsert(model) : null);
   }
 
   /// Returns a stream of all the models that match the given field value,
   /// or an empty list if none is found.
-  Stream<List<T>> getManyByFieldValue$<U>(
-      {required GetPropertyValueFunction<T, U> getPropVal,
-      required dynamic value,
-      required Endpoint endpoint,
-      bool useCache = true,
-      ModelFilter<T>? modelFilter,
-      Json? body}) {
+  Stream<List<T>> getManyByFieldValue$<U>({
+    required GetPropertyValueFunction<T, U> getPropVal,
+    required dynamic value,
+    required Endpoint endpoint,
+    bool useCache = true,
+    ModelFilter<T>? modelFilter,
+    JsonMap? body,
+  }) {
     if (useCache) {
-      final models = getManyByPropertyValueAndFilter<U>(getPropVal, value,
-          modelFilter: modelFilter);
+      final models = getManyByPropertyValueAndFilter<U>(
+        getPropVal,
+        value,
+        modelFilter: modelFilter,
+      );
       if (models.isNotEmpty) {
         return Stream.value(models).asBroadcastStream();
       }
     }
     return getMany$(
-            endpoint: endpoint,
-            param: value,
-            modelFilter: modelFilter,
-            body: body)
-        .map((models) => upsertMany(models));
+      endpoint: endpoint,
+      param: value,
+      modelFilter: modelFilter,
+      body: body,
+    ).map((models) => upsertMany(models));
   }
 
   /// Returns a stream of all the models.
-  Stream<List<T>> getAllItems$(
-      {required Endpoint endpoint,
-      bool useCache = true,
-      ModelFilter<T>? modelFilter,
-      Json? body}) {
+  Stream<List<T>> getAllItems$({
+    required Endpoint endpoint,
+    bool useCache = true,
+    ModelFilter<T>? modelFilter,
+    JsonMap? body,
+  }) {
     if (useCache && getAllHasRun) {
       var models = getAll();
       if (modelFilter != null) {
@@ -88,8 +97,9 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
       }
       return Stream.value(models).asBroadcastStream();
     } else {
-      return getMany$(endpoint: endpoint, modelFilter: modelFilter)
-          .map((models) {
+      return getMany$(endpoint: endpoint, modelFilter: modelFilter).map((
+        models,
+      ) {
         final upsertedModels = upsertMany(models);
         getAllHasRun = true;
         return upsertedModels;
@@ -99,7 +109,9 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
 
   /// Returns a stream of a model including the given relational fields.
   Stream<T?> getIncluding$(
-      Stream<T?> model$, List<StoreIncludes> storeGetters) {
+    Stream<T?> model$,
+    List<StoreIncludes> storeGetters,
+  ) {
     List<Stream<dynamic>> listOfZipStreams = [];
     return model$.switchMap((model) {
       if (model == null) {
@@ -108,32 +120,39 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
         for (var modelField in storeGetters) {
           listOfZipStreams.add(modelField.method(model));
         }
-        return Rx.zipList(listOfZipStreams).switchMap((value) {
-          return Stream.value(model);
-        }).doOnData((model) {
-          upsert(model);
-        });
+        return Rx.zipList(listOfZipStreams)
+            .switchMap((value) {
+              return Stream.value(model);
+            })
+            .doOnData((model) {
+              upsert(model);
+            });
       }
     });
   }
 
   /// Returns a stream of a list of models including the given relational fields.
   Stream<List<T>> getManyIncluding$(
-      Stream<List<T>> models$, List<StoreIncludes> storeGetters) {
+    Stream<List<T>> models$,
+    List<StoreIncludes> storeGetters,
+  ) {
     return models$.switchMap((models) {
       if (models.isEmpty) {
         return Stream.value(models);
       } else {
         List<Stream<dynamic>> listOfZipStreams = [];
         for (var modelField in storeGetters) {
-          listOfZipStreams
-              .addAll(models.map((model) => modelField.method(model)));
+          listOfZipStreams.addAll(
+            models.map((model) => modelField.method(model)),
+          );
         }
-        return Rx.zipList(listOfZipStreams).switchMap((value) {
-          return Stream.value(models);
-        }).doOnData((models) {
-          items = [...items];
-        });
+        return Rx.zipList(listOfZipStreams)
+            .switchMap((value) {
+              return Stream.value(models);
+            })
+            .doOnData((models) {
+              items = [...items];
+            });
       }
     });
   }

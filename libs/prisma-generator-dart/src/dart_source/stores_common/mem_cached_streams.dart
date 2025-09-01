@@ -32,7 +32,7 @@ class MemCachedStream<U> {
   MemCachedStream({
     required Endpoint endpoint,
     dynamic param,
-    Json? body,
+    JsonMap? body,
     this.stream$,
   }) : dateTime = DateTime.now() {
     serializedRequest = _serializeRequest(
@@ -63,7 +63,7 @@ class MemCachedStream<U> {
   String _serializeRequest({
     dynamic param,
     required Endpoint endpoint,
-    Json? body,
+    JsonMap? body,
   }) {
     // final dateTime = DateTime.now().toIso8601String();
     final serializedParam = param != null ? param.toString() : '';

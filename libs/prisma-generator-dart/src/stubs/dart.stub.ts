@@ -31,7 +31,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
 
     /// Creates a new instance of this class from a JSON object.
     #{OverrideAnnotation}
-    factory #{ClassName}.fromJson(Json json) =>
+    factory #{ClassName}.fromJson(JsonMap json) =>
       #{ClassName}(
         #{fromJsonArgs}
       );
@@ -77,7 +77,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     }
     /// Converts this instance to a JSON object.
     #{OverrideAnnotation}
-    Json toJson() => ({
+    JsonMap toJson() => ({
         #{toJsonKeyValues}
       });
 
@@ -122,7 +122,7 @@ export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropNa
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 export const dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}'].toString()) : null`;
-export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
+export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as JsonMap) : null`;
 export const dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
 
 export const dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.tryParse(e.toString())).toList() : null`;
@@ -130,7 +130,7 @@ export const dartFromJsonScalarBigIntListArg = `#{PropName}: json['#{PropName}']
 export const dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
 
 // export const dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>(json['#{PropName}'], #{Type}.fromJson) : null`;
-export const dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>((json['#{PropName}'] as List).cast<Json>(), #{Type}.fromJson) : null`;
+export const dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>((json['#{PropName}'] as List).cast<JsonMap>(), #{Type}.fromJson) : null`;
 
 // export const dartFromJsonEnumArg = `#{PropName}: #{Type}.values.byName(json['#{PropName}'])`;
 // export const dartFromJsonEnumListArg = `#{PropName}: (json['#{PropName}']).map((item) => #{Type}.values.byName(json[item])).toList())`;

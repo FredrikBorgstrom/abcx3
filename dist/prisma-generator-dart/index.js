@@ -590,7 +590,7 @@ var DartTypeMap = {
   Decimal: "double",
   Float: "double",
   Int: "int",
-  Json: "Json",
+  Json: "dynamic",
   String: "String"
 };
 var PrismaHelper = class _PrismaHelper {
@@ -790,7 +790,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
 
     /// Creates a new instance of this class from a JSON object.
     #{OverrideAnnotation}
-    factory #{ClassName}.fromJson(Json json) =>
+    factory #{ClassName}.fromJson(JsonMap json) =>
       #{ClassName}(
         #{fromJsonArgs}
       );
@@ -836,7 +836,7 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     }
     /// Converts this instance to a JSON object.
     #{OverrideAnnotation}
-    Json toJson() => ({
+    JsonMap toJson() => ({
         #{toJsonKeyValues}
       });
 
@@ -868,12 +868,12 @@ var dartCustomCopyConstructorListArg = `#{PropName}: #{InstanceName}.#{PropName}
 var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 var dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}'].toString()) : null`;
-var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as Json) : null`;
+var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as JsonMap) : null`;
 var dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
 var dartFromJsonScalarIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => int.tryParse(e.toString())).toList() : null`;
 var dartFromJsonScalarBigIntListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => BigInt.tryParse(e.toString())).toList() : null`;
 var dartFromJsonScalarStringListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}'] as List<dynamic>).map((e) => e.toString()).toList() : null`;
-var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>((json['#{PropName}'] as List).cast<Json>(), #{Type}.fromJson) : null`;
+var dartFromJsonModelListArg = `#{PropName}: json['#{PropName}'] != null ? createModels<#{Type}>((json['#{PropName}'] as List).cast<JsonMap>(), #{Type}.fromJson) : null`;
 var dartFromJsonEnumArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}']) : null`;
 var dartFromJsonEnumListArg = `#{PropName}: json['#{PropName}'] != null ? (json['#{PropName}']).map((item) => #{Type}.fromJson(item)).toList()) : null`;
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
@@ -1101,7 +1101,7 @@ var DartGenerator = class {
     return content;
   }
   isFieldRequired(field) {
-    return false;
+    return field.type === "Json";
   }
   printDefaultValue(field) {
     if (field.hasDefaultValue && !(field.default instanceof Object)) {

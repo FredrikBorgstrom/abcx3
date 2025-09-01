@@ -1,6 +1,6 @@
 part of '../abcx3_common.library.dart';
 
-List<T> createModels<T>(List<Json> json, JsonFactory<T> jsonFactory) {
+List<T> createModels<T>(List<JsonMap> json, JsonFactory<T> jsonFactory) {
   List<T> instances = [];
   for (final item in json) {
     instances.add(jsonFactory(item));

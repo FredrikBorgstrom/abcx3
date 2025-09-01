@@ -11,13 +11,13 @@ class ModelCreator<T> {
     if (data == null || data == '') {
       return null;
     } else if (data is List) {
-      return createMany(data.cast<Json>());
+      return createMany(data.cast<JsonMap>());
     } else {
-      return createOne(data as Json);
+      return createOne(data as JsonMap);
     }
   }
 
-  List<T> createMany(List<Json> jsonList) {
+  List<T> createMany(List<JsonMap> jsonList) {
     List<T> instances = [];
     for (final item in jsonList) {
       instances.add(createOne(item));
@@ -25,7 +25,7 @@ class ModelCreator<T> {
     return instances;
   }
 
-  T createOne(Json json) {
+  T createOne(JsonMap json) {
     return jsonModelFactory(json);
   }
 }
