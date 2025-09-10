@@ -1291,13 +1291,13 @@ class #{Model}Store extends ModelStreamStore<#{ModelsIdDartType}, #{Model}> {
 
   // ADD REF MODELS TO REF STORES
 
-  #{UpdateRefStores}
+  #{RecursiveUpsertsPlaceHolder}
 
-  #{UpdateRefStoresForList}
+  #{RecursiveListUpsertsPlaceHolder}
 
 //   @override
 //   #{Model} upsert(#{Model} item) {
-//     return updateRefStores(item);
+//     return recursiveUpsert(item);
 //   }
 
 }
@@ -1397,25 +1397,25 @@ var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
-var dartStoreUpdateRefStores = `#{Model} updateRefStores(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+var dartStoreRecursiveUpsert = `#{Model} recursiveUpsert(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
     if (recursiveDepth > 0) {
         recursiveDepth--;
-        #{UpdateRefStoreForFields}
+        #{RecursiveUpsertsForFields}
     }
     return super.upsert(#{moDel});
 }`;
-var dartStoreUpdateRefStoresForList = `List<#{Model}> updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+var dartRecursiveListUpsert = `List<#{Model}> recursiveListUpsert(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
     final updated#{Model}s = <#{Model}>[];
     for (var #{moDel} in #{moDel}s) {
-        updated#{Model}s.add(updateRefStores(#{moDel}, recursiveDepth: recursiveDepth));
+        updated#{Model}s.add(recursiveUpsert(#{moDel}, recursiveDepth: recursiveDepth));
     }
     return updated#{Model}s;
 }`;
-var dartStoreUpdateRefStoreForField = `if (#{moDel}.#{fieldName} != null) {
-        #{FieldType}Store.instance.updateRefStores(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+var dartStoreRecursiveUpsertForField = `if (#{moDel}.#{fieldName} != null) {
+        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveUpsert(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
     }`;
-var dartStoreUpdateRefStoreForListField = `if (#{moDel}.#{fieldName} != null) {
-        #{FieldType}Store.instance.updateRefStoresForList(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+var dartStoreRecursiveUpsertForListField = `if (#{moDel}.#{fieldName} != null) {
+        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveListUpsert(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
     }`;
 var dartStoreGetByPropertyVal$ = `
     Stream<#{Model}?> getBy#{FieldName}$(
@@ -1558,8 +1558,8 @@ var DartStoreGenerator = class {
     content = content.replace(/#{GetManyByPropertyVal\$}/g, getByPropertyVal$.join("\n\n	"));
     content = content.replace(/#{GetRelatedModelsWithId\$}/g, GetRelatedModelsWithId$.join("\n\n	"));
     content = content.replace(/#{GetRelatedModels\$}/g, GetRelatedModels$.join("\n\n	"));
-    content = content.replace(/#{UpdateRefStores}/g, this.generateUpdateRefStores(modelFields));
-    content = content.replace(/#{UpdateRefStoresForList}/g, this.generateUpdateRefStoresForList());
+    content = content.replace(/#{RecursiveUpsertsPlaceHolder}/g, this.generateRecursiveUpserts(modelFields));
+    content = content.replace(/#{RecursiveListUpsertsPlaceHolder}/g, this.generateRecursiveListUpserts());
     content = content.replace(/#{Endpoints}/g, endpoints.join(",\n	"));
     if (includesConstructor.length === 0) {
       includesConstructor.push(this.replaceAllVariables(dartStoreIncludesEmptyConstructor));
@@ -1616,24 +1616,24 @@ var DartStoreGenerator = class {
     }
     return this.replaceAllVariables(content, field);
   }
-  generateUpdateRefStores(fields) {
-    let content = dartStoreUpdateRefStores;
+  generateRecursiveUpserts(fields) {
+    let content = dartStoreRecursiveUpsert;
     content = this.replaceAllVariables(content);
-    let updateRefStores = "";
+    let recursiveUpserts = "";
     for (const field of fields) {
-      updateRefStores += this.generateUpdateRefStoreForField(field);
+      recursiveUpserts += this.generateRecursiveUpsertForField(field);
     }
-    content = content.replace(/#{UpdateRefStoreForFields}/g, updateRefStores);
+    content = content.replace(/#{RecursiveUpsertsForFields}/g, recursiveUpserts);
     content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
     return content;
   }
-  generateUpdateRefStoreForField(field) {
-    let content = field.isList ? dartStoreUpdateRefStoreForListField : dartStoreUpdateRefStoreForField;
+  generateRecursiveUpsertForField(field) {
+    let content = field.isList ? dartStoreRecursiveUpsertForListField : dartStoreRecursiveUpsertForField;
     content = content.replace(/#{FieldType}/g, field.type);
     return this.replaceAllVariables(content, field);
   }
-  generateUpdateRefStoresForList() {
-    let content = dartStoreUpdateRefStoresForList;
+  generateRecursiveListUpserts() {
+    let content = dartRecursiveListUpsert;
     content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
     return this.replaceAllVariables(content);
   }

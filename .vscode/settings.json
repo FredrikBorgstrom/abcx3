@@ -34,5 +34,8 @@
     "**/node_modules": false,
     "**/Thumbs.db": true
 },
-  "hide-files.files": []
+  "hide-files.files": [],
+  "search.exclude": {
+    "**/node_modules": false
+  }
 }

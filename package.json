@@ -32,9 +32,9 @@
         "typescript": "~5.9.2"
     },
     "engines": {
-        "node": "^22.0.0",
-        "npm": "^9.6.5",
-        "pnpm": "^10.0.0"
+        "node": ">=22.0.0",
+        "npm": ">=9.6.5",
+        "pnpm": ">=10.0.0"
     },
     "author": {
         "name": "Fredrik Borgström",
