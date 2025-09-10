@@ -1295,6 +1295,11 @@ class #{Model}Store extends ModelStreamStore<#{ModelsIdDartType}, #{Model}> {
 
   #{UpdateRefStoresForList}
 
+//   @override
+//   #{Model} upsert(#{Model} item) {
+//     return updateRefStores(item);
+//   }
+
 }
 
 #{ClassInclude}
@@ -1397,7 +1402,7 @@ var dartStoreUpdateRefStores = `#{Model} updateRefStores(#{Model} #{moDel}, {int
         recursiveDepth--;
         #{UpdateRefStoreForFields}
     }
-    return upsert(#{moDel});
+    return super.upsert(#{moDel});
 }`;
 var dartStoreUpdateRefStoresForList = `List<#{Model}> updateRefStoresForList(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
     final updated#{Model}s = <#{Model}>[];
