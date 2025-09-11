@@ -9,5 +9,11 @@ export interface DartGeneratorSettings extends GeneratorSettings {
     // ModelsImplementBaseClass?: boolean;
     // CommonSourceDirectory: string;
     // ModelsBaseClassFileName: string;
+    GenerateEndpoints?: boolean;
+    BackendPath?: string;
+    EndpointsOutputPath?: string;
+    generateEndpoints?: boolean;
+    backendPath?: string;
+    endpointsOutputPath?: string;
 
 }

@@ -1,12 +1,12 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
 import { convertBooleanStrings, convertEnvStrings, copyCommonSourceFiles, initEnv, outputToConsoleAsync, StringFns, writeFileSafelyAsync } from '@shared';
 import { exec } from 'child_process';
-import * as fs from 'fs';
 import path from 'path';
 import { GENERATOR_NAME } from './constants';
 import { DartGeneratorSettings } from './dart_settings.interface';
 import { DartGenerator } from './generators/dart.generator';
 import { DartStoreGenerator } from './generators/dart_store.generator';
+import { EndpointGenerator } from './generators/endpoint.generator';
 import { generateDartEnum } from './generators/enum.generators';
 import { dartStoreLibrary } from './stubs/stores_library.stub';
 
@@ -24,6 +24,9 @@ const defaultOptions: DartGeneratorSettings = {
     // ModelsImplementBaseClass: true,
     // CommonSourceDirectory: 'common',
     // ModelsBaseClassFileName: 'prisma_model.dart',
+    GenerateEndpoints: false,
+    BackendPath: '../abcx3-backend',
+    EndpointsOutputPath: 'gen_backend_routes.dart',
 };
 
 generatorHandler({
@@ -91,6 +94,11 @@ class MainGenerator {
 
         await this.createDartLibraryFile();
         await this.generateStoreLibraryFile();
+
+        // Generate endpoints if enabled
+        if (this.settings.GenerateEndpoints || this.settings.generateEndpoints) {
+            await this.generateEndpoints();
+        }
 
         if (this.settings.FormatWithDart) {
             const outputPath = options.generator.output?.value;
@@ -208,5 +216,32 @@ class MainGenerator {
             `abcx3_stores_library.dart`
         );
         await this.writeFile(filePath, content);
+    }
+
+    async generateEndpoints() {
+        console.log('Generating endpoints...');
+        const endpointGenerator = new EndpointGenerator();
+        
+        try {
+            // Extract routes from the backend source code
+            const backendPath = this.settings.backendPath || this.settings.BackendPath || '../abcx3-backend';
+            const routes = await endpointGenerator.extractRoutesFromBackend(backendPath);
+            
+            if (routes.length === 0) {
+                console.log('No routes found in backend, skipping endpoint generation');
+                return;
+            }
+
+            console.log(`Found ${routes.length} routes in backend`);
+            
+            // Generate the endpoints file
+            const endpointsOutputPath = this.settings.endpointsOutputPath || this.settings.EndpointsOutputPath || 'gen_backend_routes.dart';
+            const fullOutputPath = path.join(this.outputPath, endpointsOutputPath);
+            
+            endpointGenerator.createDartRoutesFile(routes, fullOutputPath, this.settings);
+            
+        } catch (error) {
+            console.log('Error generating endpoints:', error);
+        }
     }
 }

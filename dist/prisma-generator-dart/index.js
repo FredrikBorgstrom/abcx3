@@ -96,8 +96,8 @@ var require_package = __commonJS({
 // node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
-    var fs2 = require("fs");
-    var path3 = require("path");
+    var fs3 = require("fs");
+    var path4 = require("path");
     var os = require("os");
     var crypto = require("crypto");
     var packageJson = require_package();
@@ -235,7 +235,7 @@ var require_main = __commonJS({
       if (options && options.path && options.path.length > 0) {
         if (Array.isArray(options.path)) {
           for (const filepath of options.path) {
-            if (fs2.existsSync(filepath)) {
+            if (fs3.existsSync(filepath)) {
               possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
             }
           }
@@ -243,15 +243,15 @@ var require_main = __commonJS({
           possibleVaultPath = options.path.endsWith(".vault") ? options.path : `${options.path}.vault`;
         }
       } else {
-        possibleVaultPath = path3.resolve(process.cwd(), ".env.vault");
+        possibleVaultPath = path4.resolve(process.cwd(), ".env.vault");
       }
-      if (fs2.existsSync(possibleVaultPath)) {
+      if (fs3.existsSync(possibleVaultPath)) {
         return possibleVaultPath;
       }
       return null;
     }
     function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path3.join(os.homedir(), envPath.slice(1)) : envPath;
+      return envPath[0] === "~" ? path4.join(os.homedir(), envPath.slice(1)) : envPath;
     }
     function _configVault(options) {
       const debug = parseBoolean(process.env.DOTENV_CONFIG_DEBUG || options && options.debug);
@@ -268,7 +268,7 @@ var require_main = __commonJS({
       return { parsed };
     }
     function configDotenv(options) {
-      const dotenvPath = path3.resolve(process.cwd(), ".env");
+      const dotenvPath = path4.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       let processEnv = process.env;
       if (options && options.processEnv != null) {
@@ -296,13 +296,13 @@ var require_main = __commonJS({
       }
       let lastError;
       const parsedAll = {};
-      for (const path4 of optionPaths) {
+      for (const path5 of optionPaths) {
         try {
-          const parsed = DotenvModule.parse(fs2.readFileSync(path4, { encoding }));
+          const parsed = DotenvModule.parse(fs3.readFileSync(path5, { encoding }));
           DotenvModule.populate(parsedAll, parsed, options);
         } catch (e) {
           if (debug) {
-            _debug(`Failed to load ${path4} ${e.message}`);
+            _debug(`Failed to load ${path5} ${e.message}`);
           }
           lastError = e;
         }
@@ -315,7 +315,7 @@ var require_main = __commonJS({
         const shortPaths = [];
         for (const filePath of optionPaths) {
           try {
-            const relative = path3.relative(process.cwd(), filePath);
+            const relative = path4.relative(process.cwd(), filePath);
             shortPaths.push(relative);
           } catch (e) {
             if (debug) {
@@ -750,8 +750,8 @@ function initEnv() {
 }
 
 // libs/prisma-generator-dart/src/generator.ts
-var import_child_process = require("child_process");
-var import_path = __toESM(require("path"));
+var import_child_process2 = require("child_process");
+var import_path2 = __toESM(require("path"));
 
 // libs/prisma-generator-dart/src/constants.ts
 var GENERATOR_NAME = "prisma-generator-dart";
@@ -1689,6 +1689,182 @@ var DartStoreGenerator = class {
   }
 };
 
+// libs/prisma-generator-dart/src/generators/endpoint.generator.ts
+var import_child_process = require("child_process");
+var fs2 = __toESM(require("fs"));
+var import_path = __toESM(require("path"));
+var EndpointGenerator = class {
+  dart_routes_stub = `
+    import 'package:abcx3/gen_models/abcx3_stores_library.dart';
+
+    enum Abc3Route implements Endpoint {
+        #{Routes}
+        
+        const Abc3Route(this.path, this.method);
+      
+        @override
+        final String path;
+        
+        @override
+        final HttpMethod method;
+
+        static String withPathParameter(String path, dynamic param) {
+            final regex = RegExp(r':([a-zA-Z]+)\\??');
+            if (param == null) {
+            // Remove the path parameter entirely if param is null
+            return path.replaceFirst(regex, '');
+            } else {
+            // Replace the path parameter with the param value
+            return path.replaceFirst(regex, param.toString());
+            }
+        }
+      }`;
+  generateDartRoutesCode = (routes) => {
+    const routeStub = `#{RouteName}("#{RoutePath}", #{RouteMethod}),
+`;
+    let allRoutesCode = "";
+    routes.forEach((route) => {
+      if (route.method !== "HEAD") {
+        let routeCode = routeStub;
+        let routeName = this.generateRouteName(route.url, route.method);
+        routeCode = routeCode.replace("#{RouteName}", routeName);
+        routeCode = routeCode.replace("#{RoutePath}", route.url);
+        routeCode = routeCode.replace("#{RouteMethod}", `HttpMethod.${route.method.toLowerCase()}`);
+        allRoutesCode += routeCode;
+      }
+    });
+    allRoutesCode = allRoutesCode.substring(0, allRoutesCode.length - 2) + ";\n";
+    const code = this.dart_routes_stub.replace("#{Routes}", allRoutesCode);
+    return code;
+  };
+  generateRouteName(url, method) {
+    let pathSegments = url.substring(1).split("/");
+    if (pathSegments.length === 1 && pathSegments[0] === "") {
+      return `root_${method.toLowerCase()}`;
+    }
+    if (pathSegments.length === 1 && pathSegments[0] === "*") {
+      return `root_${method.toLowerCase()}`;
+    }
+    let routeName = "";
+    for (let i = 0; i < pathSegments.length; i++) {
+      let segment = pathSegments[i];
+      if (segment.startsWith(":")) {
+        segment = segment.replace(/^:/, "").replace(/\?$/, "");
+        routeName += (routeName ? "_" : "") + "$" + segment;
+      } else if (segment === "*") {
+        routeName += (routeName ? "_" : "") + "wildcard";
+      } else if (segment !== "") {
+        segment = segment.replace(/-/g, "_");
+        routeName += (routeName ? "_" : "") + segment;
+      }
+    }
+    routeName += "_" + method.toLowerCase();
+    return routeName;
+  }
+  createDartRoutesFile = (routes, dartFilePath, settings) => {
+    const code = this.generateDartRoutesCode(routes);
+    const fn = this.formatDartFile;
+    fs2.writeFile(dartFilePath, code, "utf8", function(err) {
+      if (err) {
+        console.log("An error occured while writing routes to Dart File.");
+        return console.log(err);
+      }
+      if (settings.FormatWithDart) {
+        fn(dartFilePath);
+      }
+      console.log("Dart routes file has been saved and formatted.");
+    });
+  };
+  formatDartFile = (outputPath) => {
+    (0, import_child_process.exec)(`dart format "${outputPath}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.log("dart format couldn't run. Make sure you have Dart installed properly by going to https://dart.dev/get-dart");
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    });
+  };
+  /**
+   * Scans the backend source code to extract route definitions
+   * This method looks for NestJS route decorators and extracts the path and method information
+   */
+  async extractRoutesFromBackend(backendPath) {
+    const routes = [];
+    try {
+      const routesDir = import_path.default.join(backendPath, "src", "routes");
+      if (!fs2.existsSync(routesDir)) {
+        console.log("Routes directory not found, skipping endpoint generation");
+        return routes;
+      }
+      const files = this.getAllTsFiles(routesDir);
+      for (const file of files) {
+        const content = fs2.readFileSync(file, "utf8");
+        const fileRoutes = this.extractRoutesFromFile(content);
+        routes.push(...fileRoutes);
+      }
+    } catch (error) {
+      console.log("Error extracting routes from backend:", error);
+    }
+    const uniqueRoutes = this.removeDuplicateRoutes(routes);
+    console.log(`Removed ${routes.length - uniqueRoutes.length} duplicate routes`);
+    return uniqueRoutes;
+  }
+  getAllTsFiles(dir) {
+    const files = [];
+    const items = fs2.readdirSync(dir);
+    for (const item of items) {
+      const fullPath = import_path.default.join(dir, item);
+      const stat = fs2.statSync(fullPath);
+      if (stat.isDirectory()) {
+        files.push(...this.getAllTsFiles(fullPath));
+      } else if (item.endsWith(".ts") && !item.endsWith(".spec.ts")) {
+        files.push(fullPath);
+      }
+    }
+    return files;
+  }
+  extractRoutesFromFile(content) {
+    const routes = [];
+    const controllerMatch = content.match(/@Controller\s*\(\s*['"`]([^'"`]*?)['"`]\s*\)/);
+    const controllerPrefix = controllerMatch ? controllerMatch[1] : "";
+    const routeRegex = /@(Get|Post|Put|Delete|Patch|Options|Head)\s*\(\s*['"`]([^'"`]*?)['"`]\s*\)/g;
+    let match;
+    while ((match = routeRegex.exec(content)) !== null) {
+      const method = match[1].toUpperCase();
+      let path4 = match[2];
+      if (!path4) {
+        path4 = "/";
+      }
+      if (!path4.startsWith("/")) {
+        path4 = "/" + path4;
+      }
+      if (controllerPrefix) {
+        const cleanPrefix = controllerPrefix.startsWith("/") ? controllerPrefix.substring(1) : controllerPrefix;
+        path4 = "/" + cleanPrefix + path4;
+      }
+      routes.push({ url: path4, method });
+    }
+    return routes;
+  }
+  removeDuplicateRoutes(routes) {
+    const seen = /* @__PURE__ */ new Set();
+    const uniqueRoutes = [];
+    for (const route of routes) {
+      const key = `${route.method}:${route.url}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueRoutes.push(route);
+      }
+    }
+    return uniqueRoutes;
+  }
+};
+
 // libs/prisma-generator-dart/src/generators/enum.generators.ts
 var generateDartEnum = ({ name, values }, autoGenText) => {
   const enumValues = values.map(({ name: name2 }) => name2).join(",\n	");
@@ -1739,10 +1915,13 @@ var defaultOptions = {
   EnumPath: "enums",
   FormatWithDart: true,
   MakeAllPropsOptional: true,
-  UpdateStoresDefaultRecursiveDepth: 4
+  UpdateStoresDefaultRecursiveDepth: 4,
   // ModelsImplementBaseClass: true,
   // CommonSourceDirectory: 'common',
   // ModelsBaseClassFileName: 'prisma_model.dart',
+  GenerateEndpoints: false,
+  BackendPath: "../abcx3-backend",
+  EndpointsOutputPath: "gen_backend_routes.dart"
 };
 (0, import_generator_helper.generatorHandler)({
   onManifest() {
@@ -1798,9 +1977,12 @@ var MainGenerator = class {
     }
     await this.createDartLibraryFile();
     await this.generateStoreLibraryFile();
+    if (this.settings.GenerateEndpoints || this.settings.generateEndpoints) {
+      await this.generateEndpoints();
+    }
     if (this.settings.FormatWithDart) {
       const outputPath = options.generator.output?.value;
-      (0, import_child_process.exec)(`dart format "${outputPath}"`, (error, stdout, stderr) => {
+      (0, import_child_process2.exec)(`dart format "${outputPath}"`, (error, stdout, stderr) => {
         if (error) {
           console.log("dart format couldn't run. Make sure you have Dart installed properly by going to https://dart.dev/get-dart");
           console.log(`error: ${error.message}`);
@@ -1850,7 +2032,7 @@ var MainGenerator = class {
   async generateDartEnumFile(tEnum) {
     let content = generateDartEnum(tEnum, this.settings.AutoGeneratedWarningText);
     const fileName = `${StringFns.snakeCase(tEnum.name)}.dart`;
-    const filePath = import_path.default.join(this.outputPath, "models", fileName);
+    const filePath = import_path2.default.join(this.outputPath, "models", fileName);
     console.log(` > Generating enum for Model ${tEnum.name}`);
     await this.writeFile(filePath, content);
     this.modelFiles[tEnum.name] = "models/" + fileName;
@@ -1858,7 +2040,7 @@ var MainGenerator = class {
   async createDartLibraryFile() {
     let content = Object.keys(this.modelFiles).reduce((acc, key) => acc + `export '${this.modelFiles[key]}';
 `, "");
-    const filePath = import_path.default.join(
+    const filePath = import_path2.default.join(
       this.outputPath,
       `models_library.dart`
     );
@@ -1868,7 +2050,7 @@ var MainGenerator = class {
     const dartGenerator = new DartGenerator(this.settings, model);
     const dartContent = dartGenerator.generateContent();
     const fileName = `${StringFns.snakeCase(model.name)}.dart`;
-    const filePath = import_path.default.join(
+    const filePath = import_path2.default.join(
       this.outputPath,
       "models",
       fileName
@@ -1881,7 +2063,7 @@ var MainGenerator = class {
     const dartStoreGenerator = new DartStoreGenerator(this.settings, model, this.options);
     const dartContent = dartStoreGenerator.generateContent();
     const fileName = `${StringFns.snakeCase(model.name)}_store.dart`;
-    const filePath = import_path.default.join(
+    const filePath = import_path2.default.join(
       this.outputPath,
       "stores",
       fileName
@@ -1895,10 +2077,28 @@ var MainGenerator = class {
     let partsContent = Object.keys(this.dartStoreFiles).reduce((acc, key) => acc + `part '${this.dartStoreFiles[key]}';
 `, "");
     content = content.replace(/#{StoreParts}/g, partsContent);
-    const filePath = import_path.default.join(
+    const filePath = import_path2.default.join(
       this.outputPath,
       `abcx3_stores_library.dart`
     );
     await this.writeFile(filePath, content);
+  }
+  async generateEndpoints() {
+    console.log("Generating endpoints...");
+    const endpointGenerator = new EndpointGenerator();
+    try {
+      const backendPath = this.settings.backendPath || this.settings.BackendPath || "../abcx3-backend";
+      const routes = await endpointGenerator.extractRoutesFromBackend(backendPath);
+      if (routes.length === 0) {
+        console.log("No routes found in backend, skipping endpoint generation");
+        return;
+      }
+      console.log(`Found ${routes.length} routes in backend`);
+      const endpointsOutputPath = this.settings.endpointsOutputPath || this.settings.EndpointsOutputPath || "gen_backend_routes.dart";
+      const fullOutputPath = import_path2.default.join(this.outputPath, endpointsOutputPath);
+      endpointGenerator.createDartRoutesFile(routes, fullOutputPath, this.settings);
+    } catch (error) {
+      console.log("Error generating endpoints:", error);
+    }
   }
 };
