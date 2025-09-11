@@ -1,14 +1,14 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
+import { convertBooleanStrings, convertEnvStrings, copyCommonSourceFiles, outputToConsoleAsync, writeFileSafelyAsync } from '@shared';
+import { format } from 'prettier';
 import { version } from './../package.json';
 import { GENERATOR_NAME } from './constants';
 import { ControllerGenerator } from './generators/controller.generator';
-import { ServiceGenerator as ServiceGenerator } from './generators/service.generator';
 import { generateEnum } from './generators/enum.generator';
 import { ModuleGenerator } from './generators/module.generator';
-import { NestGeneratorSettings } from './nest_settings.interface';
+import { ServiceGenerator } from './generators/service.generator';
 import { NameGenerator } from './nameGenerator';
-import { format } from 'prettier';
-import { convertBooleanStrings, convertEnvStrings, copyCommonSourceFiles, outputToConsole, outputToConsoleAsync, writeFileSafely, writeFileSafelyAsync } from '@shared';
+import { NestGeneratorSettings } from './nest_settings.interface';
 
 const defaultOptions: NestGeneratorSettings = {
     strict: false,
@@ -29,6 +29,7 @@ const defaultOptions: NestGeneratorSettings = {
     PrismaServiceImportPath: 'prisma/prisma.service',
     PrismaModuleName: 'PrismaModule',
     PrismaModuleImportPath: 'src/prisma/prisma.module',
+    PrismaClientImportPath: '@prisma/client',
 
     EnumPath: 'enums'
 };

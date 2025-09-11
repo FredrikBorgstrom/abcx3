@@ -6,11 +6,11 @@ import {
     InternalServerErrorException,
     NotFoundException,
 } from '@nestjs/common';
-import { Prisma, #{Model} #{RelatedFieldTypesImport} } from '@prisma/client';
+import { Prisma, #{Model} #{RelatedFieldTypesImport} } from '#{PrismaClientImportPath}';
 import {
     PrismaService,
 } from '#{PrismaServiceImportPath}';
-import { WithLogicalOperators, WithoutLogicalOperators, getByFieldValuesHelper, getManyByFieldValuesHelper } from "../store_common";
+import { WithLogicalOperators, WithoutLogicalOperators, getByFieldValuesHelper, getManyByFieldValuesHelper } from '../store_common';
 #{NeverthrowImport}
 
 @Injectable()
