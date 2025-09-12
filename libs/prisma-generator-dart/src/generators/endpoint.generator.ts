@@ -89,17 +89,18 @@ export class EndpointGenerator {
 
     createDartRoutesFile = (routes: Array<{url: string, method: string}>, dartFilePath: string, settings: DartGeneratorSettings) => {
         const code = this.generateDartRoutesCode(routes);
-        const fn = this.formatDartFile;
-        fs.writeFile(dartFilePath, code, 'utf8', function (err) {
-            if (err) {
-                console.log("An error occured while writing routes to Dart File.");
-                return console.log(err);
-            }
+        
+        try {
+            // Write file synchronously to ensure it's completed before the generator finishes
+            fs.writeFileSync(dartFilePath, code, 'utf8');
+            console.log("Dart routes file has been saved.");
+            
             if (settings.FormatWithDart) {
-                fn(dartFilePath);
+                this.formatDartFile(dartFilePath);
             }
-            console.log("Dart routes file has been saved and formatted.");
-        });
+        } catch (err) {
+            console.log("An error occurred while writing routes to Dart File:", err);
+        }
     }
 
     formatDartFile = (outputPath: string) => {
@@ -125,19 +126,39 @@ export class EndpointGenerator {
         const routes: Array<{url: string, method: string}> = [];
         
         try {
-            // Read all TypeScript files in the routes directory
+            // Read all TypeScript files in both routes and gen directories
             const routesDir = path.join(backendPath, 'src', 'routes');
-            if (!fs.existsSync(routesDir)) {
-                console.log('Routes directory not found, skipping endpoint generation');
-                return routes;
+            const genDir = path.join(backendPath, 'src', 'gen');
+            
+            // Scan routes directory
+            if (fs.existsSync(routesDir)) {
+                const files = this.getAllTsFiles(routesDir);
+                for (const file of files) {
+                    const content = fs.readFileSync(file, 'utf8');
+                    const fileRoutes = this.extractRoutesFromFile(content);
+                    routes.push(...fileRoutes);
+                }
+                console.log(`Found ${routes.length} routes in src/routes directory`);
+            } else {
+                console.log('Routes directory not found, skipping');
             }
 
-            const files = this.getAllTsFiles(routesDir);
-            
-            for (const file of files) {
-                const content = fs.readFileSync(file, 'utf8');
-                const fileRoutes = this.extractRoutesFromFile(content);
-                routes.push(...fileRoutes);
+            // Scan gen directory for auto-generated controllers
+            if (fs.existsSync(genDir)) {
+                const genFiles = this.getAllTsFiles(genDir);
+                for (const file of genFiles) {
+                    const content = fs.readFileSync(file, 'utf8');
+                    const fileRoutes = this.extractRoutesFromFile(content);
+                    routes.push(...fileRoutes);
+                }
+                console.log(`Found ${routes.length} total routes after scanning src/gen directory`);
+            } else {
+                console.log('Gen directory not found, skipping');
+            }
+
+            if (routes.length === 0) {
+                console.log('No routes found in either directory, skipping endpoint generation');
+                return routes;
             }
         } catch (error) {
             console.log('Error extracting routes from backend:', error);

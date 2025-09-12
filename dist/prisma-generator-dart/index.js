@@ -1763,17 +1763,15 @@ var EndpointGenerator = class {
   }
   createDartRoutesFile = (routes, dartFilePath, settings) => {
     const code = this.generateDartRoutesCode(routes);
-    const fn = this.formatDartFile;
-    fs2.writeFile(dartFilePath, code, "utf8", function(err) {
-      if (err) {
-        console.log("An error occured while writing routes to Dart File.");
-        return console.log(err);
-      }
+    try {
+      fs2.writeFileSync(dartFilePath, code, "utf8");
+      console.log("Dart routes file has been saved.");
       if (settings.FormatWithDart) {
-        fn(dartFilePath);
+        this.formatDartFile(dartFilePath);
       }
-      console.log("Dart routes file has been saved and formatted.");
-    });
+    } catch (err) {
+      console.log("An error occurred while writing routes to Dart File:", err);
+    }
   };
   formatDartFile = (outputPath) => {
     (0, import_child_process.exec)(`dart format "${outputPath}"`, (error, stdout, stderr) => {
@@ -1797,15 +1795,32 @@ var EndpointGenerator = class {
     const routes = [];
     try {
       const routesDir = import_path.default.join(backendPath, "src", "routes");
-      if (!fs2.existsSync(routesDir)) {
-        console.log("Routes directory not found, skipping endpoint generation");
-        return routes;
+      const genDir = import_path.default.join(backendPath, "src", "gen");
+      if (fs2.existsSync(routesDir)) {
+        const files = this.getAllTsFiles(routesDir);
+        for (const file of files) {
+          const content = fs2.readFileSync(file, "utf8");
+          const fileRoutes = this.extractRoutesFromFile(content);
+          routes.push(...fileRoutes);
+        }
+        console.log(`Found ${routes.length} routes in src/routes directory`);
+      } else {
+        console.log("Routes directory not found, skipping");
       }
-      const files = this.getAllTsFiles(routesDir);
-      for (const file of files) {
-        const content = fs2.readFileSync(file, "utf8");
-        const fileRoutes = this.extractRoutesFromFile(content);
-        routes.push(...fileRoutes);
+      if (fs2.existsSync(genDir)) {
+        const genFiles = this.getAllTsFiles(genDir);
+        for (const file of genFiles) {
+          const content = fs2.readFileSync(file, "utf8");
+          const fileRoutes = this.extractRoutesFromFile(content);
+          routes.push(...fileRoutes);
+        }
+        console.log(`Found ${routes.length} total routes after scanning src/gen directory`);
+      } else {
+        console.log("Gen directory not found, skipping");
+      }
+      if (routes.length === 0) {
+        console.log("No routes found in either directory, skipping endpoint generation");
+        return routes;
       }
     } catch (error) {
       console.log("Error extracting routes from backend:", error);
