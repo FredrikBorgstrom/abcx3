@@ -37,5 +37,9 @@
   "hide-files.files": [],
   "search.exclude": {
     "**/node_modules": false
-  }
+  },
+  "dart.analysisExcludedFolders": [
+    "dist/prisma-generator-dart",
+    "libs/prisma-generator-dart/src/dart_source/stores_common",
+  ]
 }
