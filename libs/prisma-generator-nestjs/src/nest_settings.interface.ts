@@ -6,7 +6,7 @@ export interface NestGeneratorSettings extends GeneratorSettings {
     GenerateServices?: boolean; 
     // GenerateInputs?: boolean;
     GenerateControllers?: boolean;
-    
+    GenerateEmptyControllers?: boolean;
     GenerateModule?: boolean;
     CRUDStubFile?: string;
     WrapWithNeverthrow?: boolean;

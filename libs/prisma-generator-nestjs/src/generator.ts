@@ -18,6 +18,7 @@ const defaultOptions: NestGeneratorSettings = {
     schemaPath: '',
     GenerateServices: true,
     GenerateControllers: false,
+    GenerateEmptyControllers: false,
     GenerateModule: true,
     // InputExportPath: 'data/inputs',
     // InputSuffix: 'Input',
