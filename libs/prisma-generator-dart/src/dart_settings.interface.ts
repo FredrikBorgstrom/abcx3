@@ -15,5 +15,9 @@ export interface DartGeneratorSettings extends GeneratorSettings {
     generateEndpoints?: boolean;
     backendPath?: string;
     endpointsOutputPath?: string;
+    // When true, emit setup_stores_devtool.dart next to generated libraries
+    outputSetupForDevtools?: boolean;
+    // Support PascalCase variant to be consistent with other options
+    OutputSetupForDevtools?: boolean;
 
 }

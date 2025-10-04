@@ -27,6 +27,7 @@ const defaultOptions: DartGeneratorSettings = {
     GenerateEndpoints: false,
     BackendPath: '../abcx3-backend',
     EndpointsOutputPath: 'gen_backend_routes.dart',
+    outputSetupForDevtools: false,
 };
 
 generatorHandler({
@@ -94,6 +95,11 @@ class MainGenerator {
 
         await this.createDartLibraryFile();
         await this.generateStoreLibraryFile();
+
+        // Optionally emit a helper to wire stores into DevTools
+        if (this.settings.outputSetupForDevtools || (this as any).settings.OutputSetupForDevtools) {
+            await this.generateDevtoolsSetupFile();
+        }
 
         // Generate endpoints if enabled
         if (this.settings.GenerateEndpoints || this.settings.generateEndpoints) {
@@ -215,6 +221,23 @@ class MainGenerator {
             this.outputPath,
             `abcx3_stores_library.dart`
         );
+        await this.writeFile(filePath, content);
+    }
+
+    async generateDevtoolsSetupFile() {
+        // Build feeds list from the generated stores
+        const storeClassNames = Object.keys(this.dartStoreFiles)
+            .sort() // stable, alphabetical
+            .map(modelName => `${modelName}Store`);
+
+        const feeds = storeClassNames
+            .map((storeName) => `    StoreFeed(name: '${storeName}', items\$: ${storeName}.instance.items\$),`)
+            .join('\n');
+
+        const content = `import 'package:abcx3/gen_models/abcx3_stores_library.dart';\nimport 'package:abcx3_dart_store_devtool/abcx3_dart_store_devtool.dart';\nimport 'package:flutter/foundation.dart';\n\n/// Call from main() in debug builds to stream all store updates to DevTools\nvoid setupAbcx3StoresDevTool() {\n  if (!kDebugMode) return;\n\n  final feeds = <StoreFeed>[\n${feeds}\n  ];\n\n  Abcx3StoresDevtool.start(feeds);\n}\n`;
+
+        // Place next to the generated libraries (output root)
+        const filePath = path.join(this.outputPath, 'setup_stores_devtool.dart');
         await this.writeFile(filePath, content);
     }
 

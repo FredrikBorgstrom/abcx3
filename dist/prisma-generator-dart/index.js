@@ -1936,7 +1936,8 @@ var defaultOptions = {
   // ModelsBaseClassFileName: 'prisma_model.dart',
   GenerateEndpoints: false,
   BackendPath: "../abcx3-backend",
-  EndpointsOutputPath: "gen_backend_routes.dart"
+  EndpointsOutputPath: "gen_backend_routes.dart",
+  outputSetupForDevtools: false
 };
 (0, import_generator_helper.generatorHandler)({
   onManifest() {
@@ -1992,6 +1993,9 @@ var MainGenerator = class {
     }
     await this.createDartLibraryFile();
     await this.generateStoreLibraryFile();
+    if (this.settings.outputSetupForDevtools || this.settings.OutputSetupForDevtools) {
+      await this.generateDevtoolsSetupFile();
+    }
     if (this.settings.GenerateEndpoints || this.settings.generateEndpoints) {
       await this.generateEndpoints();
     }
@@ -2096,6 +2100,27 @@ var MainGenerator = class {
       this.outputPath,
       `abcx3_stores_library.dart`
     );
+    await this.writeFile(filePath, content);
+  }
+  async generateDevtoolsSetupFile() {
+    const storeClassNames = Object.keys(this.dartStoreFiles).sort().map((modelName) => `${modelName}Store`);
+    const feeds = storeClassNames.map((storeName) => `    StoreFeed(name: '${storeName}', items$: ${storeName}.instance.items$),`).join("\n");
+    const content = `import 'package:abcx3/gen_models/abcx3_stores_library.dart';
+import 'package:abcx3_dart_store_devtool/abcx3_dart_store_devtool.dart';
+import 'package:flutter/foundation.dart';
+
+/// Call from main() in debug builds to stream all store updates to DevTools
+void setupAbcx3StoresDevTool() {
+  if (!kDebugMode) return;
+
+  final feeds = <StoreFeed>[
+${feeds}
+  ];
+
+  Abcx3StoresDevtool.start(feeds);
+}
+`;
+    const filePath = import_path2.default.join(this.outputPath, "setup_stores_devtool.dart");
     await this.writeFile(filePath, content);
   }
   async generateEndpoints() {

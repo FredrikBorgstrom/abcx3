@@ -43,7 +43,11 @@ The main parameters for this generator as as follows:
 | provider       | string  | -             | The name of the generator - must be set to `node ./node_modules/@abcx3/prisma-generator-dart/index.js`                                                                                                                                                                                                                                                                                                                       |
 | output         | string  | -             | Destination path for the generated files. This should be an absolute path to your flutter/dart project. The folder will be created if it doesn't exist. Name it for instance 'gen_models' |
 | dryRun         | boolean | false         | don't write any content but output everything to the console instead                                                                                                                                                                                                                                                                                                                     |
-|                                                                                                                                                                                                                                                                                                  |
+| outputSetupForDevtools | boolean | false | Also emit `setup_stores_devtool.dart` next to the generated libraries. Requires the host app to depend on `abcx3_dart_store_devtool`. |
+
+#### DevTools setup file
+
+When `outputSetupForDevtools` is true, the generator writes a `setup_stores_devtool.dart` file into the generator output folder. Import and call `setupAbcx3StoresDevTool()` from your Flutter `main()` in debug builds to stream all store updates to the DevTools UI. This mirrors the helper used in the ABCx3 app and expects the `abcx3_dart_store_devtool` package to be available.
 
 
 
@@ -55,5 +59,4 @@ If you'd like to contribute, just fork the project and make a pull request.
 ### Building
 
 Run `pnpm build` to build the library.
-
 
