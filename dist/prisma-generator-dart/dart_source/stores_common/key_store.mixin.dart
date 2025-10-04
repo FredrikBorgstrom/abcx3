@@ -10,17 +10,24 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   /// use another variable than _itemsStore to store your items in
   List<T> get items => _itemsStore;
 
-  set items(List<T> value) => _itemsStore = replaceAll(value);
+  set items(List<T> items) => setItemsInternal(deduplicateAndIndex(items));
 
-  /// Replace the entire collection, enforcing uniqueness by key.
-  List<T> replaceAll(List<T> value) {
+  /// Updates the internal key index from the provided list and
+  /// returns the deduplicated list (one per $uid).
+  List<T> deduplicateAndIndex(List<T> items) {
     _map.clear();
-    for (final item in value) {
+    for (final item in items) {
       final key = getKey(item);
       assert(key != null, 'All models must have a non-null \$uid.');
       _map[key as K] = item; // last value for a key wins
     }
     return _map.values.toList();
+  }
+
+  /// Sets the already-deduplicated list without performing deduplication.
+  /// ModelStreamStore overrides this to publish to its stream.
+  void setItemsInternal(List<T> items) {
+    _itemsStore = items;
   }
 
   /// end of override
@@ -104,7 +111,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     } else {
       _map[key] = item;
     }
-    items = _map.values.toList();
+    setItemsInternal(_map.values.toList());
   }
 
   @override
@@ -115,7 +122,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
       final existing = _map[k as K];
       _map[k] = existing != null ? existing.customCopy(m) : m;
     }
-    items = _map.values.toList();
+    setItemsInternal(_map.values.toList());
   }
 
   @override
@@ -125,7 +132,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     assert(key != null, 'All models must have a non-null \$uid.');
     final removed = _map.remove(key as K) != null;
     if (removed) {
-      items = _map.values.toList();
+      setItemsInternal(_map.values.toList());
     }
     return removed;
   }
@@ -137,14 +144,14 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
       assert(k != null, 'All models must have a non-null \$uid.');
       _map.remove(k as K);
     }
-    items = _map.values.toList();
+    setItemsInternal(_map.values.toList());
   }
 
   @override
   bool deleteByKey(K key) {
     final removed = _map.remove(key) != null;
     if (removed) {
-      items = _map.values.toList();
+      setItemsInternal(_map.values.toList());
     }
     return removed;
   }
@@ -154,7 +161,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     for (var key in keys) {
       _map.remove(key);
     }
-    items = _map.values.toList();
+    setItemsInternal(_map.values.toList());
   }
 
   // NOTE! Update creates a new instance of the model, and replaces the old one!
@@ -167,7 +174,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     if (existing == null) return null;
     final updated = existing.customCopy(item);
     _map[key] = updated;
-    items = _map.values.toList();
+    setItemsInternal(_map.values.toList());
     return updated;
   }
 

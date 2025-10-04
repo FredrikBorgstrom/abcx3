@@ -25,8 +25,15 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
   /// Setter for the list of models.
   @override
   set items(List<T> items) {
-    final uniqueItems = replaceAll(items);
+    final uniqueItems = deduplicateAndIndex(items);
     _items$$.add(uniqueItems);
+  }
+
+  /// Internal emission path used by KeyStoreMixin mutators to avoid double
+  /// deduplication. Assumes `items` is already deduplicated.
+  @override
+  void setItemsInternal(List<T> items) {
+    _items$$.add(items);
   }
 
   /// Returns a stream of a single model that matches the given field value,
