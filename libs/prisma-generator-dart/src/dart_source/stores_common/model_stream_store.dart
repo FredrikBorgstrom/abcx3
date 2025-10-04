@@ -24,7 +24,10 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
 
   /// Setter for the list of models.
   @override
-  set items(List<T> items) => _items$$.add(items);
+  set items(List<T> items) {
+    final uniqueItems = replaceAll(items);
+    _items$$.add(uniqueItems);
+  }
 
   /// Returns a stream of a single model that matches the given field value,
   /// or a stream of null if none is found.
