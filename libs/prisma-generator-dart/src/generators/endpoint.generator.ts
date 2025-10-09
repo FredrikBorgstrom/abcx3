@@ -196,13 +196,14 @@ export class EndpointGenerator {
         const controllerMatch = content.match(/@Controller\s*\(\s*['"`]([^'"`]*?)['"`]\s*\)/);
         const controllerPrefix = controllerMatch ? controllerMatch[1] : '';
         
-        // Match @Get, @Post, @Put, @Delete, @Patch decorators with their paths
-        const routeRegex = /@(Get|Post|Put|Delete|Patch|Options|Head)\s*\(\s*['"`]([^'"`]*?)['"`]\s*\)/g;
+        // Match @Get, @Post, @Put, @Delete, @Patch decorators with optional path
+        // Supports: @Get('path'), @Get("path"), @Get(`path`), and @Get()
+        const routeRegex = /@(Get|Post|Put|Delete|Patch|Options|Head)\s*\(\s*(?:['"`]([^'"`]*)['"`])?\s*\)/g;
         let match;
         
         while ((match = routeRegex.exec(content)) !== null) {
             const method = match[1].toUpperCase();
-            let path = match[2];
+            let path = match[2] ?? '';
             
             // Handle empty path (root path)
             if (!path) {
@@ -218,7 +219,13 @@ export class EndpointGenerator {
             if (controllerPrefix) {
                 // Remove leading slash from controller prefix if it exists
                 const cleanPrefix = controllerPrefix.startsWith('/') ? controllerPrefix.substring(1) : controllerPrefix;
-                path = '/' + cleanPrefix + path;
+                const basePath = cleanPrefix ? '/' + cleanPrefix : '';
+                // If the method path is root ('/'), avoid trailing slash
+                if (path === '/') {
+                    path = basePath || '/';
+                } else {
+                    path = basePath + path;
+                }
             }
             
             routes.push({ url: path, method });

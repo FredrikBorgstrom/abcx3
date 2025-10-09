@@ -1847,11 +1847,11 @@ var EndpointGenerator = class {
     const routes = [];
     const controllerMatch = content.match(/@Controller\s*\(\s*['"`]([^'"`]*?)['"`]\s*\)/);
     const controllerPrefix = controllerMatch ? controllerMatch[1] : "";
-    const routeRegex = /@(Get|Post|Put|Delete|Patch|Options|Head)\s*\(\s*['"`]([^'"`]*?)['"`]\s*\)/g;
+    const routeRegex = /@(Get|Post|Put|Delete|Patch|Options|Head)\s*\(\s*(?:['"`]([^'"`]*)['"`])?\s*\)/g;
     let match;
     while ((match = routeRegex.exec(content)) !== null) {
       const method = match[1].toUpperCase();
-      let path4 = match[2];
+      let path4 = match[2] ?? "";
       if (!path4) {
         path4 = "/";
       }
@@ -1860,7 +1860,12 @@ var EndpointGenerator = class {
       }
       if (controllerPrefix) {
         const cleanPrefix = controllerPrefix.startsWith("/") ? controllerPrefix.substring(1) : controllerPrefix;
-        path4 = "/" + cleanPrefix + path4;
+        const basePath = cleanPrefix ? "/" + cleanPrefix : "";
+        if (path4 === "/") {
+          path4 = basePath || "/";
+        } else {
+          path4 = basePath + path4;
+        }
       }
       routes.push({ url: path4, method });
     }
