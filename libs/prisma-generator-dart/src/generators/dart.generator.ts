@@ -18,6 +18,7 @@ import {
     dartFromJsonEnumArg,
     dartFromJsonEnumListArg,
     dartFromJsonFloatArg,
+    dartFromJsonIntArg,
     dartFromJsonModelListArg,
     dartFromJsonRefArg,
     dartFromJsonScalarBigIntListArg,
@@ -348,7 +349,9 @@ export class DartGenerator {
                 code = dartFromJsonBigIntArg;
             } else if (field.type === 'Float') {
                 code = dartFromJsonFloatArg;
-            }else {
+            } else if (field.type === 'Int') {
+                code = dartFromJsonIntArg;
+            } else {
                 code = dartFromJsonArg;
             }
         }

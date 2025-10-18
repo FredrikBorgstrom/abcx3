@@ -867,6 +867,7 @@ var dartCustomCopyConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? 
 var dartCustomCopyConstructorListArg = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
 var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
+var dartFromJsonIntArg = `#{PropName}: int.tryParse(json['#{PropName}'].toString())`;
 var dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}'].toString()) : null`;
 var dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as JsonMap) : null`;
 var dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
@@ -1152,6 +1153,8 @@ var DartGenerator = class {
         code = dartFromJsonBigIntArg;
       } else if (field.type === "Float") {
         code = dartFromJsonFloatArg;
+      } else if (field.type === "Int") {
+        code = dartFromJsonIntArg;
       } else {
         code = dartFromJsonArg;
       }

@@ -121,6 +121,7 @@ export const dartCustomCopyConstructorListArg = `#{PropName}: #{InstanceName}.#{
 export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
+export const dartFromJsonIntArg = `#{PropName}: int.tryParse(json['#{PropName}'].toString())`;
 export const dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}'].toString()) : null`;
 export const dartFromJsonRefArg = `#{PropName}: json['#{PropName}'] != null ? #{Type}.fromJson(json['#{PropName}'] as JsonMap) : null`;
 export const dartFromJsonFloatArg = `#{PropName}: json['#{PropName}']?.toDouble()`;
