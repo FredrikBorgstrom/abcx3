@@ -37,6 +37,7 @@ export function convertEnvStrings(obj: Dictionary<string | string[]>) {
 }
 
 export function convertEnvString(value: string): string {
+    // First, try to match ${VARIABLE_NAME} format
     const matchArray = value.match(/\${(.+)}/);
     if (matchArray && matchArray.length === 2) {
         const envVarName = matchArray[1];
@@ -45,6 +46,14 @@ export function convertEnvString(value: string): string {
             return envValue;
         }
     }
+    
+    // If no ${...} wrapper, check if the value itself is an environment variable name
+    // This handles Prisma's env("VARIABLE_NAME") which passes just "VARIABLE_NAME"
+    const envValue = process.env[value];
+    if (envValue !== undefined) {
+        return envValue;
+    }
+    
     return value;
 }
 
