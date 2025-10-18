@@ -723,10 +723,14 @@ function convertEnvString(value) {
   const matchArray = value.match(/\${(.+)}/);
   if (matchArray && matchArray.length === 2) {
     const envVarName = matchArray[1];
-    const envValue = process.env[envVarName];
-    if (envValue !== void 0) {
-      return envValue;
+    const envValue2 = process.env[envVarName];
+    if (envValue2 !== void 0) {
+      return envValue2;
     }
+  }
+  const envValue = process.env[value];
+  if (envValue !== void 0) {
+    return envValue;
   }
   return value;
 }
