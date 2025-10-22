@@ -25,7 +25,7 @@ const defaultOptions: DartGeneratorSettings = {
     // CommonSourceDirectory: 'common',
     // ModelsBaseClassFileName: 'prisma_model.dart',
     GenerateEndpoints: false,
-    BackendPath: '../abcx3-backend',
+    BackendPath: 'src',
     EndpointsOutputPath: 'gen_backend_routes.dart',
     outputSetupForDevtools: false,
 };
@@ -247,7 +247,7 @@ class MainGenerator {
         
         try {
             // Extract routes from the backend source code
-            const backendPath = this.settings.backendPath || this.settings.BackendPath || '../abcx3-backend';
+            const backendPath = this.settings.backendPath || this.settings.BackendPath || './src';
             const routes = await endpointGenerator.extractRoutesFromBackend(backendPath);
             
             if (routes.length === 0) {

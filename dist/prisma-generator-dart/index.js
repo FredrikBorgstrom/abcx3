@@ -1798,11 +1798,10 @@ var EndpointGenerator = class {
    * Scans the backend source code to extract route definitions
    * This method looks for NestJS route decorators and extracts the path and method information
    */
-  async extractRoutesFromBackend(backendPath) {
+  extractRoutesFromBackend(backendPath) {
     const routes = [];
     try {
-      const routesDir = import_path.default.join(backendPath, "src", "routes");
-      const genDir = import_path.default.join(backendPath, "src", "gen");
+      const routesDir = backendPath;
       if (fs2.existsSync(routesDir)) {
         const files = this.getAllTsFiles(routesDir);
         for (const file of files) {
@@ -1810,23 +1809,12 @@ var EndpointGenerator = class {
           const fileRoutes = this.extractRoutesFromFile(content);
           routes.push(...fileRoutes);
         }
-        console.log(`Found ${routes.length} routes in src/routes directory`);
+        console.log(`Found ${routes.length} routes in src directory`);
       } else {
         console.log("Routes directory not found, skipping");
       }
-      if (fs2.existsSync(genDir)) {
-        const genFiles = this.getAllTsFiles(genDir);
-        for (const file of genFiles) {
-          const content = fs2.readFileSync(file, "utf8");
-          const fileRoutes = this.extractRoutesFromFile(content);
-          routes.push(...fileRoutes);
-        }
-        console.log(`Found ${routes.length} total routes after scanning src/gen directory`);
-      } else {
-        console.log("Gen directory not found, skipping");
-      }
       if (routes.length === 0) {
-        console.log("No routes found in either directory, skipping endpoint generation");
+        console.log("No routes found, skipping endpoint generation");
         return routes;
       }
     } catch (error) {
@@ -1836,6 +1824,54 @@ var EndpointGenerator = class {
     console.log(`Removed ${routes.length - uniqueRoutes.length} duplicate routes`);
     return uniqueRoutes;
   }
+  /* async extractRoutesFromBackend(backendPath: string): Promise<Array<{url: string, method: string}>> {
+          const routes: Array<{url: string, method: string}> = [];
+          
+          try {
+              // Read all TypeScript files in both routes and gen directories
+              const routesDir = path.join(backendPath, 'src', 'routes');
+              const genDir = path.join(backendPath, 'src', 'gen');
+              
+              // Scan routes directory
+              if (fs.existsSync(routesDir)) {
+                  const files = this.getAllTsFiles(routesDir);
+                  for (const file of files) {
+                      const content = fs.readFileSync(file, 'utf8');
+                      const fileRoutes = this.extractRoutesFromFile(content);
+                      routes.push(...fileRoutes);
+                  }
+                  console.log(`Found ${routes.length} routes in src/routes directory`);
+              } else {
+                  console.log('Routes directory not found, skipping');
+              }
+  
+              // Scan gen directory for auto-generated controllers
+              if (fs.existsSync(genDir)) {
+                  const genFiles = this.getAllTsFiles(genDir);
+                  for (const file of genFiles) {
+                      const content = fs.readFileSync(file, 'utf8');
+                      const fileRoutes = this.extractRoutesFromFile(content);
+                      routes.push(...fileRoutes);
+                  }
+                  console.log(`Found ${routes.length} total routes after scanning src/gen directory`);
+              } else {
+                  console.log('Gen directory not found, skipping');
+              }
+  
+              if (routes.length === 0) {
+                  console.log('No routes found in either directory, skipping endpoint generation');
+                  return routes;
+              }
+          } catch (error) {
+              console.log('Error extracting routes from backend:', error);
+          }
+  
+          // Remove duplicates based on url and method combination
+          const uniqueRoutes = this.removeDuplicateRoutes(routes);
+          console.log(`Removed ${routes.length - uniqueRoutes.length} duplicate routes`);
+          
+          return uniqueRoutes;
+      } */
   getAllTsFiles(dir) {
     const files = [];
     const items = fs2.readdirSync(dir);
@@ -1947,7 +1983,7 @@ var defaultOptions = {
   // CommonSourceDirectory: 'common',
   // ModelsBaseClassFileName: 'prisma_model.dart',
   GenerateEndpoints: false,
-  BackendPath: "../abcx3-backend",
+  BackendPath: "src",
   EndpointsOutputPath: "gen_backend_routes.dart",
   outputSetupForDevtools: false
 };
@@ -2139,7 +2175,7 @@ ${feeds}
     console.log("Generating endpoints...");
     const endpointGenerator = new EndpointGenerator();
     try {
-      const backendPath = this.settings.backendPath || this.settings.BackendPath || "../abcx3-backend";
+      const backendPath = this.settings.backendPath || this.settings.BackendPath || "./src";
       const routes = await endpointGenerator.extractRoutesFromBackend(backendPath);
       if (routes.length === 0) {
         console.log("No routes found in backend, skipping endpoint generation");

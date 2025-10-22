@@ -122,7 +122,41 @@ export class EndpointGenerator {
      * Scans the backend source code to extract route definitions
      * This method looks for NestJS route decorators and extracts the path and method information
      */
-    async extractRoutesFromBackend(backendPath: string): Promise<Array<{url: string, method: string}>> {
+    extractRoutesFromBackend(backendPath: string): Array<{url: string, method: string}> {
+        const routes: Array<{url: string, method: string}> = [];
+        
+        try {
+            // Read all TypeScript files in both routes and gen directories
+            const routesDir = backendPath; // path.join(backendPath, 'src') : './src';
+            
+            // Scan routes directory
+            if (fs.existsSync(routesDir)) {
+                const files = this.getAllTsFiles(routesDir);
+                for (const file of files) {
+                    const content = fs.readFileSync(file, 'utf8');
+                    const fileRoutes = this.extractRoutesFromFile(content);
+                    routes.push(...fileRoutes);
+                }
+                console.log(`Found ${routes.length} routes in src directory`);
+            } else {
+                console.log('Routes directory not found, skipping');
+            }
+
+            if (routes.length === 0) {
+                console.log('No routes found, skipping endpoint generation');
+                return routes;
+            }
+        } catch (error) {
+            console.log('Error extracting routes from backend:', error);
+        }
+
+        // Remove duplicates based on url and method combination
+        const uniqueRoutes = this.removeDuplicateRoutes(routes);
+        console.log(`Removed ${routes.length - uniqueRoutes.length} duplicate routes`);
+        
+        return uniqueRoutes;
+    }
+    /* async extractRoutesFromBackend(backendPath: string): Promise<Array<{url: string, method: string}>> {
         const routes: Array<{url: string, method: string}> = [];
         
         try {
@@ -169,7 +203,7 @@ export class EndpointGenerator {
         console.log(`Removed ${routes.length - uniqueRoutes.length} duplicate routes`);
         
         return uniqueRoutes;
-    }
+    } */
 
     private getAllTsFiles(dir: string): string[] {
         const files: string[] = [];

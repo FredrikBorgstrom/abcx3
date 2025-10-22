@@ -13,7 +13,7 @@ export interface DartGeneratorSettings extends GeneratorSettings {
     BackendPath?: string;
     EndpointsOutputPath?: string;
     generateEndpoints?: boolean;
-    backendPath?: string;
+    backendPath?: string; // path to the backend source code, used to extract routes from the backend
     endpointsOutputPath?: string;
     // When true, emit setup_stores_devtool.dart next to generated libraries
     outputSetupForDevtools?: boolean;
