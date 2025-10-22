@@ -151,7 +151,7 @@ Model filter JSON shape
 
 ## Contributing
 
-Parts of this code come from a fork of [prisma-utils]([https://github.com/prisma-utils/prisma-utils/) by Johannes Schobel.
+Small parts of this code come from a fork of [prisma-utils]([https://github.com/prisma-utils/prisma-utils/) by Johannes Schobel.
 If you'd like to contribute, just fork the project and make a pull request.
 
 ### Building
