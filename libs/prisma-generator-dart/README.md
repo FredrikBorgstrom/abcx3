@@ -64,11 +64,11 @@ generator dart {
 | `GenerateEndpoints`           | boolean  | `false`              | Also generate a single `gen_backend_routes.dart` enum by scanning your backend. |
 | `BackendPath`                 | string   | `../abcx3-backend`   | Root of your NestJS backend for route scanning (when `GenerateEndpoints` is true). |
 | `EndpointsOutputPath`         | string   | `gen_backend_routes.dart` | Output file for the routes enum (inside `output`). |
-| `outputSetupForDevtools`      | boolean  | `false`              | Also emit a `setup_stores_devtool.dart` helper. Requires `abcx3_dart_store_devtool`. |
+| `outputSetupForDevtools`      | boolean  | `false`              | Also emit a `setup_stores_devtool.dart` helper. Requires `abcx3_store_devtool`. |
 
 #### DevTools setup file
 
-When `outputSetupForDevtools` is true, the generator writes a `setup_stores_devtool.dart` file next to the generated libraries. Import and call `setupAbcx3StoresDevTool()` from your Flutter `main()` in debug builds to stream all store updates to the DevTools UI. Requires the `abcx3_dart_store_devtool` package in the Flutter app.
+When `outputSetupForDevtools` is true, the generator writes a `setup_stores_devtool.dart` file next to the generated libraries. Import and call `setupAbcx3StoresDevTool()` from your Flutter `main()` in debug builds to stream all store updates to the DevTools UI. Using the stores requires you to install the `abcx3_store_devtool` package in the hosting Flutter app.
 
 
 Using the generated Stores

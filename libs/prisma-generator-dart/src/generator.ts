@@ -234,7 +234,7 @@ class MainGenerator {
             .map((storeName) => `    StoreFeed(name: '${storeName}', items\$: ${storeName}.instance.items\$),`)
             .join('\n');
 
-        const content = `import 'package:abcx3/gen_models/abcx3_stores_library.dart';\nimport 'package:abcx3_dart_store_devtool/abcx3_dart_store_devtool.dart';\nimport 'package:flutter/foundation.dart';\n\n/// Call from main() in debug builds to stream all store updates to DevTools\nvoid setupAbcx3StoresDevTool() {\n  if (!kDebugMode) return;\n\n  final feeds = <StoreFeed>[\n${feeds}\n  ];\n\n  Abcx3StoresDevtool.start(feeds);\n}\n`;
+        const content = `import 'package:abcx3/gen_models/abcx3_stores_library.dart';\nimport 'package:abcx3_store_devtool/abcx3_store_devtool.dart';\nimport 'package:flutter/foundation.dart';\n\n/// Call from main() in debug builds to stream all store updates to DevTools\nvoid setupAbcx3StoresDevTool() {\n  if (!kDebugMode) return;\n\n  final feeds = <StoreFeed>[\n${feeds}\n  ];\n\n  Abcx3StoresDevtool.start(feeds);\n}\n`;
 
         // Place next to the generated libraries (output root)
         const filePath = path.join(this.outputPath, 'setup_stores_devtool.dart');

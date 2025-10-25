@@ -2154,7 +2154,7 @@ var MainGenerator = class {
     const storeClassNames = Object.keys(this.dartStoreFiles).sort().map((modelName) => `${modelName}Store`);
     const feeds = storeClassNames.map((storeName) => `    StoreFeed(name: '${storeName}', items$: ${storeName}.instance.items$),`).join("\n");
     const content = `import 'package:abcx3/gen_models/abcx3_stores_library.dart';
-import 'package:abcx3_dart_store_devtool/abcx3_dart_store_devtool.dart';
+import 'package:abcx3_store_devtool/abcx3_store_devtool.dart';
 import 'package:flutter/foundation.dart';
 
 /// Call from main() in debug builds to stream all store updates to DevTools
