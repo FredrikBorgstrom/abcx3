@@ -17,3 +17,7 @@ bool areListsEqual<T>(List<T>? list1, List<T>? list2) {
   }
   return true;
 }
+
+bool listItemsEqualById<T extends UID<K>, K>(List<T> list1, List<T> list2) {
+  return list1.length == list2.length && list1.every((item) => list2.any((t) => t.equalById(item)));
+}

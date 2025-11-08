@@ -1,3 +1,7 @@
+# Changelog
+
+## [2.0.2] Added listItemsEqualById utility function to the common model library
+
 ## [2.0.1] Fixed incorrect import path for abcx3_store_devtool
 
 ## [2.0.0] Breaking changes: Removed the option ModelsImplementBaseClass and all classes now implement multiple interfaces. If there is a field which is set as ID for the model, it will generate a '$uid' getter for that method, which means that the ID field can have any name and type.
