@@ -25,12 +25,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/package.json
+// node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/package.json"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "17.2.1",
+      version: "17.2.3",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -52,8 +52,8 @@ var require_package = __commonJS({
         "dts-check": "tsc --project tests/types/tsconfig.json",
         lint: "standard",
         pretest: "npm run lint && npm run dts-check",
-        test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
+        test: "tap run tests/**/*.js --allow-empty-coverage --disable-coverage --timeout=60000",
+        "test:coverage": "tap run tests/**/*.js --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -93,10 +93,10 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js
+// node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
-    var fs3 = require("fs");
+  "node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/lib/main.js"(exports2, module2) {
+    var fs4 = require("fs");
     var path4 = require("path");
     var os = require("os");
     var crypto = require("crypto");
@@ -106,9 +106,12 @@ var require_main = __commonJS({
       "\u{1F510} encrypt with Dotenvx: https://dotenvx.com",
       "\u{1F510} prevent committing .env to code: https://dotenvx.com/precommit",
       "\u{1F510} prevent building .env in docker: https://dotenvx.com/prebuild",
-      "\u{1F4E1} observe env with Radar: https://dotenvx.com/radar",
-      "\u{1F4E1} auto-backup env with Radar: https://dotenvx.com/radar",
-      "\u{1F4E1} version env with Radar: https://dotenvx.com/radar",
+      "\u{1F4E1} add observability to secrets: https://dotenvx.com/ops",
+      "\u{1F465} sync secrets across teammates & machines: https://dotenvx.com/ops",
+      "\u{1F5C2}\uFE0F backup and recover secrets: https://dotenvx.com/ops",
+      "\u2705 audit secrets and track compliance: https://dotenvx.com/ops",
+      "\u{1F504} add secrets lifecycle management: https://dotenvx.com/ops",
+      "\u{1F511} add access controls to secrets: https://dotenvx.com/ops",
       "\u{1F6E0}\uFE0F  run anywhere with `dotenvx run -- yourcommand`",
       "\u2699\uFE0F  specify custom .env file path with { path: '/custom/path/.env' }",
       "\u2699\uFE0F  enable debug logging with { debug: true }",
@@ -235,7 +238,7 @@ var require_main = __commonJS({
       if (options && options.path && options.path.length > 0) {
         if (Array.isArray(options.path)) {
           for (const filepath of options.path) {
-            if (fs3.existsSync(filepath)) {
+            if (fs4.existsSync(filepath)) {
               possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
             }
           }
@@ -245,7 +248,7 @@ var require_main = __commonJS({
       } else {
         possibleVaultPath = path4.resolve(process.cwd(), ".env.vault");
       }
-      if (fs3.existsSync(possibleVaultPath)) {
+      if (fs4.existsSync(possibleVaultPath)) {
         return possibleVaultPath;
       }
       return null;
@@ -298,7 +301,7 @@ var require_main = __commonJS({
       const parsedAll = {};
       for (const path5 of optionPaths) {
         try {
-          const parsed = DotenvModule.parse(fs3.readFileSync(path5, { encoding }));
+          const parsed = DotenvModule.parse(fs4.readFileSync(path5, { encoding }));
           DotenvModule.populate(parsedAll, parsed, options);
         } catch (e) {
           if (debug) {
@@ -419,9 +422,9 @@ var require_main = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv-expand@12.0.2/node_modules/dotenv-expand/lib/main.js
+// node_modules/.pnpm/dotenv-expand@12.0.3/node_modules/dotenv-expand/lib/main.js
 var require_main2 = __commonJS({
-  "node_modules/.pnpm/dotenv-expand@12.0.2/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv-expand@12.0.3/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
     "use strict";
     function _resolveEscapeSequences(value) {
       return value.replace(/\\\$/g, "$");
@@ -594,6 +597,7 @@ var DartTypeMap = {
   String: "String"
 };
 var PrismaHelper = class _PrismaHelper {
+  cachedDmmf = null;
   static instance;
   static getInstance() {
     if (_PrismaHelper.instance) {
@@ -632,7 +636,24 @@ var PrismaHelper = class _PrismaHelper {
     }
     return null;
   }
-  getModelByName = (modelName, options) => options.dmmf.datamodel.models.find((model) => model.name === modelName);
+  getModelByName = (modelName, options) => {
+    const optionsAny = options;
+    const hasStandardModels = options.dmmf?.datamodel?.models && options.dmmf.datamodel.models.length > 0;
+    const hasParsedDmmf = optionsAny?.parsedDmmf?.datamodel?.models && optionsAny.parsedDmmf.datamodel.models.length > 0;
+    if (!hasStandardModels && !hasParsedDmmf) {
+      console.warn(`getModelByName: No models found for "${modelName}". Standard models: ${hasStandardModels}, Parsed DMMF: ${hasParsedDmmf}`);
+    }
+    if (options.dmmf?.datamodel?.models && options.dmmf.datamodel.models.length > 0) {
+      return options.dmmf.datamodel.models.find((model) => model.name === modelName);
+    }
+    if (optionsAny?.parsedDmmf?.datamodel?.models && optionsAny.parsedDmmf.datamodel.models.length > 0) {
+      return optionsAny.parsedDmmf.datamodel.models.find((model) => model.name === modelName);
+    }
+    if (this.cachedDmmf?.models && this.cachedDmmf.models.length > 0) {
+      return this.cachedDmmf.models.find((model) => model.name === modelName);
+    }
+    return void 0;
+  };
   getFieldWithRelationName = (model, relationName) => model.fields.find((field) => field.relationName === relationName);
   getFieldNameAndType(field, language = "typescript") {
     let type;
@@ -754,7 +775,9 @@ function initEnv() {
 }
 
 // libs/prisma-generator-dart/src/generator.ts
+var import_internals = require("@prisma/internals");
 var import_child_process2 = require("child_process");
+var fs3 = __toESM(require("fs"));
 var import_path2 = __toESM(require("path"));
 
 // libs/prisma-generator-dart/src/constants.ts
@@ -2030,16 +2053,83 @@ var MainGenerator = class {
   outputPath;
   async generateFiles(options = this.options, settings = this.settings) {
     copyCommonSourceFiles("dart_source", this.outputPath);
-    for (const model of options.dmmf.datamodel.models) {
+    console.log("DMMF Debug Info:");
+    console.log("  options keys:", Object.keys(options || {}));
+    const optionsAny = options;
+    if (optionsAny?.datamodel) {
+      const isArray = Array.isArray(optionsAny.datamodel);
+      const isArrayLike = !isArray && optionsAny.datamodel.length !== void 0;
+      console.log("  options.datamodel is array:", isArray);
+      console.log("  options.datamodel is array-like:", isArrayLike);
+      console.log("  options.datamodel length:", optionsAny.datamodel.length ?? "undefined");
+      const firstItem = optionsAny.datamodel[0];
+      if (firstItem) {
+        console.log("  options.datamodel[0] keys:", Object.keys(firstItem));
+        console.log("  options.datamodel[0] type:", firstItem.type ?? firstItem.kind ?? "undefined");
+        console.log("  options.datamodel[0] name:", firstItem.name ?? "undefined");
+      }
+      if (!isArray && !isArrayLike) {
+        console.log("  options.datamodel keys:", Object.keys(optionsAny.datamodel || {}));
+        console.log("  options.datamodel.models length:", optionsAny.datamodel?.models?.length ?? "undefined");
+        console.log("  options.datamodel.enums length:", optionsAny.datamodel?.enums?.length ?? "undefined");
+      }
+    } else {
+      console.log("  options.datamodel: not present");
+    }
+    console.log("  options.dmmf keys:", Object.keys(options.dmmf || {}));
+    console.log("  options.dmmf.datamodel keys:", Object.keys(options.dmmf?.datamodel || {}));
+    console.log("  options.dmmf.datamodel.models length:", options.dmmf?.datamodel?.models?.length ?? "undefined");
+    console.log("  options.dmmf.datamodel.enums length:", options.dmmf?.datamodel?.enums?.length ?? "undefined");
+    const dmmfAny = options.dmmf;
+    if (dmmfAny?.schema) {
+      console.log("  options.dmmf.schema keys:", Object.keys(dmmfAny.schema || {}));
+      console.log("  options.dmmf.schema.datamodel keys:", Object.keys(dmmfAny.schema?.datamodel || {}));
+    }
+    if (optionsAny?.schema) {
+      console.log("  options.schema exists:", typeof optionsAny.schema);
+    }
+    let parsedDmmf = null;
+    if (typeof options?.datamodel === "string") {
+      console.log("DEBUG: options.datamodel is a string, length:", options.datamodel.length);
+      console.log("DEBUG: options.schemaPath:", options.schemaPath || options.schemaPath);
+      try {
+        let schemaString = options.datamodel;
+        let schemaPath = options.schemaPath || options.schemaPath;
+        if (schemaPath && fs3.existsSync(schemaPath)) {
+          const stat = fs3.statSync(schemaPath);
+          if (stat.isFile() && schemaPath.endsWith(".prisma")) {
+            schemaPath = import_path2.default.dirname(schemaPath);
+          }
+        }
+        if (schemaPath && fs3.existsSync(schemaPath)) {
+          const stat = fs3.statSync(schemaPath);
+          if (stat.isDirectory()) {
+            const files = fs3.readdirSync(schemaPath).filter((f) => f.endsWith(".prisma")).sort();
+            schemaString = files.map((f) => fs3.readFileSync(import_path2.default.join(schemaPath, f), "utf8")).join("\n\n");
+            console.log(`Combined ${files.length} schema files from directory`);
+          } else if (stat.isFile() && schemaPath.endsWith(".prisma")) {
+            schemaString = fs3.readFileSync(schemaPath, "utf8");
+          }
+        }
+        parsedDmmf = await (0, import_internals.getDMMF)({ datamodel: schemaString });
+        options.parsedDmmf = parsedDmmf;
+        console.log(`Parsed schema string: found ${parsedDmmf?.datamodel?.models?.length || 0} models, ${parsedDmmf?.datamodel?.enums?.length || 0} enums`);
+      } catch (error) {
+        console.warn("Failed to parse schema string:", error);
+      }
+    }
+    const models = this.getModels(options, parsedDmmf);
+    const enums = this.getEnums(options, parsedDmmf);
+    for (const model of models) {
       console.log(`Processing Model ${model.name}`);
       await this.generateDartModelFile(model);
       await this.generateDartStoreFile(model);
     }
-    for (const tEnum of options.dmmf.datamodel.enums) {
+    for (const tEnum of enums) {
       console.log(`Processing Enum ${tEnum.name}`);
       await this.generateDartEnumFile(tEnum);
     }
-    await this.createDartLibraryFile();
+    await this.createDartLibraryFile(options);
     await this.generateStoreLibraryFile();
     if (this.settings.outputSetupForDevtools || this.settings.OutputSetupForDevtools) {
       await this.generateDevtoolsSetupFile();
@@ -2104,8 +2194,133 @@ var MainGenerator = class {
     await this.writeFile(filePath, content);
     this.modelFiles[tEnum.name] = "models/" + fileName;
   }
-  async createDartLibraryFile() {
-    let content = Object.keys(this.modelFiles).reduce((acc, key) => acc + `export '${this.modelFiles[key]}';
+  getModels(options, parsedDmmf) {
+    if (parsedDmmf?.datamodel?.models && Array.isArray(parsedDmmf.datamodel.models) && parsedDmmf.datamodel.models.length > 0) {
+      console.log(`Using ${parsedDmmf.datamodel.models.length} models from parsed DMMF`);
+      return parsedDmmf.datamodel.models;
+    }
+    const optionsAny = options;
+    const dmmfAny = options.dmmf;
+    if (optionsAny?.datamodel) {
+      const datamodel = optionsAny.datamodel;
+      const isArray = Array.isArray(datamodel);
+      const isArrayLike = !isArray && datamodel.length !== void 0;
+      if (isArray || isArrayLike) {
+        const items = isArray ? datamodel : Array.from(datamodel);
+        const models = items.filter((item) => {
+          return item?.type === "model" || item?.kind === "model" || item?.name && item?.fields && !item?.values;
+        });
+        if (models.length > 0) {
+          console.log(`Found ${models.length} models in options.datamodel ${isArray ? "array" : "array-like object"}`);
+          return models;
+        }
+      }
+    }
+    if (optionsAny?.datamodel?.models && Array.isArray(optionsAny.datamodel.models) && optionsAny.datamodel.models.length > 0) {
+      console.log(`Found ${optionsAny.datamodel.models.length} models in options.datamodel.models`);
+      return optionsAny.datamodel.models;
+    }
+    if (options.dmmf?.datamodel?.models && Array.isArray(options.dmmf.datamodel.models)) {
+      if (options.dmmf.datamodel.models.length > 0) {
+        console.log(`Found ${options.dmmf.datamodel.models.length} models in options.dmmf.datamodel.models`);
+        return options.dmmf.datamodel.models;
+      } else {
+        console.warn("options.dmmf.datamodel.models exists but is empty (length 0). This may indicate a Prisma version mismatch.");
+      }
+    }
+    if (optionsAny?.schema?.datamodel?.models && Array.isArray(optionsAny.schema.datamodel.models) && optionsAny.schema.datamodel.models.length > 0) {
+      console.log("Found models in options.schema.datamodel.models");
+      return optionsAny.schema.datamodel.models;
+    }
+    if (dmmfAny?.schema?.datamodel?.models && Array.isArray(dmmfAny.schema.datamodel.models) && dmmfAny.schema.datamodel.models.length > 0) {
+      console.log("Found models in options.dmmf.schema.datamodel.models");
+      return dmmfAny.schema.datamodel.models;
+    }
+    if (dmmfAny?.models && Array.isArray(dmmfAny.models) && dmmfAny.models.length > 0) {
+      console.log("Found models in options.dmmf.models");
+      return dmmfAny.models;
+    }
+    if (optionsAny?.models && Array.isArray(optionsAny.models) && optionsAny.models.length > 0) {
+      console.log("Found models in options.models");
+      return optionsAny.models;
+    }
+    console.warn("Warning: Could not find models in DMMF structure. Available keys:", Object.keys(options.dmmf || {}));
+    console.warn("  options.datamodel keys:", optionsAny?.datamodel ? Object.keys(optionsAny.datamodel) : "not present");
+    return [];
+  }
+  getEnums(options, parsedDmmf) {
+    if (parsedDmmf?.datamodel?.enums && Array.isArray(parsedDmmf.datamodel.enums) && parsedDmmf.datamodel.enums.length > 0) {
+      console.log(`Using ${parsedDmmf.datamodel.enums.length} enums from parsed DMMF`);
+      return parsedDmmf.datamodel.enums;
+    }
+    const optionsAny = options;
+    const dmmfAny = options.dmmf;
+    if (optionsAny?.datamodel) {
+      const datamodel = optionsAny.datamodel;
+      const isArray = Array.isArray(datamodel);
+      const isArrayLike = !isArray && datamodel.length !== void 0;
+      if (isArray || isArrayLike) {
+        const items = isArray ? datamodel : Array.from(datamodel);
+        const enums = items.filter((item) => {
+          return item?.type === "enum" || item?.kind === "enum" || item?.name && item?.values && !item?.fields;
+        });
+        if (enums.length > 0) {
+          console.log(`Found ${enums.length} enums in options.datamodel ${isArray ? "array" : "array-like object"}`);
+          return enums;
+        }
+      }
+    }
+    if (optionsAny?.datamodel?.enums && Array.isArray(optionsAny.datamodel.enums) && optionsAny.datamodel.enums.length > 0) {
+      console.log(`Found ${optionsAny.datamodel.enums.length} enums in options.datamodel.enums`);
+      return optionsAny.datamodel.enums;
+    }
+    if (options.dmmf?.datamodel?.enums && Array.isArray(options.dmmf.datamodel.enums)) {
+      if (options.dmmf.datamodel.enums.length > 0) {
+        console.log(`Found ${options.dmmf.datamodel.enums.length} enums in options.dmmf.datamodel.enums`);
+        return options.dmmf.datamodel.enums;
+      } else {
+        console.warn("options.dmmf.datamodel.enums exists but is empty (length 0). This may indicate a Prisma version mismatch.");
+      }
+    }
+    if (optionsAny?.schema?.datamodel?.enums && Array.isArray(optionsAny.schema.datamodel.enums) && optionsAny.schema.datamodel.enums.length > 0) {
+      console.log("Found enums in options.schema.datamodel.enums");
+      return optionsAny.schema.datamodel.enums;
+    }
+    if (dmmfAny?.schema?.datamodel?.enums && Array.isArray(dmmfAny.schema.datamodel.enums) && dmmfAny.schema.datamodel.enums.length > 0) {
+      console.log("Found enums in options.dmmf.schema.datamodel.enums");
+      return dmmfAny.schema.datamodel.enums;
+    }
+    if (dmmfAny?.enums && Array.isArray(dmmfAny.enums) && dmmfAny.enums.length > 0) {
+      console.log("Found enums in options.dmmf.enums");
+      return dmmfAny.enums;
+    }
+    if (optionsAny?.enums && Array.isArray(optionsAny.enums) && optionsAny.enums.length > 0) {
+      console.log("Found enums in options.enums");
+      return optionsAny.enums;
+    }
+    console.warn("Warning: Could not find enums in DMMF structure. Available keys:", Object.keys(options.dmmf || {}));
+    console.warn("  options.datamodel keys:", optionsAny?.datamodel ? Object.keys(optionsAny.datamodel) : "not present");
+    return [];
+  }
+  async createDartLibraryFile(options = this.options) {
+    if (Object.keys(this.modelFiles).length === 0) {
+      console.warn("Warning: modelFiles is empty. Rebuilding from options...");
+      const models = this.getModels(options);
+      const enums = this.getEnums(options);
+      for (const model of models) {
+        const fileName = `${StringFns.snakeCase(model.name)}.dart`;
+        this.modelFiles[model.name] = "models/" + fileName;
+      }
+      for (const tEnum of enums) {
+        const fileName = `${StringFns.snakeCase(tEnum.name)}.dart`;
+        this.modelFiles[tEnum.name] = "models/" + fileName;
+      }
+    }
+    const modelFileKeys = Object.keys(this.modelFiles);
+    if (modelFileKeys.length === 0) {
+      console.warn("Warning: No model files found in modelFiles object after rebuilding. This may indicate an issue with Prisma version compatibility.");
+    }
+    let content = modelFileKeys.reduce((acc, key) => acc + `export '${this.modelFiles[key]}';
 `, "");
     const filePath = import_path2.default.join(
       this.outputPath,

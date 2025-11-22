@@ -1,4 +1,7 @@
 import { DMMF, GeneratorOptions } from '@prisma/generator-helper';
+import { getDMMF } from '@prisma/internals';
+import * as fs from 'fs';
+import * as path from 'path';
 import { StringFns } from './stringFns';
 
 export interface FieldNameAndType {
@@ -46,6 +49,7 @@ export const DartTypeMap = {
 }
 
 export class PrismaHelper {
+    private cachedDmmf: DMMF.Datamodel | null = null;
     static instance: PrismaHelper;
 
     static getInstance() {
@@ -91,8 +95,34 @@ export class PrismaHelper {
         return null;
     }
 
-    public getModelByName = (modelName: string, options: GeneratorOptions): DMMF.Model | undefined =>
-        options.dmmf.datamodel.models.find(model => model.name === modelName);
+    public getModelByName = (modelName: string, options: GeneratorOptions): DMMF.Model | undefined => {
+        // Debug logging
+        const optionsAny = options as any;
+        // Use optionsAny declared above
+        const hasStandardModels = options.dmmf?.datamodel?.models && options.dmmf.datamodel.models.length > 0;
+        const hasParsedDmmf = optionsAny?.parsedDmmf?.datamodel?.models && optionsAny.parsedDmmf.datamodel.models.length > 0;
+        if (!hasStandardModels && !hasParsedDmmf) {
+            console.warn(`getModelByName: No models found for "${modelName}". Standard models: ${hasStandardModels}, Parsed DMMF: ${hasParsedDmmf}`);
+        }
+        
+        // Try standard Prisma 6 path first
+        if (options.dmmf?.datamodel?.models && options.dmmf.datamodel.models.length > 0) {
+            return options.dmmf.datamodel.models.find(model => model.name === modelName);
+        }
+        
+        // Prisma 7: Check if generators have already parsed the DMMF and stored it
+        // Use optionsAny declared above
+        if (optionsAny?.parsedDmmf?.datamodel?.models && optionsAny.parsedDmmf.datamodel.models.length > 0) {
+            return optionsAny.parsedDmmf.datamodel.models.find(model => model.name === modelName);
+        }
+        
+        // If we have a cached DMMF, use it
+        if (this.cachedDmmf?.models && this.cachedDmmf.models.length > 0) {
+            return this.cachedDmmf.models.find(model => model.name === modelName);
+        }
+        
+        return undefined;
+    }
 
     public getFieldWithRelationName = (model: DMMF.Model, relationName: string): DMMF.Field | undefined =>
         model.fields.find(field => field.relationName === relationName);

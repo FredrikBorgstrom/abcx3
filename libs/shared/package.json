@@ -2,7 +2,7 @@
     "name": "@prisma-tools/shared",
     "description": "Shared library for prisma-tools",
     "dependencies": {
-        "dotenv": "^17.2.1",
-        "dotenv-expand": "^12.0.2"
+        "dotenv": "^17.2.3",
+        "dotenv-expand": "^12.0.3"
     }
 }

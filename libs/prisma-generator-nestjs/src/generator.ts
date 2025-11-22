@@ -1,5 +1,6 @@
 import { DMMF, generatorHandler, GeneratorOptions } from '@prisma/generator-helper';
 import { convertBooleanStrings, convertEnvStrings, copyCommonSourceFiles, outputToConsoleAsync, writeFileSafelyAsync } from '@shared';
+import { getDMMF } from '@prisma/internals';
 import { format } from 'prettier';
 import { version } from './../package.json';
 import { GENERATOR_NAME } from './constants';
@@ -31,7 +32,7 @@ const defaultOptions: NestGeneratorSettings = {
     PrismaModuleName: 'PrismaModule',
     PrismaModuleImportPath: 'src/prisma/prisma.module',
     PrismaClientImportPath: '@prisma/client',
-
+    addJSExtensionToImports: false,
     EnumPath: 'enums'
 };
 
@@ -96,7 +97,46 @@ class MainGenerator {
     }
 
     async generateFilesForAllModels() {
-        for (const model of this.options.dmmf.datamodel.models) {
+        // Prisma 7: Parse schema string if options.datamodel is a string
+        let models = this.options.dmmf?.datamodel?.models || [];
+        let enums = this.options.dmmf?.datamodel?.enums || [];
+        
+        if (models.length === 0 && typeof (this.options as any)?.datamodel === 'string') {
+            try {
+                let schemaString = (this.options as any).datamodel;
+                
+                // Prisma 7: If schemaPath points to a directory, read all .prisma files
+                const schemaPath = this.options.schemaPath || (this.options as any).schemaPath;
+                if (schemaPath && require('fs').existsSync(schemaPath)) {
+                    const stat = require('fs').statSync(schemaPath);
+                    if (stat.isDirectory()) {
+                        // Read all .prisma files in the directory and combine them
+                        const files = require('fs').readdirSync(schemaPath)
+                            .filter((f: string) => f.endsWith('.prisma'))
+                            .sort(); // Sort for consistent ordering
+                        
+                        schemaString = files
+                            .map((f: string) => require('fs').readFileSync(require('path').join(schemaPath, f), 'utf8'))
+                            .join('\n\n');
+                        
+                        console.log(`Combined ${files.length} schema files from directory`);
+                    } else if (stat.isFile() && schemaPath.endsWith('.prisma')) {
+                        // Single file - use it directly
+                        schemaString = require('fs').readFileSync(schemaPath, 'utf8');
+                    }
+                }
+                
+                const parsedDmmf = await getDMMF({ datamodel: schemaString });
+                // Store in options for PrismaHelper access
+                (this.options as any).parsedDmmf = parsedDmmf;
+                models = parsedDmmf?.datamodel?.models || [];
+                enums = parsedDmmf?.datamodel?.enums || [];
+                console.log(`Parsed schema string: found ${models.length} models, ${enums.length} enums`);
+            } catch (error) {
+                console.warn('Failed to parse schema string:', error);
+            }
+        }
+        for (const model of models) {
             if (this.settings?.GenerateServices) await this.generateServiceFile(model);
             //if (this.settings.GenerateInputs)  await this.generateInputFile(model);
             if (this.settings.GenerateControllers) await this.generateControllerFile(model);

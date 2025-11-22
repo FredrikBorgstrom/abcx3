@@ -25,12 +25,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/package.json
+// node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/package.json
 var require_package = __commonJS({
-  "node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/package.json"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/package.json"(exports2, module2) {
     module2.exports = {
       name: "dotenv",
-      version: "17.2.1",
+      version: "17.2.3",
       description: "Loads environment variables from .env file",
       main: "lib/main.js",
       types: "lib/main.d.ts",
@@ -52,8 +52,8 @@ var require_package = __commonJS({
         "dts-check": "tsc --project tests/types/tsconfig.json",
         lint: "standard",
         pretest: "npm run lint && npm run dts-check",
-        test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
+        test: "tap run tests/**/*.js --allow-empty-coverage --disable-coverage --timeout=60000",
+        "test:coverage": "tap run tests/**/*.js --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
         prerelease: "npm test",
         release: "standard-version"
       },
@@ -93,9 +93,9 @@ var require_package = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js
+// node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
-  "node_modules/.pnpm/dotenv@17.2.1/node_modules/dotenv/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs3 = require("fs");
     var path4 = require("path");
     var os = require("os");
@@ -106,9 +106,12 @@ var require_main = __commonJS({
       "\u{1F510} encrypt with Dotenvx: https://dotenvx.com",
       "\u{1F510} prevent committing .env to code: https://dotenvx.com/precommit",
       "\u{1F510} prevent building .env in docker: https://dotenvx.com/prebuild",
-      "\u{1F4E1} observe env with Radar: https://dotenvx.com/radar",
-      "\u{1F4E1} auto-backup env with Radar: https://dotenvx.com/radar",
-      "\u{1F4E1} version env with Radar: https://dotenvx.com/radar",
+      "\u{1F4E1} add observability to secrets: https://dotenvx.com/ops",
+      "\u{1F465} sync secrets across teammates & machines: https://dotenvx.com/ops",
+      "\u{1F5C2}\uFE0F backup and recover secrets: https://dotenvx.com/ops",
+      "\u2705 audit secrets and track compliance: https://dotenvx.com/ops",
+      "\u{1F504} add secrets lifecycle management: https://dotenvx.com/ops",
+      "\u{1F511} add access controls to secrets: https://dotenvx.com/ops",
       "\u{1F6E0}\uFE0F  run anywhere with `dotenvx run -- yourcommand`",
       "\u2699\uFE0F  specify custom .env file path with { path: '/custom/path/.env' }",
       "\u2699\uFE0F  enable debug logging with { debug: true }",
@@ -419,9 +422,9 @@ var require_main = __commonJS({
   }
 });
 
-// node_modules/.pnpm/dotenv-expand@12.0.2/node_modules/dotenv-expand/lib/main.js
+// node_modules/.pnpm/dotenv-expand@12.0.3/node_modules/dotenv-expand/lib/main.js
 var require_main2 = __commonJS({
-  "node_modules/.pnpm/dotenv-expand@12.0.2/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
+  "node_modules/.pnpm/dotenv-expand@12.0.3/node_modules/dotenv-expand/lib/main.js"(exports2, module2) {
     "use strict";
     function _resolveEscapeSequences(value) {
       return value.replace(/\\\$/g, "$");
@@ -575,6 +578,7 @@ var DartTypeMap = {
   String: "String"
 };
 var PrismaHelper = class _PrismaHelper {
+  cachedDmmf = null;
   static instance;
   static getInstance() {
     if (_PrismaHelper.instance) {
@@ -613,7 +617,24 @@ var PrismaHelper = class _PrismaHelper {
     }
     return null;
   }
-  getModelByName = (modelName, options) => options.dmmf.datamodel.models.find((model) => model.name === modelName);
+  getModelByName = (modelName, options) => {
+    const optionsAny = options;
+    const hasStandardModels = options.dmmf?.datamodel?.models && options.dmmf.datamodel.models.length > 0;
+    const hasParsedDmmf = optionsAny?.parsedDmmf?.datamodel?.models && optionsAny.parsedDmmf.datamodel.models.length > 0;
+    if (!hasStandardModels && !hasParsedDmmf) {
+      console.warn(`getModelByName: No models found for "${modelName}". Standard models: ${hasStandardModels}, Parsed DMMF: ${hasParsedDmmf}`);
+    }
+    if (options.dmmf?.datamodel?.models && options.dmmf.datamodel.models.length > 0) {
+      return options.dmmf.datamodel.models.find((model) => model.name === modelName);
+    }
+    if (optionsAny?.parsedDmmf?.datamodel?.models && optionsAny.parsedDmmf.datamodel.models.length > 0) {
+      return optionsAny.parsedDmmf.datamodel.models.find((model) => model.name === modelName);
+    }
+    if (this.cachedDmmf?.models && this.cachedDmmf.models.length > 0) {
+      return this.cachedDmmf.models.find((model) => model.name === modelName);
+    }
+    return void 0;
+  };
   getFieldWithRelationName = (model, relationName) => model.fields.find((field) => field.relationName === relationName);
   getFieldNameAndType(field, language = "typescript") {
     let type;
@@ -731,6 +752,7 @@ var import_dotenv = __toESM(require_main());
 var import_dotenv_expand = __toESM(require_main2());
 
 // libs/prisma-generator-nestjs/src/generator.ts
+var import_internals = require("@prisma/internals");
 var import_prettier = require("prettier");
 
 // libs/prisma-generator-nestjs/package.json
@@ -860,10 +882,11 @@ var ControllerGenerator = class {
   async generateContent() {
     let nameGen = NameGenerator.singleton;
     let content = this.settings.GenerateEmptyControllersAndServices ? controllerEmptyStub : controllerStub;
+    let importFileExtension = this.settings.addJSExtensionToImports ? ".js" : "";
     content = content.replace(/#{AutoGeneratedWarningText}/g, this.settings.AutoGeneratedWarningText);
     content = content.replace(/#{ServiceName}/g, nameGen.getClassName(this.model, "service"));
     content = content.replace(/#{ControllerClassName}/g, nameGen.getClassName(this.model, "controller"));
-    content = content.replace(/#{CrudServiceFileName}/g, nameGen.getFileName(this.model, "service"));
+    content = content.replace(/#{CrudServiceFileName}/g, nameGen.getFileName(this.model, "service") + importFileExtension);
     if (this.settings.GenerateEmptyControllersAndServices) {
       content = content.replace(/#{moDel}/g, StringFns.decapitalize(this.model.name));
       return content;
@@ -1038,19 +1061,20 @@ var ModuleGenerator = class {
   generateContent() {
     let nameGen = NameGenerator.singleton;
     let content = moduleStub;
+    let importFileExtension = this.settings.addJSExtensionToImports ? ".js" : "";
     content = content.replace(/#{AutoGeneratedWarningText}/g, this.settings.AutoGeneratedWarningText);
     content = content.replace(/#{PrismaModuleName}/g, this.settings.PrismaModuleName);
     content = content.replace(/#{PrismaModuleImportPath}/g, this.settings.PrismaModuleImportPath);
     if (this.settings.GenerateControllers) {
       content = content.replace(/#{ImportControllerClass}/g, importControllerStub);
       content = content.replace(/#{ControllerName}/g, nameGen.getClassName(this.model, "controller"));
-      content = content.replace(/#{ControllerFileName}/g, nameGen.getFileName(this.model, "controller"));
+      content = content.replace(/#{ControllerFileName}/g, nameGen.getFileName(this.model, "controller") + importFileExtension);
     } else {
       content = content.replace(/#{ImportControllerClass}/g, "");
       content = content.replace(/#{ControllerName}/g, "");
     }
     content = content.replace(/#{ServiceName}/g, nameGen.getClassName(this.model, "service"));
-    content = content.replace(/#{ServiceFileName}/g, nameGen.getFileName(this.model, "service"));
+    content = content.replace(/#{ServiceFileName}/g, nameGen.getFileName(this.model, "service") + importFileExtension);
     content = content.replace(/#{ModuleName}/g, nameGen.getClassName(this.model, "module"));
     return content;
   }
@@ -1293,6 +1317,7 @@ var defaultOptions = {
   PrismaModuleName: "PrismaModule",
   PrismaModuleImportPath: "src/prisma/prisma.module",
   PrismaClientImportPath: "@prisma/client",
+  addJSExtensionToImports: false,
   EnumPath: "enums"
 };
 (0, import_generator_helper.generatorHandler)({
@@ -1348,7 +1373,32 @@ var MainGenerator = class {
     }
   }
   async generateFilesForAllModels() {
-    for (const model of this.options.dmmf.datamodel.models) {
+    let models = this.options.dmmf?.datamodel?.models || [];
+    let enums = this.options.dmmf?.datamodel?.enums || [];
+    if (models.length === 0 && typeof this.options?.datamodel === "string") {
+      try {
+        let schemaString = this.options.datamodel;
+        const schemaPath = this.options.schemaPath || this.options.schemaPath;
+        if (schemaPath && require("fs").existsSync(schemaPath)) {
+          const stat = require("fs").statSync(schemaPath);
+          if (stat.isDirectory()) {
+            const files = require("fs").readdirSync(schemaPath).filter((f) => f.endsWith(".prisma")).sort();
+            schemaString = files.map((f) => require("fs").readFileSync(require("path").join(schemaPath, f), "utf8")).join("\n\n");
+            console.log(`Combined ${files.length} schema files from directory`);
+          } else if (stat.isFile() && schemaPath.endsWith(".prisma")) {
+            schemaString = require("fs").readFileSync(schemaPath, "utf8");
+          }
+        }
+        const parsedDmmf = await (0, import_internals.getDMMF)({ datamodel: schemaString });
+        this.options.parsedDmmf = parsedDmmf;
+        models = parsedDmmf?.datamodel?.models || [];
+        enums = parsedDmmf?.datamodel?.enums || [];
+        console.log(`Parsed schema string: found ${models.length} models, ${enums.length} enums`);
+      } catch (error) {
+        console.warn("Failed to parse schema string:", error);
+      }
+    }
+    for (const model of models) {
       if (this.settings?.GenerateServices) await this.generateServiceFile(model);
       if (this.settings.GenerateControllers) await this.generateControllerFile(model);
       if (this.settings.GenerateModule) await this.generateModuleFile(model);
