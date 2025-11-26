@@ -75,11 +75,26 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
         #{UpdateWithInstanceSetters}
         return this;
     }
+
     /// Converts this instance to a JSON object.
+    /// 
+    /// [serializedTypes] - Internal parameter tracking which model types have been serialized
+    /// in the current chain to prevent circular references.
+    /// [preventCircularSerialization] - When true (default), prevents infinite recursion by
+    /// skipping relations whose types have already been serialized in the current chain.
+    /// Set to false to serialize all relations (use with caution - may cause infinite loops).
     #{OverrideAnnotation}
-    JsonMap toJson() => ({
+    JsonMap toJson({
+      Set<String>? serializedTypes,
+      bool preventCircularSerialization = true,
+    }) {
+      final Set<String> serializedModels = preventCircularSerialization 
+          ? {...?serializedTypes, '#{ClassName}'} 
+          : const {};
+      return {
         #{toJsonKeyValues}
-      });
+      };
+    }
 
       /// Determines whether this instance and another object represent the same
       /// instance.
@@ -142,8 +157,8 @@ export const dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null
 
 export const toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
 export const toJsonBigIntPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toString()`;
-export const toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
-export const toJsonObjectListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
+export const toJsonObjectStub = `if(#{PropName} != null && (!preventCircularSerialization || !serializedModels.contains('#{Type}'))) '#{PropName}': #{PropName}#{Nullable}.toJson(serializedTypes: serializedModels, preventCircularSerialization: preventCircularSerialization)`;
+export const toJsonObjectListStub = `if(#{PropName} != null && (!preventCircularSerialization || !serializedModels.contains('#{Type}'))) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson(serializedTypes: serializedModels, preventCircularSerialization: preventCircularSerialization)).toList()`;
 export const toJsonDatePropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toIso8601String()`;
 
 export const dartEqualStub = `#{PropName} == other.#{PropName}`;
@@ -169,3 +184,7 @@ enum #{ModelName} {
   
 }
 `;
+
+// Enum-specific stubs (enums don't need circular reference prevention)
+export const toJsonEnumStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
+export const toJsonEnumListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;

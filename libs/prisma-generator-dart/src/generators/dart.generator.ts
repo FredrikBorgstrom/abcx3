@@ -32,6 +32,8 @@ import {
     toJsonBigIntPropertyStub,
     toJsonDatePropertyStub,
     toJsonObjectListStub,
+    toJsonEnumStub,
+    toJsonEnumListStub,
     toJsonObjectStub,
     toJsonPropertyStub,
     updateWithInstanceSetters
@@ -366,7 +368,9 @@ export class DartGenerator {
         let content: string;
         if (field.type === 'DateTime') {
             content = toJsonDatePropertyStub;
-        } else if (field.kind === 'object' || field.kind === 'enum') {
+        } else if (field.kind === 'enum') {
+            content = field.isList ? toJsonEnumListStub : toJsonEnumStub;
+        } else if (field.kind === 'object') {
             content = field.isList ? toJsonObjectListStub : toJsonObjectStub;
         } else if (field.type === 'BigInt') {
             content = toJsonBigIntPropertyStub;
@@ -375,6 +379,7 @@ export class DartGenerator {
         }
 
         content = this.replacePropName(content, field);
+        content = this.replaceType(content, field);
         content = this.replaceNullable(content, field);
         return content;
     }

@@ -861,11 +861,26 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
         #{UpdateWithInstanceSetters}
         return this;
     }
+
     /// Converts this instance to a JSON object.
+    /// 
+    /// [serializedTypes] - Internal parameter tracking which model types have been serialized
+    /// in the current chain to prevent circular references.
+    /// [preventCircularSerialization] - When true (default), prevents infinite recursion by
+    /// skipping relations whose types have already been serialized in the current chain.
+    /// Set to false to serialize all relations (use with caution - may cause infinite loops).
     #{OverrideAnnotation}
-    JsonMap toJson() => ({
+    JsonMap toJson({
+      Set<String>? serializedTypes,
+      bool preventCircularSerialization = true,
+    }) {
+      final Set<String> serializedModels = preventCircularSerialization 
+          ? {...?serializedTypes, '#{ClassName}'} 
+          : const {};
+      return {
         #{toJsonKeyValues}
-      });
+      };
+    }
 
       /// Determines whether this instance and another object represent the same
       /// instance.
@@ -907,8 +922,8 @@ var dartFromJsonEnumListArg = `#{PropName}: json['#{PropName}'] != null ? (json[
 var dartFromJsonDateTimeArg = `#{PropName}: json['#{PropName}'] != null ? DateTime.parse(json['#{PropName}']) : null`;
 var toJsonPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}`;
 var toJsonBigIntPropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}.toString()`;
-var toJsonObjectStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
-var toJsonObjectListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
+var toJsonObjectStub = `if(#{PropName} != null && (!preventCircularSerialization || !serializedModels.contains('#{Type}'))) '#{PropName}': #{PropName}#{Nullable}.toJson(serializedTypes: serializedModels, preventCircularSerialization: preventCircularSerialization)`;
+var toJsonObjectListStub = `if(#{PropName} != null && (!preventCircularSerialization || !serializedModels.contains('#{Type}'))) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson(serializedTypes: serializedModels, preventCircularSerialization: preventCircularSerialization)).toList()`;
 var toJsonDatePropertyStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toIso8601String()`;
 var dartEqualStub = `#{PropName} == other.#{PropName}`;
 var dartListsEqualStub = `areListsEqual(#{PropName}, other.#{PropName})`;
@@ -927,6 +942,8 @@ enum #{ModelName} {
   
 }
 `;
+var toJsonEnumStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.toJson()`;
+var toJsonEnumListStub = `if(#{PropName} != null) '#{PropName}': #{PropName}#{Nullable}.map((item) => item.toJson()).toList()`;
 
 // libs/prisma-generator-dart/src/generators/dart.generator.ts
 var DartGenerator = class {
@@ -1195,7 +1212,9 @@ var DartGenerator = class {
     let content;
     if (field.type === "DateTime") {
       content = toJsonDatePropertyStub;
-    } else if (field.kind === "object" || field.kind === "enum") {
+    } else if (field.kind === "enum") {
+      content = field.isList ? toJsonEnumListStub : toJsonEnumStub;
+    } else if (field.kind === "object") {
       content = field.isList ? toJsonObjectListStub : toJsonObjectStub;
     } else if (field.type === "BigInt") {
       content = toJsonBigIntPropertyStub;
@@ -1203,6 +1222,7 @@ var DartGenerator = class {
       content = toJsonPropertyStub;
     }
     content = this.replacePropName(content, field);
+    content = this.replaceType(content, field);
     content = this.replaceNullable(content, field);
     return content;
   }
@@ -1427,25 +1447,37 @@ var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
 }`;
-var dartStoreRecursiveUpsert = `#{Model} recursiveUpsert(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
-    if (recursiveDepth > 0) {
-        recursiveDepth--;
-        #{RecursiveUpsertsForFields}
-    }
+var dartStoreRecursiveUpsert = `/// Recursively upserts this model and its related models to their respective stores.
+///
+/// [serializedTypes] - Internal parameter tracking which model types have been upserted
+/// in the current chain to prevent circular references.
+/// [preventCircularSerialization] - When true (default), prevents infinite recursion by
+/// skipping relations whose types have already been upserted in the current chain.
+#{Model} recursiveUpsert(#{Model} #{moDel}, {
+    Set<String>? serializedTypes,
+    bool preventCircularSerialization = true,
+}) {
+    final Set<String> upsertedTypes = preventCircularSerialization 
+        ? {...?serializedTypes, '#{Model}'} 
+        : const {};
+    #{RecursiveUpsertsForFields}
     return super.upsert(#{moDel});
 }`;
-var dartRecursiveListUpsert = `List<#{Model}> recursiveListUpsert(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+var dartRecursiveListUpsert = `List<#{Model}> recursiveListUpsert(List<#{Model}> #{moDel}s, {
+    Set<String>? serializedTypes,
+    bool preventCircularSerialization = true,
+}) {
     final updated#{Model}s = <#{Model}>[];
     for (var #{moDel} in #{moDel}s) {
-        updated#{Model}s.add(recursiveUpsert(#{moDel}, recursiveDepth: recursiveDepth));
+        updated#{Model}s.add(recursiveUpsert(#{moDel}, serializedTypes: serializedTypes, preventCircularSerialization: preventCircularSerialization));
     }
     return updated#{Model}s;
 }`;
-var dartStoreRecursiveUpsertForField = `if (#{moDel}.#{fieldName} != null) {
-        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveUpsert(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+var dartStoreRecursiveUpsertForField = `if (#{moDel}.#{fieldName} != null && (!preventCircularSerialization || !upsertedTypes.contains('#{FieldType}'))) {
+        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveUpsert(#{moDel}.#{fieldName}!, serializedTypes: upsertedTypes, preventCircularSerialization: preventCircularSerialization);
     }`;
-var dartStoreRecursiveUpsertForListField = `if (#{moDel}.#{fieldName} != null) {
-        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveListUpsert(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+var dartStoreRecursiveUpsertForListField = `if (#{moDel}.#{fieldName} != null && (!preventCircularSerialization || !upsertedTypes.contains('#{FieldType}'))) {
+        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveListUpsert(#{moDel}.#{fieldName}!, serializedTypes: upsertedTypes, preventCircularSerialization: preventCircularSerialization);
     }`;
 var dartStoreGetByPropertyVal$ = `
     Stream<#{Model}?> getBy#{FieldName}$(
@@ -1654,7 +1686,6 @@ var DartStoreGenerator = class {
       recursiveUpserts += this.generateRecursiveUpsertForField(field);
     }
     content = content.replace(/#{RecursiveUpsertsForFields}/g, recursiveUpserts);
-    content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
     return content;
   }
   generateRecursiveUpsertForField(field) {
@@ -1664,7 +1695,6 @@ var DartStoreGenerator = class {
   }
   generateRecursiveListUpserts() {
     let content = dartRecursiveListUpsert;
-    content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
     return this.replaceAllVariables(content);
   }
   generateGetByPropertyVal$(field) {

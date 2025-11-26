@@ -165,15 +165,6 @@ List<#{Model}> getBy#{FieldName}(
     getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, modelFilter: modelFilter, includes: includes);`;
 
 
-
-/* export const staticGetPropValFunctionStub = `Map<String, GetPropertyValueFunction<#{Model}, dynamic>> get propertyValueFunctionMap => {
-    #{GetPropertyValueFunctions}
-  };`; */
-
-
-// export const getPropertyValueFunctionStub = `"#{fieldName}": get#{Model}#{FieldName},`;
-
-
 /// GET RELATED MODELS WITH ID STORED IN THIS MODEL:
 
 export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(
@@ -188,10 +179,6 @@ export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldNa
     }
 }`;
 
-// GET RELATED MODELS FOR MANY TO MANY RELATION:
-
-
-
 /// GET RELATED MODELS:
 
 export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
@@ -202,28 +189,40 @@ export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
     return #{fieldName};
 }`;
 
-export const dartStoreRecursiveUpsert = `#{Model} recursiveUpsert(#{Model} #{moDel}, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
-    if (recursiveDepth > 0) {
-        recursiveDepth--;
-        #{RecursiveUpsertsForFields}
-    }
+export const dartStoreRecursiveUpsert = `/// Recursively upserts this model and its related models to their respective stores.
+///
+/// [serializedTypes] - Internal parameter tracking which model types have been upserted
+/// in the current chain to prevent circular references.
+/// [preventCircularSerialization] - When true (default), prevents infinite recursion by
+/// skipping relations whose types have already been upserted in the current chain.
+#{Model} recursiveUpsert(#{Model} #{moDel}, {
+    Set<String>? serializedTypes,
+    bool preventCircularSerialization = true,
+}) {
+    final Set<String> upsertedTypes = preventCircularSerialization 
+        ? {...?serializedTypes, '#{Model}'} 
+        : const {};
+    #{RecursiveUpsertsForFields}
     return super.upsert(#{moDel});
 }`;
 
-export const dartRecursiveListUpsert = `List<#{Model}> recursiveListUpsert(List<#{Model}> #{moDel}s, {int recursiveDepth = #{UpdateStoresRecursiveDepth_SETTING}}) {
+export const dartRecursiveListUpsert = `List<#{Model}> recursiveListUpsert(List<#{Model}> #{moDel}s, {
+    Set<String>? serializedTypes,
+    bool preventCircularSerialization = true,
+}) {
     final updated#{Model}s = <#{Model}>[];
     for (var #{moDel} in #{moDel}s) {
-        updated#{Model}s.add(recursiveUpsert(#{moDel}, recursiveDepth: recursiveDepth));
+        updated#{Model}s.add(recursiveUpsert(#{moDel}, serializedTypes: serializedTypes, preventCircularSerialization: preventCircularSerialization));
     }
     return updated#{Model}s;
 }`;
 
-export const dartStoreRecursiveUpsertForField = `if (#{moDel}.#{fieldName} != null) {
-        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveUpsert(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+export const dartStoreRecursiveUpsertForField = `if (#{moDel}.#{fieldName} != null && (!preventCircularSerialization || !upsertedTypes.contains('#{FieldType}'))) {
+        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveUpsert(#{moDel}.#{fieldName}!, serializedTypes: upsertedTypes, preventCircularSerialization: preventCircularSerialization);
     }`;
 
-export const dartStoreRecursiveUpsertForListField = `if (#{moDel}.#{fieldName} != null) {
-        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveListUpsert(#{moDel}.#{fieldName}!, recursiveDepth: recursiveDepth);
+export const dartStoreRecursiveUpsertForListField = `if (#{moDel}.#{fieldName} != null && (!preventCircularSerialization || !upsertedTypes.contains('#{FieldType}'))) {
+        #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveListUpsert(#{moDel}.#{fieldName}!, serializedTypes: upsertedTypes, preventCircularSerialization: preventCircularSerialization);
     }`;
 
 export const dartStoreGetByPropertyVal$ = `
@@ -309,19 +308,3 @@ export const dartStoreEndpoint = `#{EndPointName}('/#{moDel}/by#{FieldName}/:#{f
 export const dartStoreEndpointMany = `#{EndPointManyName}('/#{moDel}/by#{FieldName}/:#{fieldName}', HttpMethod.post, List<#{Model}>)`;
 
 export const dartStoreEndpointAll = `#{EndPointAllName}('/#{moDel}', HttpMethod.post, List<#{Model}>)`;
-
-
-/// Property name to getter function map
-/* Map<String, GetPropertyValueFunction<#{Model}, dynamic>> get propertyValueFunctionMap => {
-  #{GetPropertyValueFunctions}
-}; */
-
-
-/// gets a function by property name that returns the property value from the model
-/* Function getPropToValueFunction(String propertyName) {
-  final propFunction = propertyValueFunctionMap[propertyName];
-  if (propFunction == null) {
-    throw Exception('Property "$propertyName" not found in #{Model}');
-  }
-  return propFunction;
-} */

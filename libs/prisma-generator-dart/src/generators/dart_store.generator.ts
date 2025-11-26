@@ -164,7 +164,6 @@ export class DartStoreGenerator {
             recursiveUpserts += this.generateRecursiveUpsertForField(field);
         }
         content = content.replace(/#{RecursiveUpsertsForFields}/g, recursiveUpserts);
-        content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
         return content;
     }
 
@@ -176,7 +175,6 @@ export class DartStoreGenerator {
 
     generateRecursiveListUpserts() {
         let content = dartRecursiveListUpsert;
-        content = content.replace(/#{UpdateStoresRecursiveDepth_SETTING}/g, this.settings.UpdateStoresDefaultRecursiveDepth.toString());
         return this.replaceAllVariables(content);
     }
 

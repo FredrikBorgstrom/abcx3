@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0] Added circular reference prevention to toJson() and recursiveUpsert() methods
+
+- **toJson()**: Added optional parameters `serializedTypes` (Set<String>) and `preventCircularSerialization` (bool, default true) to prevent infinite recursion when serializing models with circular references (e.g., Game → GameMove → Game).
+
+- **recursiveUpsert()**: Replaced `recursiveDepth` parameter with `serializedTypes` and `preventCircularSerialization` to use the same circular reference prevention algorithm, this is a breaking change.
+- Both methods now track which model types have been processed in the current chain and skip relations that would cause cycles.
+- Enum fields are serialized with simple `toJson()` calls without circular reference parameters (enums can't have circular references).
+
 ## [2.0.2] Added listItemsEqualById utility function to the common model library
 
 ## [2.0.1] Fixed incorrect import path for abcx3_store_devtool
@@ -17,5 +25,3 @@
 ## [1.1.2] Prisma-generator-dart: Equal now supports comparing nested objects  (2023-05-18)
 
 ## [1.1.0] Prisma-generator-dart: Added overrides for equal and hashCode (2023-05-16)
-
-
