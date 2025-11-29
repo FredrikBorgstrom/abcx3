@@ -57,16 +57,18 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
         );
     }
 
-    // Creates a new instance populated with the values of this instance and the given instance,
-    /// where the given instance's values has precedence and applies any modifications done with 
-    // triple slash comments on the prisma model fields.
+    /// Creates a new instance populated with the values of this instance and the given instance,
+    /// where the given instance's values has precedence.
+    /// Just like copyWithInstanceValues, but merges lists instead of replacing them.
 
     #{OverrideAnnotation}
-    #{ClassName} customCopy(#{ClassName} #{InstanceName}) {
+    #{ClassName} mergeWithInstanceValues(#{ClassName} #{InstanceName}) {
         return #{ClassName}(
-            #{CustomCopyConstructorArgs}
+            #{MergeWithInstanceConstructorArgs}
         );
     }
+
+
     /// Updates this instance with the values of the given instance,
   /// where the given instance has precedence.
 
@@ -131,8 +133,10 @@ export const dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 
 export const dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
-export const dartCustomCopyConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
-export const dartCustomCopyConstructorListArg = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
+export const dartCopyWithInstanceConstructorListArg = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
+
+export const dartApplyNonNullValuesConstructorArgs = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
+export const applyNonNullValuesConstructorListArgs = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
 export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;

@@ -1,7 +1,6 @@
 part of '../abcx3_stores_library.dart';
 
-mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
-    implements KeyStorageInterface<T, K> {
+mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterface<T, K> {
   List<T> _itemsStore = [];
   // Fast key -> model map for uniqueness and O(1) lookups.
   final Map<K, T> _map = {};
@@ -45,18 +44,13 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   T? getByKey(K id) => _map[id];
 
   @override
-  List<T> getManyByKeys(List<K> ids) =>
-      ids.map((id) => getByKey(id)).whereType<T>().toList();
+  List<T> getManyByKeys(List<K> ids) => ids.map((id) => getByKey(id)).whereType<T>().toList();
 
   T? getByPropertyValue<U>(GetPropertyValueFunction<T, U> getPropVal, value) {
     return items.find((m) => getPropVal(m) == value);
   }
 
-  T? getByPropertyValueAndFilter<U>(
-    GetPropertyValueFunction<T, U> getPropVal,
-    value, {
-    ModelFilter<T>? modelFilter,
-  }) {
+  T? getByPropertyValueAndFilter<U>(GetPropertyValueFunction<T, U> getPropVal, value, {ModelFilter<T>? modelFilter}) {
     final foundItem = getByPropertyValue(getPropVal, value);
     if (foundItem != null && modelFilter != null) {
       return modelFilter.filterOne(foundItem);
@@ -65,10 +59,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     }
   }
 
-  List<T> getManyByPropertyValue<W>(
-    GetPropertyValueFunction<T, W> getPropVal,
-    value,
-  ) {
+  List<T> getManyByPropertyValue<W>(GetPropertyValueFunction<T, W> getPropVal, value) {
     return items.where((m) => getPropVal(m) == value).toList();
   }
 
@@ -90,9 +81,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     List<W> values, {
     ModelFilter<T>? modelFilter,
   }) {
-    final foundItems = items
-        .where((m) => values.contains(getPropVal(m)))
-        .toList();
+    final foundItems = items.where((m) => values.contains(getPropVal(m))).toList();
     if (foundItems.isNotEmpty && modelFilter != null) {
       return modelFilter.filterMany(foundItems);
     } else {
@@ -107,7 +96,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     final existing = _map[key as K];
     if (existing != null) {
       // Merge with existing to avoid duplicates
-      _map[key] = existing.customCopy(item);
+      _map[key] = existing.mergeWithInstanceValues(item);
     } else {
       _map[key] = item;
     }
@@ -120,7 +109,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
       final k = getKey(m);
       assert(k != null, 'All models must have a non-null \$uid.');
       final existing = _map[k as K];
-      _map[k] = existing != null ? existing.customCopy(m) : m;
+      _map[k] = existing != null ? existing.mergeWithInstanceValues(m) : m;
     }
     setItemsInternal(_map.values.toList());
   }
@@ -172,7 +161,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     assert(key != null, 'All models must have a non-null \$uid.');
     final existing = _map[key as K];
     if (existing == null) return null;
-    final updated = existing.customCopy(item);
+    final updated = existing.mergeWithInstanceValues(item);
     _map[key] = updated;
     setItemsInternal(_map.values.toList());
     return updated;
@@ -205,5 +194,11 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
       upsertedItems.add(upsert(item));
     }
     return upsertedItems;
+  }
+
+  @override
+  void clear() {
+    _map.clear();
+    setItemsInternal([]);
   }
 }

@@ -8,8 +8,6 @@ import {
     dartCopyWithArg,
     dartCopyWithConstructorArg,
     dartCopyWithInstanceConstructorArg,
-    dartCustomCopyConstructorArg,
-    dartCustomCopyConstructorListArg,
     dartEqualByIdStub,
     dartEqualStub,
     dartFromJsonArg,
@@ -26,14 +24,16 @@ import {
     dartFromJsonScalarStringListArg,
     dartHashCodeKeyValue,
     dartListsEqualStub,
+    dartApplyNonNullValuesConstructorArgs as dartMergeWithInstanceConstructorArg,
+    applyNonNullValuesConstructorListArgs as dartMergeWithInstanceConstructorListArg,
     dartPropertyStub,
     dartUIDStub,
     getPropertyValueFunctionStub,
     toJsonBigIntPropertyStub,
     toJsonDatePropertyStub,
-    toJsonObjectListStub,
-    toJsonEnumStub,
     toJsonEnumListStub,
+    toJsonEnumStub,
+    toJsonObjectListStub,
     toJsonObjectStub,
     toJsonPropertyStub,
     updateWithInstanceSetters
@@ -97,7 +97,7 @@ export class DartGenerator {
         let copyWithArgs: string[] = [];
         let copyWithConstructorArgs: string[] = [];
         let copyWithInstanceConstructorArgs: string[] = [];
-        let customCopyConstructorArgs: string[] = [];
+        let mergeWithInstanceValuesConstructorArgs: string[] = [];
         const updateWithInstanceSetters: string[] = [];
         let listFields: DMMF.Field[] = [];
         const getPropToValueFunction: string[] = [];
@@ -132,7 +132,7 @@ export class DartGenerator {
             copyWithArgs.push(this.generateCopyWithArg(field));
             copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
             copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
-            customCopyConstructorArgs.push(this.generateCustomCopyConstructorArg(field, instanceName, replaceList));
+            mergeWithInstanceValuesConstructorArgs.push(this.generateMergeWithInstanceConstructorArg(field, instanceName, replaceList));
             updateWithInstanceSetters.push(this.generateUpdateWithInstanceSetter(field, instanceName));
             getPropToValueFunction.push(this.generatePropertyToValFunction(field));
             if (field.isList) {
@@ -149,7 +149,7 @@ export class DartGenerator {
             copyWithArgs.push(`int? $${listField.name}Count`);
             copyWithConstructorArgs.push(`$${listField.name}Count: $${listField.name}Count ?? this.$${listField.name}Count`);
             copyWithInstanceConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
-            customCopyConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
+            mergeWithInstanceValuesConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
             // toJsonKeyVals.push(`if($${listField.name}Count != null) '${listField.name}': $${listField.name}Count`);
         }
 
@@ -172,7 +172,7 @@ export class DartGenerator {
         const copyWithArgsContent = copyWithArgs.join(',\n\t\t') + ',';
         const copyWithConstructorArgsContent = copyWithConstructorArgs.join(',\n\t\t');
         const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(',\n\t\t');
-        const customCopyConstructorArgsContent = customCopyConstructorArgs.join(',\n\t\t');
+        const mergeWithInstanceValuesConstructorArgsContent = mergeWithInstanceValuesConstructorArgs.join(',\n\t\t');
         const updateWithInstanceSettersContent = updateWithInstanceSetters.join(';\n\t\t') + ';';
         //if (this.settings.ModelsImplementBaseClass) {
         // content = content.replace(/#{ImplementsUniqueId}/g, implementsStr + ' ');
@@ -197,7 +197,7 @@ export class DartGenerator {
         content = content.replace(/#{CopyWithConstructorArgs}/g, copyWithConstructorArgsContent);
 
         content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);
-        content = content.replace(/#{CustomCopyConstructorArgs}/g, customCopyConstructorArgsContent);
+        content = content.replace(/#{MergeWithInstanceConstructorArgs}/g, mergeWithInstanceValuesConstructorArgsContent);
         content = content.replace(/#{UpdateWithInstanceSetters}/g, updateWithInstanceSettersContent);
 
         return content;
@@ -245,8 +245,8 @@ export class DartGenerator {
         return content;
     }
 
-    generateCustomCopyConstructorArg(field: DMMF.Field, instanceName: string, replaceList: boolean = false): string {
-        let content =  (field.isList && !replaceList) ? dartCustomCopyConstructorListArg : dartCustomCopyConstructorArg;
+    generateMergeWithInstanceConstructorArg(field: DMMF.Field, instanceName: string, replaceList: boolean = false): string {
+        let content =  (field.isList && !replaceList) ? dartMergeWithInstanceConstructorListArg : dartMergeWithInstanceConstructorArg;
         content = content.replace(/#{PropName}/g, field.name);
         content = content.replace(/#{InstanceName}/g, instanceName);
         return content;

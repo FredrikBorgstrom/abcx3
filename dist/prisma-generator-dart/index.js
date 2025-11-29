@@ -843,16 +843,18 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
         );
     }
 
-    // Creates a new instance populated with the values of this instance and the given instance,
-    /// where the given instance's values has precedence and applies any modifications done with 
-    // triple slash comments on the prisma model fields.
+    /// Creates a new instance populated with the values of this instance and the given instance,
+    /// where the given instance's values has precedence.
+    /// Just like copyWithInstanceValues, but merges lists instead of replacing them.
 
     #{OverrideAnnotation}
-    #{ClassName} customCopy(#{ClassName} #{InstanceName}) {
+    #{ClassName} mergeWithInstanceValues(#{ClassName} #{InstanceName}) {
         return #{ClassName}(
-            #{CustomCopyConstructorArgs}
+            #{MergeWithInstanceConstructorArgs}
         );
     }
+
+
     /// Updates this instance with the values of the given instance,
   /// where the given instance has precedence.
 
@@ -905,8 +907,8 @@ bool equalById(UID<#{Type}> other) => $uid == other.$uid;`;
 var dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
 var dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
 var dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
-var dartCustomCopyConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
-var dartCustomCopyConstructorListArg = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
+var dartApplyNonNullValuesConstructorArgs = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
+var applyNonNullValuesConstructorListArgs = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
 var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 var dartFromJsonIntArg = `#{PropName}: int.tryParse(json['#{PropName}'].toString())`;
@@ -979,7 +981,7 @@ var DartGenerator = class {
     let copyWithArgs = [];
     let copyWithConstructorArgs = [];
     let copyWithInstanceConstructorArgs = [];
-    let customCopyConstructorArgs = [];
+    let mergeWithInstanceValuesConstructorArgs = [];
     const updateWithInstanceSetters2 = [];
     let listFields = [];
     const getPropToValueFunction = [];
@@ -1013,7 +1015,7 @@ var DartGenerator = class {
       copyWithArgs.push(this.generateCopyWithArg(field));
       copyWithConstructorArgs.push(this.generateCopyWithConstructorArg(field));
       copyWithInstanceConstructorArgs.push(this.generateCopyWithInstanceConstructorArg(field, instanceName));
-      customCopyConstructorArgs.push(this.generateCustomCopyConstructorArg(field, instanceName, replaceList));
+      mergeWithInstanceValuesConstructorArgs.push(this.generateMergeWithInstanceConstructorArg(field, instanceName, replaceList));
       updateWithInstanceSetters2.push(this.generateUpdateWithInstanceSetter(field, instanceName));
       getPropToValueFunction.push(this.generatePropertyToValFunction(field));
       if (field.isList) {
@@ -1029,7 +1031,7 @@ var DartGenerator = class {
       copyWithArgs.push(`int? $${listField.name}Count`);
       copyWithConstructorArgs.push(`$${listField.name}Count: $${listField.name}Count ?? this.$${listField.name}Count`);
       copyWithInstanceConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
-      customCopyConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
+      mergeWithInstanceValuesConstructorArgs.push(`$${listField.name}Count: ${instanceName}.$${listField.name}Count ?? $${listField.name}Count`);
     }
     const propertiesContent = properties.join("\n	");
     const constructorContent = constructorArgs.join(",\n	") + ",";
@@ -1050,7 +1052,7 @@ var DartGenerator = class {
     const copyWithArgsContent = copyWithArgs.join(",\n		") + ",";
     const copyWithConstructorArgsContent = copyWithConstructorArgs.join(",\n		");
     const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(",\n		");
-    const customCopyConstructorArgsContent = customCopyConstructorArgs.join(",\n		");
+    const mergeWithInstanceValuesConstructorArgsContent = mergeWithInstanceValuesConstructorArgs.join(",\n		");
     const updateWithInstanceSettersContent = updateWithInstanceSetters2.join(";\n		") + ";";
     content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = content.replace(/#{UIDGetter}/g, uidGetter);
@@ -1063,7 +1065,7 @@ var DartGenerator = class {
     content = content.replace(/#{CopyWithArgs}/g, copyWithArgsContent);
     content = content.replace(/#{CopyWithConstructorArgs}/g, copyWithConstructorArgsContent);
     content = content.replace(/#{CopyWithInstanceConstructorArgs}/g, copyWithInstanceConstructorArgsContent);
-    content = content.replace(/#{CustomCopyConstructorArgs}/g, customCopyConstructorArgsContent);
+    content = content.replace(/#{MergeWithInstanceConstructorArgs}/g, mergeWithInstanceValuesConstructorArgsContent);
     content = content.replace(/#{UpdateWithInstanceSetters}/g, updateWithInstanceSettersContent);
     return content;
   }
@@ -1103,8 +1105,8 @@ var DartGenerator = class {
     content = content.replace(/#{InstanceName}/g, instanceName);
     return content;
   }
-  generateCustomCopyConstructorArg(field, instanceName, replaceList = false) {
-    let content = field.isList && !replaceList ? dartCustomCopyConstructorListArg : dartCustomCopyConstructorArg;
+  generateMergeWithInstanceConstructorArg(field, instanceName, replaceList = false) {
+    let content = field.isList && !replaceList ? applyNonNullValuesConstructorListArgs : dartApplyNonNullValuesConstructorArgs;
     content = content.replace(/#{PropName}/g, field.name);
     content = content.replace(/#{InstanceName}/g, instanceName);
     return content;

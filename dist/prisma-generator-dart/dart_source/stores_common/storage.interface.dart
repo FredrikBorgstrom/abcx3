@@ -20,6 +20,8 @@ abstract interface class StorageInterface<T> {
   void delete(T item);
 
   void deleteMany(List<T> items);
+
+  void clear();
 }
 
 abstract interface class KeyStorageInterface<T, K> extends StorageInterface<T> {

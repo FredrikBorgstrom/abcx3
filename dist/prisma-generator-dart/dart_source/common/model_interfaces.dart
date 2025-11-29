@@ -18,7 +18,7 @@ abstract interface class JsonSerializable {
 abstract interface class CopyWith<T> {
   T copyWith();
   T copyWithInstanceValues(T model);
-  T customCopy(T model);
+  T mergeWithInstanceValues(T model); // like copyWithInstanceValues, but merges lists instead of replacing them
   T updateWithInstanceValues(T model);
 }
 
@@ -35,11 +35,7 @@ abstract interface class UID<K> {
 abstract interface class CopyWithAndUID<T, U> implements CopyWith<T>, UID<U> {}
 
 abstract interface class PrismaModel<K, T>
-    implements
-        JsonSerializable,
-        CopyWith<T>,
-        UID<K>,
-        GetPropToValueFunction<T> {}
+    implements JsonSerializable, CopyWith<T>, UID<K>, GetPropToValueFunction<T> {}
 
 // NOT USED:
 
