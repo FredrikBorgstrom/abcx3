@@ -24,8 +24,8 @@ import {
     dartFromJsonScalarStringListArg,
     dartHashCodeKeyValue,
     dartListsEqualStub,
-    dartApplyNonNullValuesConstructorArgs as dartMergeWithInstanceConstructorArg,
-    applyNonNullValuesConstructorListArgs as dartMergeWithInstanceConstructorListArg,
+    dartMergeWithInstanceConstructorArg,
+    dartMergeWithInstanceModelListConstructorArg,
     dartPropertyStub,
     dartUIDStub,
     getPropertyValueFunctionStub,
@@ -36,7 +36,8 @@ import {
     toJsonObjectListStub,
     toJsonObjectStub,
     toJsonPropertyStub,
-    updateWithInstanceSetters
+    updateWithInstanceSetters,
+    updateWithInstanceModelListSetters
 } from '../stubs/dart.stub';
 
 /* export const DartTypeMap = {
@@ -246,14 +247,24 @@ export class DartGenerator {
     }
 
     generateMergeWithInstanceConstructorArg(field: DMMF.Field, instanceName: string, replaceList: boolean = false): string {
-        let content =  (field.isList && !replaceList) ? dartMergeWithInstanceConstructorListArg : dartMergeWithInstanceConstructorArg;
+        let content: string;
+        if (field.isList && !replaceList && field.kind === 'object') {
+             content = dartMergeWithInstanceModelListConstructorArg;
+        } else {
+             content = dartMergeWithInstanceConstructorArg;
+        }
         content = content.replace(/#{PropName}/g, field.name);
         content = content.replace(/#{InstanceName}/g, instanceName);
         return content;
     }
 
     generateUpdateWithInstanceSetter(field: DMMF.Field, instanceName: string): string {
-        let content = updateWithInstanceSetters;
+        let content: string;
+        if (field.isList && field.kind === 'object') {
+             content = updateWithInstanceModelListSetters;
+        } else {
+             content = updateWithInstanceSetters;
+        }
         content = content.replace(/#{PropName}/g, field.name);
         content = content.replace(/#{InstanceName}/g, instanceName);
         return content;

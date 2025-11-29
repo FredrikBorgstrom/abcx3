@@ -153,15 +153,26 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterfa
     setItemsInternal(_map.values.toList());
   }
 
-  // NOTE! Update creates a new instance of the model, and replaces the old one!
+  @override
+  T? replace(T item) {
+    final key = getKey(item);
+    assert(key != null, 'All models must have a non-null \$uid.');
+    final existing = _map[key as K];
+    if (existing == null) return null;
+    final replaced = existing.mergeWithInstanceValues(item);
+    _map[key] = replaced;
+    setItemsInternal(_map.values.toList());
+    return replaced;
+  }
 
+  // NOTE! Update creates a new instance of the model, and replaces the old one!
   @override
   T? update(T item) {
     final key = getKey(item);
     assert(key != null, 'All models must have a non-null \$uid.');
     final existing = _map[key as K];
     if (existing == null) return null;
-    final updated = existing.mergeWithInstanceValues(item);
+    final updated = existing.updateWithInstanceValues(item);
     _map[key] = updated;
     setItemsInternal(_map.values.toList());
     return updated;

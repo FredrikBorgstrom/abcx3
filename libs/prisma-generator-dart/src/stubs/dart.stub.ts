@@ -6,10 +6,14 @@ import '../abcx3_common.library.dart';
 
 class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
+
+    Set<String> $assignedFields = {};
     
     /// Creates a new instance of this class.
   /// All parameters are optional and default to null.
-    #{ClassName}({#{ConstructorArgs}});
+    #{ClassName}({#{ConstructorArgs}
+      this.$assignedFields = const {},
+    });
 
     #{UIDGetter}
 
@@ -33,7 +37,8 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     #{OverrideAnnotation}
     factory #{ClassName}.fromJson(JsonMap json) =>
       #{ClassName}(
-        #{fromJsonArgs}
+        #{fromJsonArgs},
+        $assignedFields: json.keys.toSet(),
       );
 
       /// Creates a new instance populated with the values of this instance and the given values,
@@ -129,15 +134,17 @@ export const dartEqualByIdStub = `
 #{OverrideAnnotation}
 bool equalById(UID<#{Type}> other) => $uid == other.$uid;`
 
-export const dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
-export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
+export const dartCopyWithArg = `Value<#{Type}#{Nullable}>? #{PropName}`;
+export const dartCopyWithConstructorArg = `#{PropName}: #{PropName} != null ? #{PropName}.value : this.#{PropName}`;
 
 export const dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
 export const dartCopyWithInstanceConstructorListArg = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
 
-export const dartApplyNonNullValuesConstructorArgs = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
-export const applyNonNullValuesConstructorListArgs = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
-export const updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
+export const dartMergeWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.$assignedFields.contains('#{PropName}') ? #{InstanceName}.#{PropName} : #{PropName}`;
+export const dartMergeWithInstanceModelListConstructorArg = `#{PropName}: (#{InstanceName}.$assignedFields.contains('#{PropName}') && #{InstanceName}.#{PropName} != null) ? mergeModelLists(#{PropName}, #{InstanceName}.#{PropName}) : #{PropName}`;
+
+export const updateWithInstanceSetters = `if (#{InstanceName}.$assignedFields.contains('#{PropName}')) { #{PropName} = #{InstanceName}.#{PropName}; }`;
+export const updateWithInstanceModelListSetters = `if (#{InstanceName}.$assignedFields.contains('#{PropName}') && #{InstanceName}.#{PropName} != null) { #{PropName} = mergeModelLists(#{PropName}, #{InstanceName}.#{PropName}); }`;
 
 export const dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 export const dartFromJsonIntArg = `#{PropName}: int.tryParse(json['#{PropName}'].toString())`;

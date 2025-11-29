@@ -9,8 +9,9 @@ Generate Dart model classes and fully-typed reactive Stores for every Prisma mod
   - `fromJson` constructors (incl. nested objects)
   - `toJson` (omits null-valued properties since 1.2.0)
   - `==` and `hashCode` by property values
-  - `copyWith` and `copyWithInstance` (since 1.4.0)
+  - `copyWith` and `copyWithInstance` (since 1.4.0, updated in 3.0.0)
   - `_count` support for list-type fields (e.g. `posts` → `$postsCount`)
+  - **NEW in 3.0:** `$assignedFields` tracking for true partial updates
 - Stores
   - Per-model `<Model>Store` built on `ModelStreamStore` for reactive updates
   - `getAll$`, `getBy<Field>$`, `getManyBy<Field>$` stream helpers
@@ -18,9 +19,33 @@ Generate Dart model classes and fully-typed reactive Stores for every Prisma mod
   - Include helpers to lazily load relations (`<Model>Include`)
   - Deduplication and in-memory caching
   - Recursive upserts for relation graphs
+  - **NEW in 3.0:** In-place mutation for updates (`update()`) vs replacement (`replace()`)
 - Endpoints
   - Each store embeds a `<Model>Endpoints` enum with route + method per supported call
   - Optional global endpoint generation by scanning a NestJS backend (see GenerateEndpoints)
+
+## Breaking Changes in v3.0.0
+
+### `copyWith` and `Value` Wrapper
+To support explicitly setting nullable fields to `null` vs ignoring them, `copyWith` now uses a `Value` wrapper.
+
+**Old Code:**
+```dart
+user.copyWith(name: "Alice", age: null); // Error: age cannot be set to null if undefined is same as null
+```
+
+**New Code:**
+```dart
+user.copyWith(
+  name: Value("Alice"),      // Update value
+  age: Value(null),          // Clear value
+  // email: ...              // Omitted = no change
+);
+```
+
+### `update()` vs `replace()`
+- `store.update(item)` now mutates the existing object instance in place. This preserves references held by Flutter widgets.
+- `store.replace(item)` replaces the object instance in the store with the new one (old behavior).
 
 ## Installation
 

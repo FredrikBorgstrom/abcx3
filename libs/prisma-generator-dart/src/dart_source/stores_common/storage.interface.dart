@@ -11,6 +11,8 @@ abstract interface class StorageInterface<T> {
 
   T? update(T item);
 
+  T? replace(T item);
+
   List<T?> updateMany(List<T> items);
 
   T? upsert(T item);

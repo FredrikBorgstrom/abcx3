@@ -21,3 +21,27 @@ bool areListsEqual<T>(List<T>? list1, List<T>? list2) {
 bool listItemsEqualById<T extends UID<K>, K>(List<T> list1, List<T> list2) {
   return list1.length == list2.length && list1.every((item) => list2.any((t) => t.equalById(item)));
 }
+
+List<T> mergeModelLists<T extends PrismaModel>(List<T>? existing, List<T>? incoming) {
+  if (incoming == null) return existing ?? [];
+  if (existing == null) return incoming;
+
+  final Map<dynamic, T> mergedMap = {};
+
+  for (final item in existing) {
+    if (item.$uid != null) mergedMap[item.$uid] = item;
+  }
+
+  for (final item in incoming) {
+    if (item.$uid != null) {
+      final existingItem = mergedMap[item.$uid];
+      if (existingItem != null) {
+        mergedMap[item.$uid] = existingItem.mergeWithInstanceValues(item);
+      } else {
+        mergedMap[item.$uid] = item;
+      }
+    }
+  }
+
+  return mergedMap.values.toList();
+}

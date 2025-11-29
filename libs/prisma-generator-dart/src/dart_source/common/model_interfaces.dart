@@ -8,6 +8,11 @@ typedef JsonFactory<T> = T Function(JsonMap json);
 
 typedef GetPropertyValueFunction<I, O> = O? Function(I model);
 
+class Value<T> {
+  final T value;
+  const Value(this.value);
+}
+
 abstract interface class JsonSerializable {
   factory JsonSerializable.fromJson(JsonMap json) {
     throw UnimplementedError();

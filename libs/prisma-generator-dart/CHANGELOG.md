@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.0.0] Breaking Changes & Major Improvements
+
+### Breaking Changes
+- **`copyWith` now requires `Value<T>` wrappers:** Nullable parameters in `copyWith` must now be wrapped in `Value(value)` (or `Value(null)` to clear). This allows distinguishing between "undefined" (no change) and "explicit null" (clear value).
+  - *Migration:* Change `obj.copyWith(field: val)` to `obj.copyWith(field: Value(val))`.
+- **`update(item)` is now mutating:** The `update` method on stores now performs an **in-place mutation** of the existing object reference using `updateWithInstanceValues` instead of replacing the object in the store. This preserves object references held by UI widgets.
+  - *Migration:* If you relied on object identity changing to trigger updates in contexts that don't listen to streams, use `replace(item)` instead.
+
+### New Features
+- **`replace(item)`**: Added to stores to provide the old "replace object reference" behavior.
+- **True Partial Updates**: Implemented `$assignedFields` tracking in models. JSON deserialization now tracks which fields were present in the source JSON. `mergeWithInstanceValues` and `updateWithInstanceValues` use this to only update fields that were actually assigned, allowing robust handling of `null` vs "undefined".
+- **Smart List Merging**: `mergeWithInstanceValues` now merges model lists by ID (upsert logic) instead of performing a simple set union. This ensures updates to child objects are correctly applied.
+- **`@abcx3_replaceList` directive**: Added support for `/// @abcx3_replaceList` in Prisma schema comments. Use this on list fields to force replacement behavior instead of merging when updating from backend data.
+
 ## [2.1.0] Added circular reference prevention to toJson() and recursiveUpsert() methods
 
 - **toJson()**: Added optional parameters `serializedTypes` (Set<String>) and `preventCircularSerialization` (bool, default true) to prevent infinite recursion when serializing models with circular references (e.g., Game → GameMove → Game).

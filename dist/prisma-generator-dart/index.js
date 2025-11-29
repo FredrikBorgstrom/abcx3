@@ -500,7 +500,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@abcx3/prisma-generator-dart",
       description: "Generate Dart class files with to- and fromJson methods from a Prisma schema",
-      version: "2.0.2",
+      version: "3.0.0",
       main: "src/generator.js",
       bin: {
         "prisma-generator-dart": "src/generator.js"
@@ -792,10 +792,14 @@ import '../abcx3_common.library.dart';
 
 class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{ImplementsId} {
     #{Properties}
+
+    Set<String> $assignedFields = {};
     
     /// Creates a new instance of this class.
   /// All parameters are optional and default to null.
-    #{ClassName}({#{ConstructorArgs}});
+    #{ClassName}({#{ConstructorArgs}
+      this.$assignedFields = const {},
+    });
 
     #{UIDGetter}
 
@@ -819,7 +823,8 @@ class #{ClassName}#{ParentClass} implements #{ImplementsPrismaModel} #{Implement
     #{OverrideAnnotation}
     factory #{ClassName}.fromJson(JsonMap json) =>
       #{ClassName}(
-        #{fromJsonArgs}
+        #{fromJsonArgs},
+        $assignedFields: json.keys.toSet(),
       );
 
       /// Creates a new instance populated with the values of this instance and the given values,
@@ -904,12 +909,13 @@ var getPropertyValueFunctionStub = `"#{fieldName}": (m) => m.#{fieldName},`;
 var dartEqualByIdStub = `
 #{OverrideAnnotation}
 bool equalById(UID<#{Type}> other) => $uid == other.$uid;`;
-var dartCopyWithArg = `#{Type}#{Nullable} #{PropName}`;
-var dartCopyWithConstructorArg = `#{PropName}: #{PropName} ?? this.#{PropName}`;
+var dartCopyWithArg = `Value<#{Type}#{Nullable}>? #{PropName}`;
+var dartCopyWithConstructorArg = `#{PropName}: #{PropName} != null ? #{PropName}.value : this.#{PropName}`;
 var dartCopyWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
-var dartApplyNonNullValuesConstructorArgs = `#{PropName}: #{InstanceName}.#{PropName} ?? #{PropName}`;
-var applyNonNullValuesConstructorListArgs = `#{PropName}: #{InstanceName}.#{PropName}?.toSet().union(#{PropName}?.toSet() ?? {}).toList() ?? #{PropName}`;
-var updateWithInstanceSetters = `#{PropName} = #{InstanceName}.#{PropName} ?? #{PropName}`;
+var dartMergeWithInstanceConstructorArg = `#{PropName}: #{InstanceName}.$assignedFields.contains('#{PropName}') ? #{InstanceName}.#{PropName} : #{PropName}`;
+var dartMergeWithInstanceModelListConstructorArg = `#{PropName}: (#{InstanceName}.$assignedFields.contains('#{PropName}') && #{InstanceName}.#{PropName} != null) ? mergeModelLists(#{PropName}, #{InstanceName}.#{PropName}) : #{PropName}`;
+var updateWithInstanceSetters = `if (#{InstanceName}.$assignedFields.contains('#{PropName}')) { #{PropName} = #{InstanceName}.#{PropName}; }`;
+var updateWithInstanceModelListSetters = `if (#{InstanceName}.$assignedFields.contains('#{PropName}') && #{InstanceName}.#{PropName} != null) { #{PropName} = mergeModelLists(#{PropName}, #{InstanceName}.#{PropName}); }`;
 var dartFromJsonArg = `#{PropName}: json['#{PropName}'] as #{Type}#{Nullable}`;
 var dartFromJsonIntArg = `#{PropName}: int.tryParse(json['#{PropName}'].toString())`;
 var dartFromJsonBigIntArg = `#{PropName}: json['#{PropName}'] != null ? BigInt.tryParse(json['#{PropName}'].toString()) : null`;
@@ -1106,13 +1112,23 @@ var DartGenerator = class {
     return content;
   }
   generateMergeWithInstanceConstructorArg(field, instanceName, replaceList = false) {
-    let content = field.isList && !replaceList ? applyNonNullValuesConstructorListArgs : dartApplyNonNullValuesConstructorArgs;
+    let content;
+    if (field.isList && !replaceList && field.kind === "object") {
+      content = dartMergeWithInstanceModelListConstructorArg;
+    } else {
+      content = dartMergeWithInstanceConstructorArg;
+    }
     content = content.replace(/#{PropName}/g, field.name);
     content = content.replace(/#{InstanceName}/g, instanceName);
     return content;
   }
   generateUpdateWithInstanceSetter(field, instanceName) {
-    let content = updateWithInstanceSetters;
+    let content;
+    if (field.isList && field.kind === "object") {
+      content = updateWithInstanceModelListSetters;
+    } else {
+      content = updateWithInstanceSetters;
+    }
     content = content.replace(/#{PropName}/g, field.name);
     content = content.replace(/#{InstanceName}/g, instanceName);
     return content;

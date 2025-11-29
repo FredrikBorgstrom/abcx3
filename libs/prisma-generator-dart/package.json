@@ -1,7 +1,7 @@
 {
   "name": "@abcx3/prisma-generator-dart",
   "description": "Generate Dart class files with to- and fromJson methods from a Prisma schema",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "main": "src/generator.js",
   "bin": {
     "prisma-generator-dart": "src/generator.js"
