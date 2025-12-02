@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.0.1]
+
+- Added missing "@prisma/internals" to dependencies
+
 ## [3.0.0] Breaking Changes & Major Improvements
 
 ### Breaking Changes
