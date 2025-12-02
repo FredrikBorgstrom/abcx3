@@ -1,3 +1,10 @@
+# ChangeLog
+
+## [2.0.0]
+
+* **prisma-generator-nestjs:** Transitioned to Prisma 7 
+
+
 ## [1.3.1](https://github.com/prisma-utils/prisma-utils/compare/@prisma-utils/prisma-crud-generator@1.3.0...@prisma-utils/prisma-crud-generator@1.3.1) (2022-10-14)
 
 

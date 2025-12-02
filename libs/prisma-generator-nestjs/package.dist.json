@@ -1,7 +1,7 @@
 {
   "name": "@abcx3/prisma-generator-nestjs",
   "description": "Automatically creates Nestjs controllers, services and modules from your Prisma Schema",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "main": "./index.js",
   "bin":  "./index.js",
   "keywords": ["prisma", "generator", "nestjs", "typescript", "orm"],
