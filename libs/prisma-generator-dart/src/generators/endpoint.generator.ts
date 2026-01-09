@@ -75,8 +75,9 @@ export class EndpointGenerator {
             } else if (segment === '*') {
                 routeName += (routeName ? '_' : '') + 'wildcard';
             } else if (segment !== '') {
-                // Replace hyphens with underscores and add to route name
-                segment = segment.replace(/-/g, '_');
+                // Replace hyphens and dots with underscores and add to route name
+                // Dots need to be replaced because they're invalid in Dart enum identifiers
+                segment = segment.replace(/-/g, '_').replace(/\./g, '_');
                 routeName += (routeName ? '_' : '') + segment;
             }
         }
