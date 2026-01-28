@@ -36,8 +36,8 @@ import {
     toJsonObjectListStub,
     toJsonObjectStub,
     toJsonPropertyStub,
-    updateWithInstanceSetters,
-    updateWithInstanceModelListSetters
+    updateWithInstanceModelListSetters,
+    updateWithInstanceSetters
 } from '../stubs/dart.stub';
 
 /* export const DartTypeMap = {
@@ -174,7 +174,7 @@ export class DartGenerator {
         const copyWithConstructorArgsContent = copyWithConstructorArgs.join(',\n\t\t');
         const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(',\n\t\t');
         const mergeWithInstanceValuesConstructorArgsContent = mergeWithInstanceValuesConstructorArgs.join(',\n\t\t');
-        const updateWithInstanceSettersContent = updateWithInstanceSetters.join(';\n\t\t') + ';';
+        const updateWithInstanceSettersContent = updateWithInstanceSetters.join('\n\t\t'); // + ';';
         //if (this.settings.ModelsImplementBaseClass) {
         // content = content.replace(/#{ImplementsUniqueId}/g, implementsStr + ' ');
         content = content.replace(/#{OverrideAnnotation}/g, '@override');

@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.4]
+
+- Removed semicolon between if statements
+
+## [3.0.3]
+
+- Adjusted the construction of `updateWithInstanceSettersContent` to remove the trailing semicolon, ensuring proper syntax in generated Dart code.
+
 ## [3.0.2]
 
 - Fixed endpoint enum generation to replace dots (`.`) with underscores (`_`) in route names, fixing invalid Dart identifiers for endpoints like `/.well-known/apple-developer-domain-association.txt`

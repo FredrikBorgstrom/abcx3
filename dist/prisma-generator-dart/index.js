@@ -500,7 +500,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@abcx3/prisma-generator-dart",
       description: "Generate Dart class files with to- and fromJson methods from a Prisma schema",
-      version: "3.0.2",
+      version: "3.0.3",
       main: "src/generator.js",
       bin: {
         "prisma-generator-dart": "src/generator.js"
@@ -1059,7 +1059,7 @@ var DartGenerator = class {
     const copyWithConstructorArgsContent = copyWithConstructorArgs.join(",\n		");
     const copyWithInstanceConstructorArgsContent = copyWithInstanceConstructorArgs.join(",\n		");
     const mergeWithInstanceValuesConstructorArgsContent = mergeWithInstanceValuesConstructorArgs.join(",\n		");
-    const updateWithInstanceSettersContent = updateWithInstanceSetters2.join(";\n		") + ";";
+    const updateWithInstanceSettersContent = updateWithInstanceSetters2.join("\n		");
     content = content.replace(/#{OverrideAnnotation}/g, "@override");
     content = content.replace(/#{UIDGetter}/g, uidGetter);
     content = content.replace(/#{GetPropertyValueFunctions}/g, getPropToValueFunction.join("\n\n	"));
