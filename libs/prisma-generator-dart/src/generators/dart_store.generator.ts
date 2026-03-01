@@ -121,12 +121,12 @@ export class DartStoreGenerator {
     }
 
     generateGetByPropertyVal(field: DMMF.Field) {
-        let content = dartStoreGetByPropertyVal;
+        let content = this.replaceMethodFieldName(dartStoreGetByPropertyVal, field.name);
         return this.replaceAllVariables(content, field);
     }
 
     generateGetManyByPropertyVal(field: DMMF.Field) {
-        let content = dartStoreGetManyByPropertyVal;
+        let content = this.replaceMethodFieldName(dartStoreGetManyByPropertyVal, field.name);
         return this.replaceAllVariables(content, field);
     }
 
@@ -140,12 +140,11 @@ export class DartStoreGenerator {
 
     generateGetRelatedModels(field: DMMF.Field, relatedModelStore: string) {
         const relationToFieldName = PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '';
-        const relationToFieldNameCapitalized = StringFns.capitalize(relationToFieldName);
+        const relationToMethodFieldName = this.getStoreMethodFieldName(relationToFieldName);
         let content = dartStoreGetRelatedModels;
         content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
         // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
-        content = content.replace(/#{relationToFieldName}/g, relationToFieldName);
-        content = content.replace(/#{RelationToFieldName}/g, relationToFieldNameCapitalized);
+        content = content.replace(/#{RelationToMethodFieldName}/g, relationToMethodFieldName);
         if (field.isList) {
             content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
             content = content.replace(/#{setRefModelFunction}/g, 'setIncludedReferencesForList');
@@ -179,13 +178,13 @@ export class DartStoreGenerator {
     }
 
     generateGetByPropertyVal$(field: DMMF.Field) {
-        let content = dartStoreGetByPropertyVal$;
+        let content = this.replaceMethodFieldName(dartStoreGetByPropertyVal$, field.name);
         content = content.replace(/#{EndPointName}/g, this.generateEndpointName(true));
         return this.replaceAllVariables(content, field);
     }
 
     generateGetManyByPropertyVal$(field: DMMF.Field) {
-        let content = dartStoreGetManyByPropertyVal$;
+        let content = this.replaceMethodFieldName(dartStoreGetManyByPropertyVal$, field.name);
         content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
         return this.replaceAllVariables(content, field);
     }
@@ -197,7 +196,10 @@ export class DartStoreGenerator {
         content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
         // const fieldObject = this.prismaHelper.getModel(field.type);
         // const getByIdInRelatedModel$ = this.prismaHelper.getIdFieldNameAndType(relationToField, 'dart')?.name ?? '';
-        content = content.replace(/#{getByIdInRelatedModel\$}/g, `getBy${StringFns.capitalize(relationToField)}$`);
+        content = content.replace(
+            /#{getByIdInRelatedModel\$}/g,
+            `getBy${this.getStoreMethodFieldName(relationToField)}$`,
+        );
         // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
         
         /* if (field.isList) {
@@ -209,11 +211,12 @@ export class DartStoreGenerator {
     }
 
     generateGetRelatedModels$(field: DMMF.Field, relatedModelStore: string) {
-        let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '');
+        const relationToFieldName = PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? '';
+        const relationToMethodFieldName = this.getStoreMethodFieldName(relationToFieldName);
         let content = dartStoreGetRelatedModels$;
         content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
         // content = content.replace(/#{GetIncludingType}/g, `${field.type}`);
-        content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
+        content = content.replace(/#{RelationToMethodFieldName}/g, relationToMethodFieldName);
         if (field.isList) {
             content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
             // content = content.replace(/#{getIncluding\$}/g, 'getManyIncluding$');
@@ -261,5 +264,16 @@ export class DartStoreGenerator {
 
     generateEndpointName(returnsSingleRecord: boolean) {
         return returnsSingleRecord ? dartStoreEndpointName : dartStoreEndpointManyName;
+    }
+
+    private replaceMethodFieldName(content: string, fieldName: string): string {
+        return content.replace(/#{MethodFieldName}/g, this.getStoreMethodFieldName(fieldName));
+    }
+
+    private getStoreMethodFieldName(fieldName: string): string {
+        const capitalizedFieldName = StringFns.capitalize(fieldName);
+        // KeyStoreMixin already declares getByKey(K id), so model field "key"
+        // must use a non-colliding generated method name.
+        return capitalizedFieldName === 'Key' ? 'KeyField' : capitalizedFieldName;
     }
 }

@@ -1436,13 +1436,13 @@ var dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache = true, Mo
     }
 `;
 var dartStoreGetByPropertyVal = `
-#{Model}? getBy#{FieldName}(
+#{Model}? getBy#{MethodFieldName}(
     #{FieldType} #{fieldName},
     {ModelFilter<#{Model}>? modelFilter, List<#{Model}Include>? includes}
     ) =>
     getIncluding(get#{Model}#{FieldName}, #{fieldName}, modelFilter: modelFilter, includes: includes);`;
 var dartStoreGetManyByPropertyVal = `
-List<#{Model}> getBy#{FieldName}(
+List<#{Model}> getBy#{MethodFieldName}(
     #{FieldType} #{fieldName},
     {ModelFilter<#{Model}>? modelFilter, List<#{Model}Include>? includes}
     ) =>
@@ -1460,7 +1460,7 @@ var dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldName}(
 }`;
 var dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
     #{Model} #{moDel}, {ModelFilter<#{FieldType}>? modelFilter, #{IncludeType} includes}) {
-    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, modelFilter: modelFilter, includes: includes);
+    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToMethodFieldName}(#{moDel}.$uid!, modelFilter: modelFilter, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
@@ -1498,7 +1498,7 @@ var dartStoreRecursiveUpsertForListField = `if (#{moDel}.#{fieldName} != null &&
         #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveListUpsert(#{moDel}.#{fieldName}!, serializedTypes: upsertedTypes, preventCircularSerialization: preventCircularSerialization);
     }`;
 var dartStoreGetByPropertyVal$ = `
-    Stream<#{Model}?> getBy#{FieldName}$(
+    Stream<#{Model}?> getBy#{MethodFieldName}$(
         #{FieldType} #{fieldName},
         {bool useCache = true,
         ModelFilter<#{Model}>? modelFilter,
@@ -1517,7 +1517,7 @@ var dartStoreGetByPropertyVal$ = `
 }
 `;
 var dartStoreGetManyByPropertyVal$ = `
-    Stream<List<#{Model}>> getBy#{FieldName}$(
+    Stream<List<#{Model}>> getBy#{MethodFieldName}$(
         #{FieldType} #{fieldName},
         {bool useCache = true,
         ModelFilter<#{Model}>? modelFilter,
@@ -1552,7 +1552,7 @@ var dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get#{FieldNa
 }`;
 var dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
     #{Model} #{moDel}, {bool useCache = true, ModelFilter<#{FieldType}>? modelFilter, #{IncludeType} includes}) {
-    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(
+    return #{RelatedModelStore}.instance.getBy#{RelationToMethodFieldName}$(
         #{moDel}.$uid!,
         useCache: useCache,
         modelFilter: modelFilter,
@@ -1667,11 +1667,11 @@ var DartStoreGenerator = class {
     return this.replaceAllVariables(content);
   }
   generateGetByPropertyVal(field) {
-    let content = dartStoreGetByPropertyVal;
+    let content = this.replaceMethodFieldName(dartStoreGetByPropertyVal, field.name);
     return this.replaceAllVariables(content, field);
   }
   generateGetManyByPropertyVal(field) {
-    let content = dartStoreGetManyByPropertyVal;
+    let content = this.replaceMethodFieldName(dartStoreGetManyByPropertyVal, field.name);
     return this.replaceAllVariables(content, field);
   }
   generateGetRelatedModelsWithId(field, relationFromField) {
@@ -1682,11 +1682,10 @@ var DartStoreGenerator = class {
   }
   generateGetRelatedModels(field, relatedModelStore) {
     const relationToFieldName = PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? "";
-    const relationToFieldNameCapitalized = StringFns.capitalize(relationToFieldName);
+    const relationToMethodFieldName = this.getStoreMethodFieldName(relationToFieldName);
     let content = dartStoreGetRelatedModels;
     content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-    content = content.replace(/#{relationToFieldName}/g, relationToFieldName);
-    content = content.replace(/#{RelationToFieldName}/g, relationToFieldNameCapitalized);
+    content = content.replace(/#{RelationToMethodFieldName}/g, relationToMethodFieldName);
     if (field.isList) {
       content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
       content = content.replace(/#{setRefModelFunction}/g, "setIncludedReferencesForList");
@@ -1716,12 +1715,12 @@ var DartStoreGenerator = class {
     return this.replaceAllVariables(content);
   }
   generateGetByPropertyVal$(field) {
-    let content = dartStoreGetByPropertyVal$;
+    let content = this.replaceMethodFieldName(dartStoreGetByPropertyVal$, field.name);
     content = content.replace(/#{EndPointName}/g, this.generateEndpointName(true));
     return this.replaceAllVariables(content, field);
   }
   generateGetManyByPropertyVal$(field) {
-    let content = dartStoreGetManyByPropertyVal$;
+    let content = this.replaceMethodFieldName(dartStoreGetManyByPropertyVal$, field.name);
     content = content.replace(/#{EndPointManyName}/g, this.generateEndpointName(false));
     return this.replaceAllVariables(content, field);
   }
@@ -1729,14 +1728,18 @@ var DartStoreGenerator = class {
     let content = dartStoreGetRelatedModelsWithId$;
     content = content.replace(/#{relationFromField}/g, relationFromField);
     content = content.replace(/#{StreamReturnType}/g, `${field.type}?`);
-    content = content.replace(/#{getByIdInRelatedModel\$}/g, `getBy${StringFns.capitalize(relationToField)}$`);
+    content = content.replace(
+      /#{getByIdInRelatedModel\$}/g,
+      `getBy${this.getStoreMethodFieldName(relationToField)}$`
+    );
     return this.replaceAllVariables(content, field);
   }
   generateGetRelatedModels$(field, relatedModelStore) {
-    let relationToFieldName = StringFns.capitalize(PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? "");
+    const relationToFieldName = PrismaHelper.getInstance().getRelationToFieldName(field, this.options) ?? "";
+    const relationToMethodFieldName = this.getStoreMethodFieldName(relationToFieldName);
     let content = dartStoreGetRelatedModels$;
     content = content.replace(/#{RelatedModelStore}/g, relatedModelStore);
-    content = content.replace(/#{RelationToFieldName}/g, relationToFieldName);
+    content = content.replace(/#{RelationToMethodFieldName}/g, relationToMethodFieldName);
     if (field.isList) {
       content = content.replace(/#{StreamReturnType}/g, `List<${field.type}>`);
     } else {
@@ -1764,6 +1767,13 @@ var DartStoreGenerator = class {
   }
   generateEndpointName(returnsSingleRecord) {
     return returnsSingleRecord ? dartStoreEndpointName : dartStoreEndpointManyName;
+  }
+  replaceMethodFieldName(content, fieldName) {
+    return content.replace(/#{MethodFieldName}/g, this.getStoreMethodFieldName(fieldName));
+  }
+  getStoreMethodFieldName(fieldName) {
+    const capitalizedFieldName = StringFns.capitalize(fieldName);
+    return capitalizedFieldName === "Key" ? "KeyField" : capitalizedFieldName;
   }
 };
 

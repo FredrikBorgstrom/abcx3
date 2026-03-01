@@ -150,7 +150,7 @@ export const dartStoreGetAll$ = `Stream<List<#{Model}>> getAll$({bool useCache =
 
 
 export const dartStoreGetByPropertyVal = `
-#{Model}? getBy#{FieldName}(
+#{Model}? getBy#{MethodFieldName}(
     #{FieldType} #{fieldName},
     {ModelFilter<#{Model}>? modelFilter, List<#{Model}Include>? includes}
     ) =>
@@ -158,7 +158,7 @@ export const dartStoreGetByPropertyVal = `
 
 
 export const dartStoreGetManyByPropertyVal = `
-List<#{Model}> getBy#{FieldName}(
+List<#{Model}> getBy#{MethodFieldName}(
     #{FieldType} #{fieldName},
     {ModelFilter<#{Model}>? modelFilter, List<#{Model}Include>? includes}
     ) =>
@@ -183,7 +183,7 @@ export const dartStoreGetRelatedModelsWithId = `#{StreamReturnType} get#{FieldNa
 
 export const dartStoreGetRelatedModels = `#{StreamReturnType} get#{FieldName}(
     #{Model} #{moDel}, {ModelFilter<#{FieldType}>? modelFilter, #{IncludeType} includes}) {
-    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToFieldName}(#{moDel}.$uid!, modelFilter: modelFilter, includes: includes);
+    final #{fieldName} = #{RelatedModelStore}.instance.getBy#{RelationToMethodFieldName}(#{moDel}.$uid!, modelFilter: modelFilter, includes: includes);
     #{moDel}.#{fieldName} = #{fieldName};
     // #{setRefModelFunction}(#{fieldName}, includes: includes);
     return #{fieldName};
@@ -226,7 +226,7 @@ export const dartStoreRecursiveUpsertForListField = `if (#{moDel}.#{fieldName} !
     }`;
 
 export const dartStoreGetByPropertyVal$ = `
-    Stream<#{Model}?> getBy#{FieldName}$(
+    Stream<#{Model}?> getBy#{MethodFieldName}$(
         #{FieldType} #{fieldName},
         {bool useCache = true,
         ModelFilter<#{Model}>? modelFilter,
@@ -246,7 +246,7 @@ export const dartStoreGetByPropertyVal$ = `
 `;
 
 export const dartStoreGetManyByPropertyVal$ = `
-    Stream<List<#{Model}>> getBy#{FieldName}$(
+    Stream<List<#{Model}>> getBy#{MethodFieldName}$(
         #{FieldType} #{fieldName},
         {bool useCache = true,
         ModelFilter<#{Model}>? modelFilter,
@@ -285,7 +285,7 @@ export const dartStoreGetRelatedModelsWithId$ = `Stream<#{StreamReturnType}> get
 
 export const dartStoreGetRelatedModels$ = `Stream<#{StreamReturnType}> get#{FieldName}$(
     #{Model} #{moDel}, {bool useCache = true, ModelFilter<#{FieldType}>? modelFilter, #{IncludeType} includes}) {
-    return #{RelatedModelStore}.instance.getBy#{RelationToFieldName}$(
+    return #{RelatedModelStore}.instance.getBy#{RelationToMethodFieldName}$(
         #{moDel}.$uid!,
         useCache: useCache,
         modelFilter: modelFilter,
