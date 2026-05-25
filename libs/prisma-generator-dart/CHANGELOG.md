@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.0.6]
+
+- Fixed type mismatch in generated stores for scalar list fields (e.g. `String[]`). Previously, non-unique scalar list fields produced `getBy{Field}` / `getBy{Field}$` methods and a `getManyBy{Field}` endpoint that treated the list as a single scalar value, causing a Dart compile error (`List<T>? Function(Model)` can't be assigned to `T? Function(Model)`). These lookup methods and their endpoint are no longer emitted for scalar list fields; the property value getter (e.g. `get{Model}{FieldName}`) is still generated so callers can read the list directly from the model.
+
 ## [3.0.4]
 
 - Removed semicolon between if statements

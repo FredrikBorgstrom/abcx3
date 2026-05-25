@@ -66,7 +66,12 @@ export class DartStoreGenerator {
                         getUniqueByPropertyVal.push(this.generateGetByPropertyVal(field));
                     }
                     endpoints.push(this.generateEndpoint(field));
-                } else {
+                } else if (!field.isList) {
+                    // Skip generating `getBy{Field}` lookups for scalar list fields
+                    // (e.g. `String[]`). The generated method/endpoint would take a
+                    // single value while `get{Model}{FieldName}` returns the list,
+                    // causing a type mismatch. The list value getter is still emitted
+                    // above so callers can read the list directly from the model.
                     getByPropertyVal$.push(this.generateGetManyByPropertyVal$(field));
                     getByPropertyVal.push(this.generateGetManyByPropertyVal(field));
                     endpoints.push(this.generateEndpointMany(field));

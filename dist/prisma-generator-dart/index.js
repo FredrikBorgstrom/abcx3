@@ -500,7 +500,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@abcx3/prisma-generator-dart",
       description: "Generate Dart class files with to- and fromJson methods from a Prisma schema",
-      version: "3.0.3",
+      version: "3.0.6",
       main: "src/generator.js",
       bin: {
         "prisma-generator-dart": "src/generator.js"
@@ -1621,7 +1621,7 @@ var DartStoreGenerator = class {
             getUniqueByPropertyVal.push(this.generateGetByPropertyVal(field));
           }
           endpoints.push(this.generateEndpoint(field));
-        } else {
+        } else if (!field.isList) {
           getByPropertyVal$.push(this.generateGetManyByPropertyVal$(field));
           getByPropertyVal.push(this.generateGetManyByPropertyVal(field));
           endpoints.push(this.generateEndpointMany(field));
