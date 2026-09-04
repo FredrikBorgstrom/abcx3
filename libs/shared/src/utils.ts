@@ -1,4 +1,4 @@
-import { Dictionary } from "@prisma/generator-helper";
+type Dictionary<T> = Record<string, T | undefined>;
 
 export function forEachEnum(enumObj: Record<string & number, string>, fn: (str: string) => any) {
     const enumArr = Object.values(enumObj) as Array<string & number>;

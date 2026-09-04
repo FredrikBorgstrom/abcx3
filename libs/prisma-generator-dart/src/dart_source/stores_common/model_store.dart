@@ -11,19 +11,24 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
 
   // T? getById(K id) => getByPropertyValue(getId, id);
 
-  T? getById(K id, {List<StoreIncludes>? includes}) =>
-      getIncluding(getId, id, includes: includes);
+  T? getById(K id, {List<StoreIncludes>? includes}) {
+    final model = getByKey(id);
+    setIncludedReferences(model, includes: includes);
+    return model;
+  }
 
   T? getIncluding<W>(
     GetPropertyValueFunction<T, W> getPropVal,
     W value, {
     ModelFilter<T>? modelFilter,
     List<StoreIncludes>? includes,
+    Object? indexKey,
   }) {
     final model = getByPropertyValueAndFilter(
       getPropVal,
       value,
       modelFilter: modelFilter,
+      indexKey: indexKey,
     );
     setIncludedReferences(model, includes: includes);
     return model;
@@ -34,11 +39,13 @@ class ModelStore<K, T extends PrismaModel<K, T>> extends ModelCreator<T>
     W value, {
     ModelFilter<T>? modelFilter,
     List<StoreIncludes>? includes,
+    Object? indexKey,
   }) {
     final models = getManyByPropertyValueAndFilter(
       getPropVal,
       value,
       modelFilter: modelFilter,
+      indexKey: indexKey,
     );
     setIncludedReferencesForList(models, includes: includes);
     return models;

@@ -24,15 +24,13 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
 
   /// Setter for the list of models.
   @override
-  set items(List<T> items) {
-    final uniqueItems = deduplicateAndIndex(items);
-    _items$$.add(uniqueItems);
-  }
+  set items(List<T> items) => setItemsInternal(deduplicateAndIndex(items));
 
   /// Internal emission path used by KeyStoreMixin mutators to avoid double
   /// deduplication. Assumes `items` is already deduplicated.
   @override
   void setItemsInternal(List<T> items) {
+    invalidatePropertyIndexes();
     _items$$.add(items);
   }
 
@@ -44,6 +42,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
     required Endpoint endpoint,
     bool useCache = true,
     ModelFilter<T>? modelFilter,
+    Object? indexKey,
     JsonMap? body,
   }) {
     if (useCache) {
@@ -51,6 +50,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
         getPropVal,
         value,
         modelFilter: modelFilter,
+        indexKey: indexKey,
       );
       if (model != null) {
         // if useCache is true, we return a broadcast stream ONLY if we have a cached value
@@ -73,6 +73,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
     required Endpoint endpoint,
     bool useCache = true,
     ModelFilter<T>? modelFilter,
+    Object? indexKey,
     JsonMap? body,
   }) {
     if (useCache) {
@@ -80,6 +81,7 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
         getPropVal,
         value,
         modelFilter: modelFilter,
+        indexKey: indexKey,
       );
       if (models.isNotEmpty) {
         return Stream.value(models).asBroadcastStream();

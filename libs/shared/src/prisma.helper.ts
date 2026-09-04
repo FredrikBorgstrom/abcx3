@@ -113,7 +113,7 @@ export class PrismaHelper {
         // Prisma 7: Check if generators have already parsed the DMMF and stored it
         // Use optionsAny declared above
         if (optionsAny?.parsedDmmf?.datamodel?.models && optionsAny.parsedDmmf.datamodel.models.length > 0) {
-            return optionsAny.parsedDmmf.datamodel.models.find(model => model.name === modelName);
+            return optionsAny.parsedDmmf.datamodel.models.find((model: DMMF.Model) => model.name === modelName);
         }
         
         // If we have a cached DMMF, use it

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.7]
+
+- Added lazily built, mutation-safe secondary indexes for generated property lookups. Repeated relationship hydration now builds each property index once and performs keyed lookups instead of scanning an entire model store for every parent record.
+- Changed primary-key `getById` reads to use the existing key map directly.
+- Fixed filtered multi-record property lookups so filters apply only to records matching the requested property value.
+- Wait for generated Dart formatting to finish before reporting generation complete.
+
 ## [3.0.6]
 
 - Fixed type mismatch in generated stores for scalar list fields (e.g. `String[]`). Previously, non-unique scalar list fields produced `getBy{Field}` / `getBy{Field}$` methods and a `getManyBy{Field}` endpoint that treated the list as a single scalar value, causing a Dart compile error (`List<T>? Function(Model)` can't be assigned to `T? Function(Model)`). These lookup methods and their endpoint are no longer emitted for scalar list fields; the property value getter (e.g. `get{Model}{FieldName}`) is still generated so callers can read the list directly from the model.

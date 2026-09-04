@@ -154,7 +154,13 @@ export const dartStoreGetByPropertyVal = `
     #{FieldType} #{fieldName},
     {ModelFilter<#{Model}>? modelFilter, List<#{Model}Include>? includes}
     ) =>
-    getIncluding(get#{Model}#{FieldName}, #{fieldName}, modelFilter: modelFilter, includes: includes);`;
+    getIncluding(
+      get#{Model}#{FieldName},
+      #{fieldName},
+      modelFilter: modelFilter,
+      includes: includes,
+      indexKey: '#{fieldName}',
+    );`;
 
 
 export const dartStoreGetManyByPropertyVal = `
@@ -162,7 +168,13 @@ List<#{Model}> getBy#{MethodFieldName}(
     #{FieldType} #{fieldName},
     {ModelFilter<#{Model}>? modelFilter, List<#{Model}Include>? includes}
     ) =>
-    getManyIncluding(get#{Model}#{FieldName}, #{fieldName}, modelFilter: modelFilter, includes: includes);`;
+    getManyIncluding(
+      get#{Model}#{FieldName},
+      #{fieldName},
+      modelFilter: modelFilter,
+      includes: includes,
+      indexKey: '#{fieldName}',
+    );`;
 
 
 /// GET RELATED MODELS WITH ID STORED IN THIS MODEL:
@@ -234,6 +246,7 @@ export const dartStoreGetByPropertyVal$ = `
     final item$ = getByFieldValue$<#{FieldType}>(
         getPropVal: get#{Model}#{FieldName},
         value: #{fieldName},
+        indexKey: '#{fieldName}',
         modelFilter: modelFilter,
         endpoint: #{Model}Endpoints.#{EndPointName},
         useCache: useCache);
@@ -254,6 +267,7 @@ export const dartStoreGetManyByPropertyVal$ = `
     final items$ = getManyByFieldValue$<#{FieldType}>(
         getPropVal: get#{Model}#{FieldName},
         value: #{fieldName},
+        indexKey: '#{fieldName}',
         modelFilter: modelFilter,
         endpoint: #{Model}Endpoints.#{EndPointManyName},
         useCache: useCache);

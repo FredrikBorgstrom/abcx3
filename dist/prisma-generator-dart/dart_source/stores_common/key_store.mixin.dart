@@ -1,9 +1,14 @@
 part of '../abcx3_stores_library.dart';
 
-mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterface<T, K> {
+mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
+    implements KeyStorageInterface<T, K> {
   List<T> _itemsStore = [];
   // Fast key -> model map for uniqueness and O(1) lookups.
   final Map<K, T> _map = {};
+  // Lazily built secondary indexes for generated property getters. The cache is
+  // invalidated whenever the store changes, so relationship hydration can look
+  // up children in O(1) without paying to maintain unused indexes.
+  final Map<Object, Map<Object?, List<T>>> _propertyIndexes = {};
 
   /// override the following getter and setter in your class to change storage engine and
   /// use another variable than _itemsStore to store your items in
@@ -26,8 +31,15 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterfa
   /// Sets the already-deduplicated list without performing deduplication.
   /// ModelStreamStore overrides this to publish to its stream.
   void setItemsInternal(List<T> items) {
+    invalidatePropertyIndexes();
     _itemsStore = items;
   }
+
+  /// Clears lazily built property indexes after a store mutation.
+  ///
+  /// Storage implementations that override [setItemsInternal] must call this
+  /// before publishing the changed items.
+  void invalidatePropertyIndexes() => _propertyIndexes.clear();
 
   /// end of override
 
@@ -44,14 +56,39 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterfa
   T? getByKey(K id) => _map[id];
 
   @override
-  List<T> getManyByKeys(List<K> ids) => ids.map((id) => getByKey(id)).whereType<T>().toList();
+  List<T> getManyByKeys(List<K> ids) =>
+      ids.map((id) => getByKey(id)).whereType<T>().toList();
 
-  T? getByPropertyValue<U>(GetPropertyValueFunction<T, U> getPropVal, value) {
-    return items.find((m) => getPropVal(m) == value);
+  Map<Object?, List<T>> _getPropertyIndex<U>(
+    GetPropertyValueFunction<T, U> getPropVal, {
+    Object? indexKey,
+  }) {
+    final cacheKey = indexKey ?? getPropVal;
+    return _propertyIndexes.putIfAbsent(cacheKey, () {
+      final index = <Object?, List<T>>{};
+      for (final item in items) {
+        (index[getPropVal(item)] ??= <T>[]).add(item);
+      }
+      return index;
+    });
   }
 
-  T? getByPropertyValueAndFilter<U>(GetPropertyValueFunction<T, U> getPropVal, value, {ModelFilter<T>? modelFilter}) {
-    final foundItem = getByPropertyValue(getPropVal, value);
+  T? getByPropertyValue<U>(
+    GetPropertyValueFunction<T, U> getPropVal,
+    value, {
+    Object? indexKey,
+  }) {
+    final matches = _getPropertyIndex(getPropVal, indexKey: indexKey)[value];
+    return matches == null || matches.isEmpty ? null : matches.first;
+  }
+
+  T? getByPropertyValueAndFilter<U>(
+    GetPropertyValueFunction<T, U> getPropVal,
+    value, {
+    ModelFilter<T>? modelFilter,
+    Object? indexKey,
+  }) {
+    final foundItem = getByPropertyValue(getPropVal, value, indexKey: indexKey);
     if (foundItem != null && modelFilter != null) {
       return modelFilter.filterOne(foundItem);
     } else {
@@ -59,18 +96,28 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterfa
     }
   }
 
-  List<T> getManyByPropertyValue<W>(GetPropertyValueFunction<T, W> getPropVal, value) {
-    return items.where((m) => getPropVal(m) == value).toList();
+  List<T> getManyByPropertyValue<W>(
+    GetPropertyValueFunction<T, W> getPropVal,
+    value, {
+    Object? indexKey,
+  }) {
+    final matches = _getPropertyIndex(getPropVal, indexKey: indexKey)[value];
+    return matches == null ? <T>[] : List<T>.of(matches);
   }
 
   List<T> getManyByPropertyValueAndFilter<W>(
     GetPropertyValueFunction<T, W> getPropVal,
     value, {
     ModelFilter<T>? modelFilter,
+    Object? indexKey,
   }) {
-    final foundItems = getManyByPropertyValue(getPropVal, value);
+    final foundItems = getManyByPropertyValue(
+      getPropVal,
+      value,
+      indexKey: indexKey,
+    );
     if (foundItems.isNotEmpty && modelFilter != null) {
-      return modelFilter.filterMany(items);
+      return modelFilter.filterMany(foundItems);
     } else {
       return foundItems;
     }
@@ -81,7 +128,9 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>> implements KeyStorageInterfa
     List<W> values, {
     ModelFilter<T>? modelFilter,
   }) {
-    final foundItems = items.where((m) => values.contains(getPropVal(m))).toList();
+    final foundItems = items
+        .where((m) => values.contains(getPropVal(m)))
+        .toList();
     if (foundItems.isNotEmpty && modelFilter != null) {
       return modelFilter.filterMany(foundItems);
     } else {
