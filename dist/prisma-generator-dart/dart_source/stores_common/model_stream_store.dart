@@ -20,17 +20,17 @@ class ModelStreamStore<K, T extends PrismaModel<K, T>>
 
   /// Getter for the list of models.
   @override
-  List<T> get items => _items$$.value;
+  List<T> get items => super.items;
 
   /// Setter for the list of models.
   @override
-  set items(List<T> items) => setItemsInternal(deduplicateAndIndex(items));
+  set items(List<T> items) => super.items = items;
 
   /// Internal emission path used by KeyStoreMixin mutators to avoid double
   /// deduplication. Assumes `items` is already deduplicated.
   @override
   void setItemsInternal(List<T> items) {
-    invalidatePropertyIndexes();
+    super.setItemsInternal(items);
     _items$$.add(items);
   }
 

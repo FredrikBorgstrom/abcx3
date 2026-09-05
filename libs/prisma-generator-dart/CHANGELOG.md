@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.8]
+
+- Batch recursive relation imports and bulk store updates so each changed store publishes one snapshot per synchronous operation, avoiding repeated full-store copying during game-history imports.
+- Keep key, list, and indexed relationship reads current inside nested batches. Completed writes are published even when an operation throws, while existing in-place model update semantics are preserved.
+
 ## [3.0.7]
 
 - Added lazily built, mutation-safe secondary indexes for generated property lookups. Repeated relationship hydration now builds each property index once and performs keyed lookups instead of scanning an entire model store for every parent record.

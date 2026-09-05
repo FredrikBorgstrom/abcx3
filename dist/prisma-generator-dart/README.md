@@ -19,6 +19,12 @@ Generate Dart model classes and fully-typed reactive Stores for every Prisma mod
   - Include helpers to lazily load relations (`<Model>Include`)
   - Deduplication and in-memory caching
   - Recursive upserts for relation graphs
+  - Synchronous relation-graph batching: recursive imports and bulk upserts/updates
+    publish one snapshot per changed store, while key and relationship lookups
+    immediately reflect completed writes. Nested batches share the outer batch.
+    Completed writes are published even if an import throws; batching does not
+    roll back data. Previously published lists retain their membership, while
+    model instances retain the existing in-place update semantics.
   - **NEW in 3.0:** In-place mutation for updates (`update()`) vs replacement (`replace()`)
 - Endpoints
   - Each store embeds a `<Model>Endpoints` enum with route + method per supported call

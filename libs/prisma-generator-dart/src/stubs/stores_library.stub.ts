@@ -17,6 +17,7 @@ part 'stores_common/model_store.dart';
 part 'stores_common/model_stream_store.dart';
 part 'stores_common/storage.interface.dart';
 part 'stores_common/key_store.mixin.dart';
+part 'store_mutation_batch.dart';
 part 'stores_common/mem_cached_streams.dart';
 
 part 'stores_common/filter_operator_and_value.dart';
@@ -26,4 +27,3 @@ part 'stores_common/model_filters.dart';
 
 #{StoreParts}
 `;
-

@@ -500,7 +500,7 @@ var require_package2 = __commonJS({
     module2.exports = {
       name: "@abcx3/prisma-generator-dart",
       description: "Generate Dart class files with to- and fromJson methods from a Prisma schema",
-      version: "3.0.7",
+      version: "3.0.8",
       main: "src/generator.js",
       bin: {
         "prisma-generator-dart": "src/generator.js"
@@ -1488,21 +1488,25 @@ var dartStoreRecursiveUpsert = `/// Recursively upserts this model and its relat
     Set<String>? serializedTypes,
     bool preventCircularSerialization = true,
 }) {
+    return StoreMutationBatch.run(() {
     final Set<String> upsertedTypes = preventCircularSerialization 
         ? {...?serializedTypes, '#{Model}'} 
         : const {};
     #{RecursiveUpsertsForFields}
     return super.upsert(#{moDel});
+    });
 }`;
 var dartRecursiveListUpsert = `List<#{Model}> recursiveListUpsert(List<#{Model}> #{moDel}s, {
     Set<String>? serializedTypes,
     bool preventCircularSerialization = true,
 }) {
+    return StoreMutationBatch.run(() {
     final updated#{Model}s = <#{Model}>[];
     for (var #{moDel} in #{moDel}s) {
         updated#{Model}s.add(recursiveUpsert(#{moDel}, serializedTypes: serializedTypes, preventCircularSerialization: preventCircularSerialization));
     }
     return updated#{Model}s;
+    });
 }`;
 var dartStoreRecursiveUpsertForField = `if (#{moDel}.#{fieldName} != null && (!preventCircularSerialization || !upsertedTypes.contains('#{FieldType}'))) {
         #{moDel}.#{fieldName} = #{FieldType}Store.instance.recursiveUpsert(#{moDel}.#{fieldName}!, serializedTypes: upsertedTypes, preventCircularSerialization: preventCircularSerialization);
@@ -2054,6 +2058,7 @@ part 'stores_common/model_store.dart';
 part 'stores_common/model_stream_store.dart';
 part 'stores_common/storage.interface.dart';
 part 'stores_common/key_store.mixin.dart';
+part 'store_mutation_batch.dart';
 part 'stores_common/mem_cached_streams.dart';
 
 part 'stores_common/filter_operator_and_value.dart';

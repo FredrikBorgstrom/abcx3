@@ -211,22 +211,26 @@ export const dartStoreRecursiveUpsert = `/// Recursively upserts this model and 
     Set<String>? serializedTypes,
     bool preventCircularSerialization = true,
 }) {
+    return StoreMutationBatch.run(() {
     final Set<String> upsertedTypes = preventCircularSerialization 
         ? {...?serializedTypes, '#{Model}'} 
         : const {};
     #{RecursiveUpsertsForFields}
     return super.upsert(#{moDel});
+    });
 }`;
 
 export const dartRecursiveListUpsert = `List<#{Model}> recursiveListUpsert(List<#{Model}> #{moDel}s, {
     Set<String>? serializedTypes,
     bool preventCircularSerialization = true,
 }) {
+    return StoreMutationBatch.run(() {
     final updated#{Model}s = <#{Model}>[];
     for (var #{moDel} in #{moDel}s) {
         updated#{Model}s.add(recursiveUpsert(#{moDel}, serializedTypes: serializedTypes, preventCircularSerialization: preventCircularSerialization));
     }
     return updated#{Model}s;
+    });
 }`;
 
 export const dartStoreRecursiveUpsertForField = `if (#{moDel}.#{fieldName} != null && (!preventCircularSerialization || !upsertedTypes.contains('#{FieldType}'))) {

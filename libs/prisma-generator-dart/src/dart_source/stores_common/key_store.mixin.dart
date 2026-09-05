@@ -3,6 +3,7 @@ part of '../abcx3_stores_library.dart';
 mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     implements KeyStorageInterface<T, K> {
   List<T> _itemsStore = [];
+  bool _itemsDirty = false;
   // Fast key -> model map for uniqueness and O(1) lookups.
   final Map<K, T> _map = {};
   // Lazily built secondary indexes for generated property getters. The cache is
@@ -12,9 +13,18 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
 
   /// override the following getter and setter in your class to change storage engine and
   /// use another variable than _itemsStore to store your items in
-  List<T> get items => _itemsStore;
+  List<T> get items {
+    if (_itemsDirty) {
+      _itemsStore = _map.values.toList();
+      _itemsDirty = false;
+    }
+    return _itemsStore;
+  }
 
-  set items(List<T> items) => setItemsInternal(deduplicateAndIndex(items));
+  set items(List<T> items) {
+    deduplicateAndIndex(items);
+    _storeChanged();
+  }
 
   /// Updates the internal key index from the provided list and
   /// returns the deduplicated list (one per $uid).
@@ -33,7 +43,18 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
   void setItemsInternal(List<T> items) {
     invalidatePropertyIndexes();
     _itemsStore = items;
+    _itemsDirty = false;
   }
+
+  void _storeChanged() {
+    // Invalidate on every write, including writes inside a batch, so reads
+    // during recursive upserts never observe stale relationship indexes.
+    invalidatePropertyIndexes();
+    _itemsDirty = true;
+    StoreMutationBatch._schedule(this, _publishItems);
+  }
+
+  void _publishItems() => setItemsInternal(items);
 
   /// Clears lazily built property indexes after a store mutation.
   ///
@@ -149,7 +170,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     } else {
       _map[key] = item;
     }
-    setItemsInternal(_map.values.toList());
+    _storeChanged();
   }
 
   @override
@@ -160,7 +181,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
       final existing = _map[k as K];
       _map[k] = existing != null ? existing.mergeWithInstanceValues(m) : m;
     }
-    setItemsInternal(_map.values.toList());
+    _storeChanged();
   }
 
   @override
@@ -170,7 +191,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     assert(key != null, 'All models must have a non-null \$uid.');
     final removed = _map.remove(key as K) != null;
     if (removed) {
-      setItemsInternal(_map.values.toList());
+      _storeChanged();
     }
     return removed;
   }
@@ -182,14 +203,14 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
       assert(k != null, 'All models must have a non-null \$uid.');
       _map.remove(k as K);
     }
-    setItemsInternal(_map.values.toList());
+    _storeChanged();
   }
 
   @override
   bool deleteByKey(K key) {
     final removed = _map.remove(key) != null;
     if (removed) {
-      setItemsInternal(_map.values.toList());
+      _storeChanged();
     }
     return removed;
   }
@@ -199,7 +220,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     for (var key in keys) {
       _map.remove(key);
     }
-    setItemsInternal(_map.values.toList());
+    _storeChanged();
   }
 
   @override
@@ -210,7 +231,7 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     if (existing == null) return null;
     final replaced = existing.mergeWithInstanceValues(item);
     _map[key] = replaced;
-    setItemsInternal(_map.values.toList());
+    _storeChanged();
     return replaced;
   }
 
@@ -223,17 +244,19 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
     if (existing == null) return null;
     final updated = existing.updateWithInstanceValues(item);
     _map[key] = updated;
-    setItemsInternal(_map.values.toList());
+    _storeChanged();
     return updated;
   }
 
   @override
   List<T?> updateMany(List<T> items) {
-    List<T?> updatedModels = [];
-    for (var item in items) {
-      updatedModels.add(update(item));
-    }
-    return updatedModels;
+    return StoreMutationBatch.run(() {
+      List<T?> updatedModels = [];
+      for (var item in items) {
+        updatedModels.add(update(item));
+      }
+      return updatedModels;
+    });
   }
 
   @override
@@ -249,16 +272,18 @@ mixin KeyStoreMixin<K, T extends PrismaModel<K, T>>
 
   @override
   List<T> upsertMany(List<T> items) {
-    final upsertedItems = <T>[];
-    for (var item in items) {
-      upsertedItems.add(upsert(item));
-    }
-    return upsertedItems;
+    return StoreMutationBatch.run(() {
+      final upsertedItems = <T>[];
+      for (var item in items) {
+        upsertedItems.add(upsert(item));
+      }
+      return upsertedItems;
+    });
   }
 
   @override
   void clear() {
     _map.clear();
-    setItemsInternal([]);
+    _storeChanged();
   }
 }
